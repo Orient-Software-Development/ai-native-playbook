@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Task Slicing — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#lifecycle">Lifecycle</a>
+    <span class="sep">›</span>
+    <span class="here">Task Slicing</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">10 · Lifecycle — Chapter 03</div>
+    <h1>Task Slicing</h1>
+    <p class="lede">
+      Hand the agent <strong>one slice at a time: one deliverable, one test, one commit</strong>. A
+      small slice you can verify the moment it lands beats a sprawling diff where one buried mistake
+      taints everything around it — and the approved plan already drew the slice lines for you.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      The plan is approved and, if you did it right, it already reads as an ordered list of small
+      pieces. Tempting to just say "build all that" and go make coffee. Don't. A sprawling all-at-once
+      diff is where one buried mistake hides among forty plausible lines and taints everything it
+      touches.
+    </p>
+    <p>
+      So this chapter takes the plan's list and turns it into discipline: one deliverable, one test,
+      one commit — built bottom-up, each slice proven before the next gets to lean on it.
+    </p>
+
+    <div class="fig">
+      <div class="pipe">
+        <div class="step c1"><div class="dot"></div><div class="s-n">01</div><div class="s-t">Spec</div></div>
+        <div class="step c2"><div class="dot"></div><div class="s-n">02</div><div class="s-t">Plan</div></div>
+        <div class="step c3 on"><div class="dot"></div><div class="s-n">03</div><div class="s-t">Slice</div></div>
+        <div class="step c4"><div class="dot"></div><div class="s-n">04</div><div class="s-t">Code</div></div>
+        <div class="step c5"><div class="dot"></div><div class="s-n">05</div><div class="s-t">Verify</div></div>
+        <div class="step c6"><div class="dot"></div><div class="s-n">06</div><div class="s-t">Review</div></div>
+      </div>
+      <p class="fig-cap">The governed lifecycle — you are here</p>
+    </div>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      Don't ask the agent to build the whole feature in one go. Cut the approved
+      <a href="02-plan-before-code.html">plan</a> into <strong>tasks</strong>, and make each task as
+      small as it can honestly be:
+    </p>
+    <ul>
+      <li><strong>One deliverable.</strong> A task produces exactly one nameable thing — <em>the table
+        exists</em>, <em>the flag persists</em>, <em>the list orders correctly</em>. If you can't say
+        what single thing a task delivers in one short phrase, it's really several tasks wearing one
+        name.</li>
+      <li><strong>One test.</strong> Each deliverable comes with the one check that proves it — and you
+        run that check before moving on.</li>
+      <li><strong>One commit.</strong> A verified slice is a checkpoint: a small, self-contained diff
+        you can read in one sitting and roll back to if the next slice goes wrong.</li>
+    </ul>
+    <p>
+      And <strong>slice by layer, bottom-up</strong>. Most features stack the same way — data
+      <strong>schema</strong> at the bottom, then the <strong>commands/logic</strong> that write and
+      read it, then the <strong>API</strong> that exposes it, then the <strong>UI</strong> on top.
+      Build them in that order, proving each layer before you build on it, so every slice rests on
+      something already verified rather than on a guess.
+    </p>
+
+    <div class="fig">
+      <div class="layers">
+        <div class="layer l1">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <ellipse class="st" cx="16" cy="8" rx="9" ry="3.5"/>
+            <path class="st" d="M7 8 V24 C7 26 11 27.5 16 27.5 C21 27.5 25 26 25 24 V8"/>
+            <path class="lc" d="M7 16 C7 18 11 19.5 16 19.5 C21 19.5 25 18 25 16"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Schema</h4>
+            <p>The data shape at the foundation — <code>deal_priorities</code> link table + migration. Proven first, so nothing above rests on a guess.</p>
+          </div>
+          <div class="l-dur">slice 1<br>commit ✓</div>
+        </div>
+        <div class="layer l2">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <rect class="st" x="5" y="7" width="22" height="18" rx="2.5"/>
+            <polyline class="lc" points="10,13 14,16 10,19" stroke-linejoin="round"/>
+            <line class="lc" x1="16" y1="19" x2="21" y2="19"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Commands / logic</h4>
+            <p>The behaviour that writes and reads the data — <code>flagDeal</code> / <code>unflagDeal</code>. Tested against real persisted state, not "ran without throwing."</p>
+          </div>
+          <div class="l-dur">slice 2<br>commit ✓</div>
+        </div>
+        <div class="layer l3">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <circle class="st" cx="14" cy="14" r="8"/>
+            <line class="lc" x1="20" y1="20" x2="26" y2="26"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Query / API</h4>
+            <p>What exposes the data — the extended deals-list query. The two-user test (AC-002) proves the contract's privacy rule right here.</p>
+          </div>
+          <div class="l-dur">slice 3<br>commit ✓</div>
+        </div>
+        <div class="layer l4">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <rect class="st" x="5" y="7" width="22" height="18" rx="2.5"/>
+            <line class="st" x1="5" y1="12" x2="27" y2="12"/>
+            <circle class="cl" cx="9" cy="9.5" r="1.1"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>UI</h4>
+            <p>On top — a star toggle on each row, wired to the commands. Evidence is a click-through and screenshot: flag, reorder, unflag.</p>
+          </div>
+          <div class="l-dur">slice 4<br>commit ✓</div>
+        </div>
+      </div>
+      <p class="fig-cap">Slice by layer, bottom-up — each slice rests on a layer already proven</p>
+    </div>
+
+    <p>
+      The discipline is simple: <strong>verify each slice before you start the next.</strong> A slice
+      isn't "done" because the agent stopped typing — it's done when its one test passes against real
+      state.
+    </p>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      A bug caught in the slice that introduced it is a one-line fix. The same bug discovered three
+      layers later — after the API and UI are built on top of it — is a thread you have to pull through
+      everything stacked above it. Slicing keeps every mistake close to its cause: when the two-user
+      isolation check fails at the query layer, you already <em>know</em> the schema and the commands
+      beneath it passed their own checks, so there's exactly one place to look instead of eight.
+    </p>
+    <p>
+      Small diffs are also the only diffs that actually get reviewed. A wall of plausible agent-written
+      code invites a skim, and a skim is where <a href="06-review-and-convergence.html">"zombie code"</a>
+      survives — code that looks right, compiles, and quietly does the wrong thing. A slice you can hold
+      in your head is one you can genuinely review, not just wave through.
+    </p>
+    <p>
+      There's a context benefit too. A focused task keeps the agent working over a small, relevant slice
+      of the codebase instead of spreading its attention across every layer at once — the same
+      <a href="../00-foundations/02-context-engineering.html">attention-budget</a> logic that makes a
+      short spec beat a sprawling one. Narrow the task and the agent's work gets sharper, not just
+      easier to check.
+    </p>
+
+    <p class="pull">A slice isn't done because the agent stopped typing — it's done when its <em>one test passes</em> against real state.</p>
+
+    <p>
+      And each committed slice is a <strong>checkpoint</strong>. When a slice goes wrong, you revert one
+      small, self-contained commit and retry — cheap. When a single giant task goes wrong, every layer is
+      tangled with every other and there's nothing clean to roll back to; the whole thing is
+      all-or-nothing, and "nothing" is usually what you get.
+    </p>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <ul>
+      <li><strong>One deliverable, one test, one commit.</strong> The three-part test for a good slice.
+        If a task can't name its single deliverable, or you can't name the one check that proves it,
+        split it until you can.</li>
+      <li><strong>Slice by layer, bottom-up.</strong> Schema → commands/logic → API → UI. Each slice
+        sits on a layer that's already proven, so a failure points down at <em>this</em> slice, not at
+        some unverified foundation under it.</li>
+      <li><strong>Verify before you advance.</strong> Run the slice's check against real state before
+        opening the next task — see <a href="05-verify-proof-not-vibes.html">Verify — Proof, Not
+        Vibes</a>. Never stack a new slice on an unverified one; that's how one bug becomes four.</li>
+      <li><strong>Keep the diff reviewable.</strong> A couple of files, not a sprawl. If a single task
+        is touching every layer at once, it isn't sliced yet.</li>
+      <li><strong>Let the plan be your slice list.</strong> A good <a href="02-plan-before-code.html">plan</a>
+        already reads as an ordered set of small pieces — you usually don't re-design the slices, you
+        just take them one at a time, top of the list down.</li>
+      <li><strong>Commit each verified slice.</strong> The checkpoint is the point — and it's what lets
+        short-lived branches merge continuously
+        (<a href="../30-delivery/01-trunk-based-development.html">trunk-based development</a>).</li>
+      <li><strong>Don't:</strong> bundle a "while I'm here" cleanup into a feature slice; let one task
+        span every layer; or call a slice done because the agent finished, only because its test
+        passed.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>
+      Take the <em>per-user deal priority</em> feature whose plan you approved on the previous page. The
+      plan already laid out four layers in order: a <code>deal_priorities</code> link table, the
+      flag/unflag commands, the extended list query, and the UI star toggle. That ordered list <em>is</em>
+      the slice list.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">As one big task</span>
+          <h4>"Build per-user deal priority"</h4>
+          <ul>
+            <li>One diff touches all four layers at once — schema, commands, query, and component together.</li>
+            <li>The cross-user bug (REQ-002) is in there <em>somewhere</em>, buried among migration files and UI tweaks.</li>
+            <li>No checkpoint to fall back to — the diff is all-or-nothing, so a fix means re-reading the whole thing.</li>
+          </ul>
+          <p class="outcome-line">This is exactly the <b>unreviewable wall a busy reviewer skims</b> — and exactly how the privacy bug ships.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">Sliced</span>
+          <h4>Four tasks, each proven before the next</h4>
+          <ul>
+            <li>Each slice rests on a layer already proven.</li>
+            <li>When the two-user test fails at Slice 3, you don't go hunting — Slices 1 and 2 passed, so the bug is in the join you just wrote.</li>
+            <li>One place, one small revert, one retry.</li>
+          </ul>
+          <p class="outcome-line">The privacy rule that would have shipped silently is <b>caught at the exact slice that owns it</b> — and every green slice is a commit you can stand on.</p>
+        </div>
+      </div>
+      <p class="fig-cap">The same plan, one diff vs four — slicing keeps each mistake close to its cause</p>
+    </div>
+
+    <p>Sliced, the same plan becomes four tasks, each proven before the next begins:</p>
+
+    <div class="fig">
+      <pre><code>Slice 1 — Schema      deliverable: deal_priorities(user_id, deal_id) table + migration
+                      test: migration applies cleanly; the (user_id, deal_id) pair is unique
+                      commit ✓  →  the table exists and is constrained
+
+Slice 2 — Commands    deliverable: flagDeal / unflagDeal write to the link table
+                      test: flagging persists a row for THIS user; unflag removes it
+                            (assert real DB state, not "ran without throwing")
+                      commit ✓  →  flags actually persist
+
+Slice 3 — Query       deliverable: deals-list query left-joins the current user's
+                            priorities, orders flagged-first, keeps existing sub-order
+                      test: the two-user test (AC-002) — A's flag never appears for B;
+                            ordering is correct and nothing is hidden
+                      commit ✓  →  the contract's privacy rule is proven
+
+Slice 4 — UI          deliverable: a star toggle on each row, wired to the commands
+                      test/evidence: click-through + screenshot; flag, reorder, unflag
+                      commit ✓  →  the feature is visible and usable</code></pre>
+      <p class="fig-cap">One deliverable, one test, one commit — the plan's list becomes four checkpoints</p>
+    </div>
+
+    <p>
+      Each slice rests on a layer already proven. So when the two-user isolation test fails at
+      <strong>Slice 3</strong>, you don't go hunting: Slices 1 and 2 passed their own checks, so the bug
+      is in the join you just wrote — one place, one small revert, one retry. The privacy rule that would
+      have shipped silently in the big-bang version gets caught at the exact slice that owns it.
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>The big-bang task.</strong> One task spanning every layer, returned as a diff too
+        large to truly review — so entangled bugs hide in plausible code and there's no checkpoint to
+        roll back to. (<a href="../40-anti-patterns/01-failure-modes.html">Failure modes</a>)</li>
+      <li><strong>The "while I'm here" bundle.</strong> Unrelated cleanup smuggled into a feature slice,
+        so the commit no longer captures one deliverable and stops being a clean checkpoint.</li>
+      <li><strong>Stacked unverified slices.</strong> Building the next layer before the one beneath it
+        is proven, so a foundational bug compounds upward and surfaces far from its cause.</li>
+      <li><strong>The untestable slice.</strong> A "task" with no single observable check that proves it
+        — a sign it's really several tasks, or that the requirement underneath it is too vague to
+        build.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — Code With the Agent</div>
+      <p>
+        The slice is approved and the agent starts typing. This is <em>not</em> the moment to step back
+        and wait for the diff — it's the moment to steer in real time, point at concrete references
+        instead of fuzzy analogies, and remember the uncomfortable truth that <strong>a rule you stated
+        is not a rule the agent followed</strong>.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="02-plan-before-code.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Plan Before Code</div>
+    </a>
+    <a class="next" href="04-code-with-the-agent.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Code With the Agent</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="02-plan-before-code.html">Plan Before Code</a>
+      <a href="04-code-with-the-agent.html">Code With the Agent</a>
+      <a href="05-verify-proof-not-vibes.html">Verify — Proof, Not Vibes</a>
+      <a href="06-review-and-convergence.html">Review and Convergence</a>
+      <a href="../30-delivery/01-trunk-based-development.html">Trunk-Based Development</a>
+      <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

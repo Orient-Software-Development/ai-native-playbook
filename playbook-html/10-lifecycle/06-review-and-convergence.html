@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review and Convergence — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#lifecycle">Lifecycle</a>
+    <span class="sep">›</span>
+    <span class="here">Review and Convergence</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">10 · Lifecycle — Chapter 06</div>
+    <h1>Review and Convergence</h1>
+    <p class="lede">
+      Agent code is fluent, and <strong>fluency is exactly what hides the bug</strong> — plausible code
+      that does the wrong thing sails past a skim. Read the diff like you mean it, and as the same pattern
+      lands a second and third time, pull the shared piece out <em>before</em> the copies drift.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      The change is built and verified — proof attached, contract met. One step left before it's truly
+      done, and it's the one fluency makes dangerous. Agent code reads <em>beautifully</em>: it compiles,
+      it's tidy, it looks like a careful engineer wrote it. That polish is exactly the camouflage a bug
+      hides behind.
+    </p>
+    <p>
+      So this final lifecycle chapter does two things at once — read the diff like you mean it to catch
+      the plausible-but-wrong, and pull shared shapes together before the third near-copy quietly drifts
+      apart. Review keeps wrong code out; convergence keeps the right code from rotting.
+    </p>
+
+    <div class="fig">
+      <div class="pipe">
+        <div class="step c1"><div class="dot"></div><div class="s-n">01</div><div class="s-t">Spec</div></div>
+        <div class="step c2"><div class="dot"></div><div class="s-n">02</div><div class="s-t">Plan</div></div>
+        <div class="step c3"><div class="dot"></div><div class="s-n">03</div><div class="s-t">Slice</div></div>
+        <div class="step c4"><div class="dot"></div><div class="s-n">04</div><div class="s-t">Code</div></div>
+        <div class="step c5"><div class="dot"></div><div class="s-n">05</div><div class="s-t">Verify</div></div>
+        <div class="step c6 on"><div class="dot"></div><div class="s-n">06</div><div class="s-t">Review</div></div>
+      </div>
+      <p class="fig-cap">The governed lifecycle — you are here</p>
+    </div>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      Two jobs happen after a change is written and <a href="05-verify-proof-not-vibes.html">verified</a>,
+      and both exist to stop quality eroding as agents produce <em>volume</em>.
+    </p>
+
+    <div class="fig">
+      <div class="outcomes">
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <circle class="st" cx="14" cy="14" r="8"/>
+            <line class="lc" x1="20" y1="20" x2="26" y2="26"/>
+            <path class="lc" d="M10.5 14 l2.5 2.5 l5 -5.5" stroke-linejoin="round"/>
+          </svg></div>
+          <h4>Deliberate diff review</h4>
+          <p>Read the diff like it matters. Agent code is fluent, and that plausibility is precisely what hides <strong>zombie code</strong>: a dead branch, an always-true condition, a swallowed error, a path nobody asked for. A skim waves it through because it <em>reads</em> fine; only a deliberate read — tracing what the code actually does — catches it.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <path class="ln" d="M7 6 V14 C7 17 10 17 13 17"/>
+            <path class="ln" d="M7 26 V18 C7 15 10 15 13 15"/>
+            <line class="lc" x1="13" y1="16" x2="25" y2="16"/>
+            <polyline class="lc" points="21,12 26,16 21,20" stroke-linejoin="round"/>
+          </svg></div>
+          <h4>Convergence</h4>
+          <p>A feature lands, then gets polished — a fix, a tweak, a second near-copy. Treat that follow-up as <em>convergence</em>: each pass should make the codebase <strong>more coherent</strong>, not just bolt more on. The signal is duplication; the timing is the <strong>rule of three</strong>.</p>
+        </div>
+      </div>
+      <p class="fig-cap">The two jobs after verify — keep wrong code out, keep the right code from rotting</p>
+    </div>
+
+    <p>
+      <strong>1. Deliberate diff review.</strong> A dead branch that's never reached, a condition that's
+      always true, a handler that silently swallows the case it was meant to handle, a path nobody asked
+      for. A skim waves it through because it <em>reads</em> fine; only a deliberate read — tracing what
+      the code actually does, not what it appears to do — catches it.
+    </p>
+    <p>
+      <strong>2. Convergence.</strong> The signal to watch is duplication, and the timing rule is the
+      <strong>rule of three</strong> — the first time you write a pattern, fine; the second, note it;
+      <strong>before the third copy, extract the shared piece</strong> into one named place. Pull it out
+      while it's still three small similar blocks, not after it's a dozen drifting ones.
+    </p>
+
+    <div class="fig">
+      <div class="diagram">
+        <svg viewBox="0 0 370 116" role="img" aria-label="The rule of three: the first copy is fine, the second you notice, and before the third you extract the shared piece into one named place">
+          <rect class="wh" x="12" y="10" width="128" height="26" rx="6"/>
+          <text x="76" y="26" text-anchor="middle" font-size="9.5">1st copy — fine</text>
+          <rect class="wh" x="12" y="44" width="128" height="26" rx="6"/>
+          <text x="76" y="60" text-anchor="middle" font-size="9.5">2nd — notice</text>
+          <rect class="oa" x="12" y="78" width="128" height="26" rx="6"/>
+          <text x="76" y="94" text-anchor="middle" font-size="9.5">3rd — extract</text>
+          <line class="lc" x1="148" y1="57" x2="214" y2="57"/>
+          <polyline class="lc" points="208,51 215,57 208,63" fill="none" stroke-linejoin="round"/>
+          <rect class="oa" x="220" y="42" width="138" height="32" rx="8"/>
+          <text x="289" y="58" text-anchor="middle" font-size="9.5">one named place</text>
+          <text x="289" y="69" text-anchor="middle" font-size="7.5">the shared piece</text>
+        </svg>
+      </div>
+      <p class="fig-cap">The rule of three — extract at three small similar blocks, before they drift into a dozen</p>
+    </div>
+
+    <p>
+      They share a page because they share a cause: at agent throughput, code accumulates faster than
+      ever, and so does <strong>entropy</strong> — the slow drift toward a messier, more duplicated,
+      harder-to-change codebase. Review is the gate that keeps wrong code <em>out</em>; convergence is the
+      garbage-collection that keeps the right code from rotting into a pile of near-duplicates.
+    </p>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      The agent's strength — producing fluent, plausible code — is the reviewer's trap. A human's bug
+      usually <em>looks</em> like a bug: a typo, an obvious gap. An agent's bug looks like working code,
+      because the model is optimised to produce text that reads as correct. So "looks fine" is the
+      <em>least</em> reliable signal you have on agent output, and the review has to be deliberate: trace
+      the logic, not the prose. And it can't be the author who reviews — for the same reason a feature
+      can't <a href="05-verify-proof-not-vibes.html">self-verify</a>, the process that wrote the plausible
+      code is biased to read it as correct.
+    </p>
+    <p>
+      Convergence works because duplication isn't expensive when you <em>create</em> it — it's expensive
+      later, every time the copied thing has to change and you must find and fix every copy, and miss one.
+      The rule of three is a timing rule with a reason on each side. Wait too long and the copies drift —
+      each picks up its own special case — until there's no clean shared piece left to extract. Extract too
+      <em>early</em>, at the first copy, and you're guessing at the shared shape from a single example and
+      will abstract the wrong thing. Three is the sweet spot: enough examples to see what's genuinely
+      common, few enough that they haven't diverged yet.
+    </p>
+
+    <p class="pull">"Looks fine" is the <em>least</em> reliable signal you have on agent output — trace the logic, not the prose.</p>
+
+    <p>
+      Both compound at scale, which is why they earn their own step. One unreviewed zombie is a bug; a
+      <em>habit</em> of skimming is a codebase you can't trust. One duplicated block is nothing; a codebase
+      of near-duplicates is one neither human nor agent can change safely, because every edit ripples in
+      ways no one can predict. The discipline is cheap per change and its absence is ruinous in aggregate.
+    </p>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <p><strong>Reviewing:</strong></p>
+    <ul>
+      <li><strong>Read the diff deliberately</strong> — trace the logic, don't skim the prose. For each
+        change ask: what does this actually do on the inputs the spec cares about, including the edge
+        ones?</li>
+      <li><strong>Hunt for zombies:</strong> dead branches, always-true conditions, swallowed errors,
+        handlers for cases that can't occur. The test isn't "does it look reasonable" — it's "where in the
+        spec is this, and does it do that."</li>
+      <li><strong>Someone other than the author reviews</strong> — a teammate, or a fresh agent with the
+        spec — the same generator/evaluator split that makes verification trustworthy.</li>
+      <li><strong>Lean on small slices.</strong> A reviewable diff is the entire payoff of
+        <a href="03-task-slicing.html">task slicing</a>; a wall of code can't be read deliberately, so
+        don't produce one.</li>
+    </ul>
+    <p><strong>Converging:</strong></p>
+    <ul>
+      <li><strong>Watch duplication and apply the rule of three.</strong> First copy: fine. Second:
+        notice. Third: extract the shared piece into one named place <em>before</em> you write it.</li>
+      <li><strong>Don't extract too early.</strong> One copy isn't a pattern. Abstracting from a single
+        example builds a leaky abstraction everything else has to bend around.</li>
+      <li><strong>Treat polish passes as convergence, not accretion</strong> — each follow-up should leave
+        the code more coherent than it found it. Garbage-collect: delete the dead, fold the duplicated,
+        before the entropy compounds.</li>
+      <li><strong>Don't:</strong> rubber-stamp a green diff; trust "looks right" on agent code; or
+        copy-paste a fourth time because it's faster in the moment.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>Take the <em>per-user deal priority</em> feature — verified and ready to merge. Two things surface.</p>
+    <p>
+      <strong>A zombie.</strong> The deliberate read of the query slice hits a branch nobody mentioned:
+    </p>
+
+    <div class="fig">
+      <pre><code>if (user.role === 'admin') {
+  // show all teams' flagged deals
+  return allFlagsAcrossTeams(...)
+}</code></pre>
+      <p class="fig-cap">A zombie — plausible, inert-looking, and nowhere in the spec</p>
+    </div>
+
+    <p>
+      Nothing in the spec asked for this — REQ-002 says flags are private, full stop. The agent invented a
+      plausible-sounding admin path; it compiles, the tests never hit it, and it quietly breaks the privacy
+      contract for one class of user. A skim sails right past it ("looks like reasonable admin handling").
+      The deliberate read asks the one question that matters — <em>where in the spec is this?</em> — finds
+      the answer is <em>nowhere</em>, and deletes it.
+    </p>
+    <p>
+      <strong>Convergence.</strong> A sprint later, two more features want the same shape of thing: a
+      <em>follow-up</em> flag on deals and a <em>watched</em> marker on accounts. Each arrives as a near-copy
+      of the deal-priority pattern — a per-user link table, a flag/unflag command pair, a join in the list
+      query. The first copy (deal priority) was fine. On the second (follow-ups) you <em>notice</em> the
+      repeated shape. The third (watched accounts) is the trigger: before writing it as a third copy, you
+      extract a small <strong>per-user toggle</strong> helper that all three call, while they're still
+      three similar blocks. Wait until the fifth and they'd each have drifted — one adds a timestamp, one a
+      note — and there'd be no clean thing left to pull out.
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>The rubber-stamp review.</strong> Approving a green diff without really reading it —
+        plausibility waved through, zombie code shipped. The headline failure this page prevents.
+        (<a href="../40-anti-patterns/01-failure-modes.html">Failure modes</a>)</li>
+      <li><strong>"Looks right" on agent code.</strong> Trusting fluency as correctness — the single least
+        reliable signal on generated code, because the model is built to make wrong code read as right.</li>
+      <li><strong>Premature extraction.</strong> Abstracting at the first copy, guessing the shared shape
+        wrong, and leaving a leaky abstraction everything has to bend around.</li>
+      <li><strong>Copy-paste creep.</strong> The opposite failure — never extracting, letting
+        near-duplicates pile up until the codebase can't be changed safely.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — Guides — Feedforward</div>
+      <p>
+        That's one whole change shepherded from spec to merge. But you don't want to hand-hold every change
+        forever — so the next section builds the <strong>harness itself</strong>, the reusable controls
+        that do this steering for you. We start with guides: everything you put in front of the agent
+        before it acts.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="05-verify-proof-not-vibes.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Verify — Proof, Not Vibes</div>
+    </a>
+    <a class="next" href="../20-harness/01-guides-feedforward.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Guides — Feedforward</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="03-task-slicing.html">Task Slicing</a>
+      <a href="05-verify-proof-not-vibes.html">Verify — Proof, Not Vibes</a>
+      <a href="../20-harness/01-guides-feedforward.html">Guides — Feedforward</a>
+      <a href="../30-delivery/01-trunk-based-development.html">Trunk-Based Development</a>
+      <a href="../50-adoption/02-growing-the-harness.html">Growing the Harness</a>
+      <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

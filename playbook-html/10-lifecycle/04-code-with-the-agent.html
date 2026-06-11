@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Code With the Agent — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#lifecycle">Lifecycle</a>
+    <span class="sep">›</span>
+    <span class="here">Code With the Agent</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">10 · Lifecycle — Chapter 04</div>
+    <h1>Code With the Agent</h1>
+    <p class="lede">
+      Steer with the concrete thing, not an analogy — "match this function" beats "do it like the other
+      page." And <strong>never assume a rule you stated is a rule the agent followed</strong>: it drifts
+      off clear instructions, so the enforcement has to live <em>outside</em> it, in sensors and review.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      We've sliced the plan into bite-sized tasks, each with its own test. Now the agent actually starts
+      writing — and this is where a lot of people make the same quiet mistake: they hit go, wander off,
+      and come back to a finished diff. The diff is the <em>most</em> expensive place to discover the
+      agent misread you.
+    </p>
+    <p>
+      This chapter is about staying in the room while it works — steering with the concrete thing rather
+      than a hand-wave, and accepting the slightly deflating fact that telling an agent a rule and
+      getting the rule obeyed are two very different events.
+    </p>
+
+    <div class="fig">
+      <div class="pipe">
+        <div class="step c1"><div class="dot"></div><div class="s-n">01</div><div class="s-t">Spec</div></div>
+        <div class="step c2"><div class="dot"></div><div class="s-n">02</div><div class="s-t">Plan</div></div>
+        <div class="step c3"><div class="dot"></div><div class="s-n">03</div><div class="s-t">Slice</div></div>
+        <div class="step c4 on"><div class="dot"></div><div class="s-n">04</div><div class="s-t">Code</div></div>
+        <div class="step c5"><div class="dot"></div><div class="s-n">05</div><div class="s-t">Verify</div></div>
+        <div class="step c6"><div class="dot"></div><div class="s-n">06</div><div class="s-t">Review</div></div>
+      </div>
+      <p class="fig-cap">The governed lifecycle — you are here</p>
+    </div>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      The <a href="03-task-slicing.html">slice</a> is approved and the agent starts writing. Your job now
+      isn't to step back and wait for the diff — it's to <em>steer in the moment</em>, and to not trust
+      what you can't check. Two halves.
+    </p>
+
+    <div class="fig">
+      <div class="outcomes">
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <circle class="st" cx="16" cy="16" r="11"/>
+            <circle class="st" cx="16" cy="16" r="5"/>
+            <circle class="cl" cx="16" cy="16" r="1.6"/>
+          </svg></div>
+          <h4>Steer with concrete reference</h4>
+          <p>"Make it work like the accounts list" forces the agent to guess what <em>like</em> means — and it guesses the most probable thing. Instead quote the exact behaviour: point at the file and lines, paste the rule. Then <strong>watch it work and course-correct early</strong> — a nudge at the first wrong line is a sentence; the same fix ten files later is a rebuild.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <path class="oa" d="M16 3 L27 8 V16 C27 23 22 27 16 29 C10 27 5 23 5 16 V8 Z" stroke-linejoin="round"/>
+            <path class="lc" d="M11 16 l4 4 l7 -9" stroke-linejoin="round"/>
+          </svg></div>
+          <h4>Don't trust the agent to police itself</h4>
+          <p>Putting a rule in front of the agent does not mean it follows the rule. It can't reliably hold every instruction in attention while solving the problem, so it drifts. Guides <em>lower the rate</em> of violations; they never drive it to zero. The enforcement lives outside the agent: <strong>sensors</strong> and <strong>review</strong> by a separate evaluator.</p>
+        </div>
+      </div>
+      <p class="fig-cap">The two halves of coding with the agent — steer it in, then catch what slips</p>
+    </div>
+
+    <p>
+      <strong>Steer with concrete reference, not analogy.</strong> A scoped, concrete instruction is to
+      this in-the-moment loop what a concrete <a href="01-spec-the-contract.html">spec</a> is to the
+      whole feature: it removes the gap the agent would otherwise fill with a confident wrong guess. Be
+      specific about the task itself — the inputs, the outputs, the files to touch, the files to read
+      first. Then watch it work and redirect the moment it heads the wrong way.
+    </p>
+    <p>
+      <strong>Don't trust the agent to police itself.</strong> Not out of defiance — it simply can't
+      reliably hold every instruction in attention while solving the problem in front of it, so it drifts
+      off rules you stated plainly. So never rely on the agent enforcing its own constraints. The
+      enforcement lives outside the agent: <strong>sensors</strong> — computational checks like type
+      checkers, linters, and tests that fail loudly the instant a rule is broken — and
+      <strong>review</strong> by a separate evaluator. Instructions are <em>feedforward</em> (what you
+      tell the agent before it acts); sensors and review are <em>feedback</em> (what catches it after).
+      You need both, because the first is unreliable on its own.
+    </p>
+
+    <p class="pull">"But I told it not to" is neither a defence nor a fix — the only reliable enforcement is a check the agent <em>cannot talk its way past</em>.</p>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      "Like X" relies on the agent reconstructing your intent from an analogy, and it doesn't have your
+      mental model of how X works — it has the most probable completion of the phrase "like X," which can
+      be subtly or wildly off. Hand it the actual reference and there's nothing left to reconstruct: the
+      gap where the wrong guess would go is simply closed.
+    </p>
+    <p>
+      Early correction is cheap for the same reason <a href="03-task-slicing.html">slicing</a> and
+      <a href="02-plan-before-code.html">plan review</a> are: a wrong direction <em>compounds</em>. Caught
+      at its source it's a one-line redirect; caught after the agent has built three things on top of it,
+      it's a thread you have to pull through all of them. Watching and nudging keeps every wrong turn
+      small enough to fix in a sentence.
+    </p>
+    <p>
+      And the self-follow limit is <em>structural</em>, not a tuning problem you can prompt your way out
+      of. The agent produces the next most probable step given everything in front of it; a rule you
+      stated is one signal among many competing for its attention, and the local pull of "make this work"
+      can simply outweigh it. It's the same reason
+      <a href="05-verify-proof-not-vibes.html">verification</a> can't be self-graded and
+      <a href="06-review-and-convergence.html">review</a> can't be done by the author: the agent's own
+      word about its own compliance is the least reliable signal you have.
+    </p>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <ul>
+      <li><strong>Quote, don't gesture.</strong> "Match the validation in <code>handleSubmit</code> at
+        <code>orders.ts:40-58</code>" beats "validate like the orders form." Paste the reference
+        behaviour or the rule straight into the task.</li>
+      <li><strong>Be specific and scoped.</strong> Name the deliverable, the inputs and outputs, the
+        files to touch, and the files to read <em>first</em>. A scoped task is one the agent can hold
+        whole — and one you can actually review.</li>
+      <li><strong>Course-correct early and often.</strong> Redirect at the first wrong turn, not at the
+        finished diff. You can <strong>stop the agent mid-action</strong> — that interrupt is a normal,
+        expected part of steering, and it's the cheapest correction you have.</li>
+      <li><strong>Send investigation to a side channel.</strong> For "go figure out how X works," use a
+        <strong>subagent</strong> — a separate, scoped agent run — so the answer comes back without
+        flooding your working thread. Keep the main thread's
+        <a href="../00-foundations/02-context-engineering.html">attention budget</a> for the task.</li>
+      <li><strong>Keep the agent on a leash you can see.</strong> Prefer a scoped, reversible working mode
+        where consequential actions are approved deliberately, and keep diffs small enough to review.</li>
+      <li><strong>Put rules where a sensor can enforce them.</strong> If a constraint matters, back it
+        with a check — a type, a lint rule, a test — not just a sentence in a
+        <a href="../20-harness/01-guides-feedforward.html">guide</a>. State it as feedforward <em>and</em>
+        enforce it as <a href="../20-harness/03-sensors-feedback.html">feedback</a>.</li>
+      <li><strong>Don't:</strong> say "like X does it" and hope; let a wrong direction run because
+        interrupting feels premature; assume a rule in the prompt is a rule obeyed; or let the agent act
+        unsupervised on anything you can't reverse.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>
+      Take the <em>per-user deal priority</em> feature at <strong>slice 3</strong> — extend the existing
+      deals-list query to join the current user's priorities and order flagged-first.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">Vague and trusting</span>
+          <h4>"…like how we sort other lists, and remember flags are per-user"</h4>
+          <ul>
+            <li><em>"Like how we sort other lists"</em> — the agent picks a list that sorts by a global column and mirrors that shape, which doesn't fit per-user data at all.</li>
+            <li><em>"Remember flags are per-user"</em> — a rule, stated clearly — doesn't hold: deep in the join it drops the <code>user_id</code> filter because the simpler query still returns rows.</li>
+            <li>The local pull of make-it-run beat the rule you stated.</li>
+          </ul>
+          <p class="outcome-line">It hands you a green diff that <b>leaks flags across users</b>. You told it the rule; it didn't follow the rule.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">Concrete and checked</span>
+          <h4>Point at the exact thing, back it with a check</h4>
+          <ul>
+            <li>"Extend <code>getDealsList</code> in <code>deals/queries.ts:120-145</code>; left-join <code>deal_priorities</code> on <code>(deal_id, current_user_id)</code>… read the schema first." No analogy to reconstruct.</li>
+            <li>The privacy rule is backed by the two-user test (a sensor) and a reviewer who isn't the author.</li>
+            <li>Mid-stream you watch it begin the join without the user filter and redirect in one sentence.</li>
+          </ul>
+          <p class="outcome-line">The rule is honoured — not because you asked nicely, but because <b>a check would have caught the violation if you hadn't</b>.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Same slice, two prompts — specificity removes the guess, external checks remove the dependence on self-discipline</p>
+    </div>
+
+    <p>
+      The lesson the example carries: <em>specificity removes the guess, and external checks remove the
+      dependence on the agent's self-discipline.</em> Steer concretely, verify always, and never confuse
+      "I instructed it" with "it complied."
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>The "like X does it" prompt.</strong> Steering by analogy, so the agent reconstructs
+        your intent from a guess and builds against the wrong reference.
+        (<a href="../40-anti-patterns/01-failure-modes.html">Failure modes</a>)</li>
+      <li><strong>Trusting the agent to self-enforce.</strong> Assuming a rule stated in the prompt or a
+        guide is a rule obeyed. The fix is <a href="../20-harness/03-sensors-feedback.html">sensors</a>
+        and <a href="06-review-and-convergence.html">review</a>, not a firmer tone.</li>
+      <li><strong>Late course-correction.</strong> Letting a wrong direction run all the way to the diff
+        because interrupting felt premature — turning a one-line redirect into a rebuild.</li>
+      <li><strong>The unsupervised agent.</strong> Letting it act across the repo on irreversible things
+        with no scoped mode, no approval step, and no small diff to review.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — Verify — Proof, Not Vibes</div>
+      <p>
+        The code is written and the agent cheerfully reports "all tests passing." Lovely — but it wrote
+        those tests from its own code, so they prove it does what it does, not what you asked for. Next
+        we replace the warm feeling with actual evidence, graded by someone who isn't the author.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="03-task-slicing.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Task Slicing</div>
+    </a>
+    <a class="next" href="05-verify-proof-not-vibes.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Verify — Proof, Not Vibes</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="03-task-slicing.html">Task Slicing</a>
+      <a href="05-verify-proof-not-vibes.html">Verify — Proof, Not Vibes</a>
+      <a href="06-review-and-convergence.html">Review and Convergence</a>
+      <a href="../20-harness/01-guides-feedforward.html">Guides — Feedforward</a>
+      <a href="../20-harness/03-sensors-feedback.html">Sensors — Feedback</a>
+      <a href="../00-foundations/02-context-engineering.html">Context Engineering</a>
+      <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Repo Structure and Legibility — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#harness">Harness</a>
+    <span class="sep">›</span>
+    <span class="here">Repo Structure and Legibility</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">20 · Harness — Chapter 02</div>
+    <h1>Repo Structure and Legibility</h1>
+    <p class="lede">
+      How your repo is laid out <strong>is</strong> a guide. A predictable, conventional structure is
+      <em>feedforward the repo broadcasts for free</em>, on every task, without spending a token to
+      re-explain itself.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      Last page covered the guides you sit down and author — instruction files, blueprints, constraints.
+      This one is sneakier, because the most powerful guide in your repo is one you never actually write.
+      It's the <em>layout</em>.
+    </p>
+    <p>
+      Before the agent reads a single word you wrote, it reads the folder tree, the file names, where
+      everything sits relative to everything else. A tidy, conventional structure is feedforward the repo
+      broadcasts for free, on every task, forever. A bespoke mess is a maze it has to grope through one file
+      at a time.
+    </p>
+
+    <div class="fig">
+      <div class="harness-bar">
+        <div class="hb-half hb-guides on">
+          <div class="hb-tag">Feedforward · before</div>
+          <div class="hb-name">Guides</div>
+          <div class="hb-sub">a guide you <em>arrange</em>, not write</div>
+        </div>
+        <div class="hb-mid">
+          <span class="hb-arrow">→</span>
+          <span class="hb-agent">agent<br>acts</span>
+          <span class="hb-arrow">→</span>
+        </div>
+        <div class="hb-half hb-sensors">
+          <div class="hb-tag">Feedback · after</div>
+          <div class="hb-name">Sensors</div>
+          <div class="hb-sub">grade what it produced</div>
+        </div>
+      </div>
+      <p class="fig-cap">Still the guides half — but this guide is the <em>shape</em> of the repo itself</p>
+    </div>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      The agent perceives your project entirely through its
+      <a href="../00-foundations/02-context-engineering.html">context window</a>. Before it reads a single
+      guide you authored, it reads the repo — the folder tree, the file names, where things sit relative to
+      each other. That layout is the first feedforward the agent ever meets, and it's the cheapest you'll
+      ever own: you arrange the structure once, and every future task benefits without you re-spending a
+      token. A <strong>legible</strong> repo — one a newcomer could navigate and reason about on its own — is
+      a map. An illegible one is a maze the agent has to grope through file by file, guessing as it goes.
+    </p>
+
+    <div class="fig">
+      <div class="duo">
+        <div class="duo-panel bad">
+          <span class="duo-tag">Illegible — a maze</span>
+          <svg viewBox="0 0 120 96" role="img" aria-label="A tangle of scattered boxes joined by crossing dashed lines">
+            <rect class="wh" x="8" y="10" width="26" height="14" rx="3"/>
+            <rect class="wh" x="74" y="6" width="30" height="14" rx="3"/>
+            <rect class="wh" x="44" y="32" width="26" height="14" rx="3"/>
+            <rect class="wh" x="86" y="40" width="26" height="14" rx="3"/>
+            <rect class="wh" x="14" y="54" width="30" height="14" rx="3"/>
+            <rect class="wh" x="58" y="68" width="30" height="14" rx="3"/>
+            <path class="lc da" d="M34 17 L74 13"/>
+            <path class="lc da" d="M21 24 L57 32"/>
+            <path class="lc da" d="M89 20 L70 39"/>
+            <path class="lc da" d="M57 46 L29 54"/>
+            <path class="lc da" d="M99 54 L73 68"/>
+            <path class="lc da" d="M44 61 L58 75"/>
+            <path class="lc da" d="M70 39 L99 40"/>
+            <text x="78" y="92" font-size="28" fill="#D97757">?</text>
+          </svg>
+          <p class="duo-cap">No convention to lean on. Every placement is a <b>guess</b>; the agent burns its budget just <b>locating</b> things.</p>
+        </div>
+        <div class="duo-panel good">
+          <span class="duo-tag">Legible — a map</span>
+          <svg viewBox="0 0 120 96" role="img" aria-label="A tidy folder tree with a root and ordered children">
+            <rect class="oa" x="44" y="8" width="32" height="14" rx="3"/>
+            <line class="ln" x1="60" y1="22" x2="60" y2="32"/>
+            <line class="ln" x1="24" y1="32" x2="96" y2="32"/>
+            <line class="ln" x1="24" y1="32" x2="24" y2="40"/>
+            <line class="ln" x1="60" y1="32" x2="60" y2="40"/>
+            <line class="ln" x1="96" y1="32" x2="96" y2="40"/>
+            <rect class="wh" x="10" y="40" width="28" height="13" rx="3"/>
+            <rect class="cl" x="46" y="40" width="28" height="13" rx="3"/>
+            <rect class="wh" x="82" y="40" width="28" height="13" rx="3"/>
+            <line class="ln" x1="24" y1="53" x2="24" y2="61"/>
+            <line class="ln" x1="60" y1="53" x2="60" y2="61"/>
+            <rect class="wh" x="10" y="61" width="28" height="12" rx="3"/>
+            <rect class="wh" x="46" y="61" width="28" height="12" rx="3"/>
+            <rect class="wh" x="10" y="79" width="28" height="11" rx="3"/>
+          </svg>
+          <p class="duo-cap">Matches the ecosystem's priors. The agent's <b>defaults are already right</b>, and it <b>navigates</b> instead of searching.</p>
+        </div>
+      </div>
+      <p class="fig-cap">The same project, two structures — one the agent reads as a map, one it gropes through as a maze</p>
+    </div>
+
+    <p>Legibility isn't a vibe; it's a small set of concrete arrangements:</p>
+    <ul>
+      <li><strong>A conventional, industry-standard layout.</strong> Lay the project out the way its
+        framework and ecosystem expect. Agents carry strong priors about where things <em>should</em> live;
+        when your structure matches them, half the map is drawn before you start. A bespoke layout throws all
+        of that away.</li>
+      <li><strong>A dedicated home for the contracts.</strong> Keep specs in one obvious, named place (a
+        <code>specs/</code> folder), not scattered through wikis, tickets, and comments. The contract the
+        agent builds against has to be <em>findable</em> to be useful.</li>
+      <li><strong>Sensors co-located with the code they guard.</strong> Put each test beside the module it
+        covers, not in a far-off mirror tree. When the agent opens a module it sees the test that proves it,
+        so it extends the suite instead of leaving the new path uncovered.</li>
+      <li><strong>Clear package and module boundaries.</strong> Make it obvious what lives where and which
+        direction dependencies may flow, so the agent extends the structure instead of reaching across a line
+        it shouldn't.</li>
+      <li><strong>Consistent naming.</strong> When the same kind of thing is named the same way everywhere,
+        the agent can <em>predict</em> a file's name from its job and find it without a full-tree search.</li>
+    </ul>
+
+    <p class="pull">A legible repo turns "the agent can't find it" into "the agent <em>navigates</em> it."</p>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      The agent fills every gap it meets with its most probable guess (the same mechanism behind every guide
+      — see <a href="01-guides-feedforward.html">feedforward</a>). A legible repo simply leaves fewer gaps to
+      fill. When the layout matches convention, the agent's default placement is correct. When the test sits
+      beside the code, the agent finds it and extends it rather than inventing a parallel one. When the
+      boundary is explicit, the agent doesn't reach across it, because it can <em>see</em> the line.
+    </p>
+    <p>
+      There's a budget reason too. In an illegible repo the agent burns its
+      <a href="../00-foundations/02-context-engineering.html">attention budget</a> just <em>locating</em>
+      things — grepping the tree, opening wrong files, reconstructing a structure that was never written
+      down. Every one of those tokens is spent on navigation instead of on the task, and the agent reasons
+      worse for it.
+    </p>
+    <p>
+      This is the <a href="../00-foundations/03-harness-engineering.html">harnessability</a> idea made
+      concrete, and it pays off the same way: twice. Clear boundaries, conventional layout, and tests beside
+      their code were always good engineering — they make the repo easier for <em>humans</em>. The same
+      arrangements now make it easier for <em>agents</em>. You're not doing new work to be agent-ready;
+      you're doing the work you'd do anyway, and collecting a second payoff.
+    </p>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <ul>
+      <li><strong>Follow the conventional layout for your stack.</strong> Use the directory structure your
+        framework and package manager expect, named the way the ecosystem names it. Save your creativity for
+        the product, not the scaffolding — every deviation is a guide you now have to write by hand.</li>
+      <li><strong>Give the contracts one obvious home.</strong> A top-level <code>specs/</code> folder, one
+        file per spec, named predictably. The agent should never have to ask where the spec for a feature
+        lives.</li>
+      <li><strong>Put sensors next to the code.</strong> Co-locate tests with the modules they cover.
+        Proximity is itself a signal: it tells the agent (and the reviewer) that <em>this</em> code is the
+        thing <em>this</em> test is responsible for.</li>
+      <li><strong>Make boundaries a readable map, not just a buried config.</strong> This is the one teams
+        get wrong most often. The rule "package A may not import package B" usually <em>does</em> exist —
+        encoded deep in a hundreds-of-lines lint config. But that config is a
+        <a href="03-sensors-feedback.html">sensor</a>: it enforces the boundary <em>after</em> the agent
+        crosses it. Give the agent a short, human-readable map alongside the config that enforces it.</li>
+      <li><strong>Name things predictably.</strong> One naming pattern per kind of thing, applied everywhere,
+        so a file's name is derivable from its role.</li>
+      <li><strong>For a large codebase, give the agent a structural index it can query.</strong> Hand the
+        agent a <em>code graph</em> — a machine-generated index of the symbols and how they connect — that it
+        queries directly instead of grepping the tree file by file. Treat this as a general practice, not an
+        endorsement of any one indexer.</li>
+      <li><strong>Don't:</strong> invent a bespoke layout the agent has no priors for; scatter conventions
+        across a wiki, three docs, and a config; let a giant lint config be the <em>only</em> record of your
+        architecture; or let the structure drift until the layout no longer reflects how the code works.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>
+      A teammate asks the agent to add a feature spanning two packages of a monorepo — a reporting view that
+      needs a number computed in the finance package. The repo enforces a strict rule: finance may not depend
+      on reporting. That rule is real, and it's enforced — by a long, generated lint config that fails the
+      build on a forbidden import.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">Without legibility</span>
+          <h4>The boundary is enforced, but never <em>stated</em></h4>
+          <ul>
+            <li>Nowhere is there a plain-language map of which package owns what — the only record is the lint config, which no agent reads front-to-back to learn the architecture.</li>
+            <li>So the agent guesses: it puts the computation in reporting and imports finance the wrong way — plausible, and exactly backwards.</li>
+            <li>The build goes red on a rule it never saw stated. It moves a file, trips a <em>different</em> line of the same config, and thrashes.</li>
+          </ul>
+          <p class="outcome-line">The boundary was <b>enforced but never legible</b>, so the agent learned it the most expensive way possible — one red build at a time.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">With legibility</span>
+          <h4>A short map sits beside the config</h4>
+          <ul>
+            <li>Here are the packages, here's what each owns, here are the arrows for which may depend on which. The agent reads it first — it's small, findable, written for a reader.</li>
+            <li>It places the computation in finance, exposed through the one edge reporting is allowed to use. The import direction is right on the first attempt.</li>
+            <li>The lint config still stands behind the map as the sensor; it just never has to fire.</li>
+          </ul>
+          <p class="outcome-line">The guide got there first, so <b>the boundary never had to be discovered by colliding with it</b>.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Enforcing a boundary and making it legible are two different jobs — you want both</p>
+    </div>
+
+    <p>
+      The lesson the example carries: a config that fails the build is a sensor — it tells the agent it was
+      wrong, after the fact. A readable map of the same boundary is a guide — it tells the agent what's
+      right, before it acts. Structure that's only enforced makes the agent learn by colliding with it;
+      structure that's also legible lets the agent navigate it. Arrange the repo so the shape is
+      <em>readable</em>, and pair every boundary the config guards with a map the agent can actually read.
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>The buried boundary.</strong> The architecture lives only inside a sprawling lint config —
+        enforced, but never stated anywhere a reader learns it first. The agent discovers each rule by
+        tripping it. (<a href="01-guides-feedforward.html">Guides — Feedforward</a> ·
+        <a href="03-sensors-feedback.html">Sensors — Feedback</a>)</li>
+      <li><strong>The bespoke layout.</strong> An idiosyncratic structure the agent has no training-data
+        priors for, so every placement is a guess and every convention has to be hand-written to
+        compensate.</li>
+      <li><strong>Scattered conventions.</strong> The rules for how the repo is organised spread across a
+        wiki, several docs, and a config, so "where does X go?" has no single answer.</li>
+      <li><strong>The stale map.</strong> A layout or boundary map that no longer matches how the code
+        actually works, teaching the wrong structure with the authority of being read first.
+        (<a href="../50-adoption/02-growing-the-harness.html">Growing the Harness</a>)</li>
+      <li><strong>Grep-the-whole-tree.</strong> On a large codebase, leaving the agent to locate every symbol
+        by scanning files one at a time — burning budget on navigation a structural index would hand it for
+        free.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — Sensors — Feedback</div>
+      <p>
+        That's the whole feedforward half of the harness — everything that shapes the agent <em>before</em>
+        it acts. Time to flip the coin to the other half: sensors, the checks that grade the work
+        <em>after</em> — and the one rule underneath them that decides whether any of them are real.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="01-guides-feedforward.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Guides — Feedforward</div>
+    </a>
+    <a class="next" href="03-sensors-feedback.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Sensors — Feedback</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="01-guides-feedforward.html">Guides — Feedforward</a>
+      <a href="../00-foundations/03-harness-engineering.html">Harness Engineering</a>
+      <a href="../00-foundations/02-context-engineering.html">Context Engineering</a>
+      <a href="../10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a>
+      <a href="03-sensors-feedback.html">Sensors — Feedback</a>
+      <a href="../50-adoption/02-growing-the-harness.html">Growing the Harness</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

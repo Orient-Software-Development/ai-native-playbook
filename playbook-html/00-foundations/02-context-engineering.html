@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Context Engineering — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#foundations">Foundations</a>
+    <span class="sep">›</span>
+    <span class="here">Context Engineering</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">00 · Foundations — Chapter 02</div>
+    <h1>Context Engineering</h1>
+    <p class="lede">
+      The context window is a <strong>budget, not a backpack</strong>. What you load — and what
+      you keep <em>out</em> — decides whether the agent reasons over the right information or
+      drowns in noise. Anything it can't see effectively doesn't exist.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      A model only knows what's in its context window <em>at the instant it acts</em>. That window
+      is a <strong>budget</strong>, not a backpack you keep stuffing. Every token spent on a stale
+      instruction or an irrelevant file is a token <em>not</em> spent on the task.
+    </p>
+    <p>
+      And this isn't just about hitting the limit. A model reasons most reliably over a focused
+      input, and as the input grows the thread frays — a specific fact gets buried, and earlier
+      framing quietly biases later steps — so quality degrades <em>well before</em> the window
+      fills. That fraying-with-length is called <strong>context rot</strong>.
+    </p>
+
+    <p class="pull">More context is not more understanding — past a point it's <em>dilution</em>.</p>
+
+    <div class="fig">
+      <div class="diagram">
+        <svg viewBox="0 0 360 170" role="img" aria-label="Reasoning quality rises to a peak with the right amount of context, then frays as the input grows — degrading well before the window fills">
+          <line class="ln" x1="40" y1="18" x2="40" y2="132"/>
+          <line class="ln" x1="40" y1="132" x2="340" y2="132"/>
+          <line class="ln da" x1="312" y1="22" x2="312" y2="132"/>
+          <path class="lc" d="M40,114 C 78,50 122,40 152,40 C 198,40 252,96 300,118 C 305,121 309,123 312,124"/>
+          <circle class="cl" cx="152" cy="40" r="4"/>
+          <text x="44" y="14" font-size="9">reasoning quality ↑</text>
+          <text x="152" y="30" text-anchor="middle" font-size="9">right amount</text>
+          <text x="312" y="16" text-anchor="middle" font-size="9">window full</text>
+          <text x="66" y="126" font-size="8">too little</text>
+          <text x="252" y="110" font-size="8">dilution</text>
+          <text x="190" y="152" text-anchor="middle" font-size="9">context length →</text>
+        </svg>
+      </div>
+      <p class="fig-cap">Context rot — quality frays long before the budget runs out</p>
+    </div>
+
+    <p>
+      The instinct to pile <em>more</em> in — a longer spec, a bigger instruction file, one
+      endless chat — is the bug, not the fix. But the answer isn't simply <em>less</em> either:
+      too little context and the agent guesses at what it can't see. The discipline is
+      <strong>the right context — not too much, not too little, just what the task needs.</strong>
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">Pack the backpack</span>
+          <h4>Stuff in everything, just in case</h4>
+          <ul>
+            <li>A longer spec, a bigger instruction file, one endless chat — pile it all in.</li>
+            <li>Stale instructions and irrelevant files spend the tokens the task needed.</li>
+            <li>The thread frays: a key fact gets buried, early framing biases later steps.</li>
+          </ul>
+          <p class="outcome-line">Quality degrades <b>well before the window fills</b> — that's context rot, not understanding.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">Budget the window</span>
+          <h4>Load just what the task needs</h4>
+          <ul>
+            <li>Name the specific spec, file, or decision — point, don't dump.</li>
+            <li>Keep durable truth in the repo; carry only a small handoff into the window.</li>
+            <li>Reset when you switch tasks; continue only while the context is still signal.</li>
+          </ul>
+          <p class="outcome-line">The right context — <b>not too much, not too little</b>, just what the task needs.</p>
+        </div>
+      </div>
+      <p class="fig-cap">More in isn't more understanding — budgeting the window is the discipline</p>
+    </div>
+
+    <p>
+      It helps to know that context lives in three layers, each with a different job — and a
+      different degree of durability:
+    </p>
+
+    <div class="fig">
+      <div class="layers">
+        <div class="layer l1">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <rect class="st" x="5" y="8" width="22" height="16" rx="2.5"/>
+            <line class="lc" x1="10" y1="16" x2="14" y2="16"/>
+            <line class="lc" x1="17" y1="16" x2="22" y2="16"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Working memory</h4>
+            <p>What's in the window right now. Ephemeral and budgeted; it vanishes on a reset. This is the layer the whole page is about.</p>
+          </div>
+          <div class="l-dur">ephemeral<br>scratch space</div>
+        </div>
+        <div class="layer l2">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <ellipse class="st" cx="16" cy="9" rx="9" ry="3.5"/>
+            <path class="st" d="M7 9 V23 C7 25 11 26.5 16 26.5 C21 26.5 25 25 25 23 V9"/>
+            <path class="lc" d="M7 16 C7 18 11 19.5 16 19.5 C21 19.5 25 18 25 16"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>The memory store</h4>
+            <p>A semi-durable scratchpad the agent retrieves from across turns. Handy — but an <em>accelerator</em>, never the source of truth.</p>
+          </div>
+          <div class="l-dur">semi-durable<br>convenience</div>
+        </div>
+        <div class="layer l3">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <rect class="oa" x="6" y="6" width="20" height="20" rx="2.5"/>
+            <line class="lc" x1="11" y1="12" x2="21" y2="12"/>
+            <line class="lc" x1="11" y1="16" x2="21" y2="16"/>
+            <line class="lc" x1="11" y1="20" x2="17" y2="20"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>The repository</h4>
+            <p>Code, specs, decisions, and notes under version control — the durable <strong>system of record</strong>, reviewable and legible to every future run. When something matters, it belongs here.</p>
+          </div>
+          <div class="l-dur">durable<br>system of record</div>
+        </div>
+      </div>
+      <p class="fig-cap">Three layers of context — from ephemeral scratch to the durable canon</p>
+    </div>
+
+    <p class="pull">The repo is the <em>canon</em>, the store is a convenience, the window is scratch space.</p>
+
+    <p>
+      So when a session gets bloated, the move is <em>situational</em>. <strong>Reset</strong> — a
+      clean slate carrying only a durable note — when you switch tasks, or before any
+      independent-judgement step where the accumulated history would bias the verdict.
+      <strong>Continue</strong> when you're deep in one coherent task and the context is still
+      signal, not noise.
+    </p>
+
+    <div class="callout">
+      <div class="c-label">Either way — reset or continue</div>
+      <p>
+        <strong>Write the durable note first.</strong> The repo remembers reliably; a long chat
+        doesn't. A reset is a genuine clean start, not <em>compaction</em> — which just summarises
+        the same biased history in place. The clean slate is what keeps verification honest.
+      </p>
+    </div>
+
+    <h2><span class="idx">01</span>The habits that get you there</h2>
+    <p>
+      The discipline is less a rule than a handful of reflexes. Each one keeps the window on the
+      task and the truth where the agent can actually find it.
+    </p>
+
+    <ul>
+      <li><strong>Point, don't dump.</strong> Name the specific spec, file, or decision the task
+        needs. An agent told where the source of truth <em>is</em> reasons from it; an agent handed
+        everything reconstructs a plausible — often wrong — version. Give it a map, not a
+        1,000-page manual.</li>
+      <li><strong>Write it down where the agent can see it.</strong> Anything living in a chat
+        thread, a doc tool, or someone's head is <em>invisible</em> to the agent. Only repo-local,
+        versioned artifacts — code, specs, schemas, instruction files — are reliably legible across
+        runs. If a decision exists only in Microsoft Teams, it may as well not exist.</li>
+      <li><strong>Clear context when you switch topics — or when history would bias the agent.</strong>
+        The classic antipattern is one marathon conversation that runs from brainstorm → plan →
+        code → tests: by the time the agent writes the tests, it has spent the whole thread
+        convincing itself the design is right, so it writes tests that confirm its own code, not the
+        spec. Start a fresh context for each distinct job, carrying only a small handoff. <em>(This
+        is a</em> reset <em>— a genuine clean start — not</em> compaction<em>, which just summarises
+        the same biased history in place.)</em></li>
+      <li><strong>More skills and guides isn't better — it's a tax.</strong> Loading a big library
+        of reusable skills or instruction files up front can burn tens of thousands of tokens
+        <em>before you even ask your first question</em>, and agents are bad at picking the right
+        one from a large pile — they miss the good skill, and a noisy, irrelevant one can actively
+        mislead them. Curate a small, high-signal set and load the rest only when the task calls for
+        it. (How to <em>design</em> skills so they retrieve well is
+        <a href="../20-harness/01-guides-feedforward.html">Guides — Feedforward</a>; the failure
+        when you don't is <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>.)</li>
+      <li><strong>Own your prompts — don't outsource prompt engineering to a framework.</strong>
+        Context is your biggest lever over the agent's output, so keep your hands on it. A framework
+        that "handles context for you" is making the most important decision — <em>what the agent
+        sees</em> — where you can't inspect or tune it. You don't need to see the model's weights,
+        but you must see its prompt. A thin helper that does what you told it is fine; a framework
+        that decides for you is not.</li>
+    </ul>
+
+    <p>
+      Context is the channel everything else reaches the agent through. The next page is the system
+      that fills it deliberately — guides before the agent acts, sensors after — the
+      <strong>harness</strong>.
+    </p>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="01-why-ai-native.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Why AI-Native Development</div>
+    </a>
+    <a class="next" href="03-harness-engineering.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Harness Engineering</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="01-why-ai-native.html">Why AI-Native</a>
+      <a href="03-harness-engineering.html">Harness Engineering</a>
+      <a href="../20-harness/01-guides-feedforward.html">Guides — Feedforward</a>
+      <a href="../10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a>
+      <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

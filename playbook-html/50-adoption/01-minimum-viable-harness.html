@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Minimum Viable Harness — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#adoption">Adoption</a>
+    <span class="sep">›</span>
+    <span class="here">The Minimum Viable Harness</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">50 · Adoption — Chapter 01</div>
+    <h1>The Minimum Viable Harness</h1>
+    <p class="lede">
+      Don't wait for the perfect harness — stand up the smallest one that already <strong>closes the
+      loop</strong>. One guide file, a formatter and linter, a type check, a gate that blocks on red, and one
+      real behaviour test. You can build it in week one, and it beats a grand plan you never finish.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      We've covered what works, and the entire rogues' gallery of what doesn't. Which leaves the only question
+      that matters on a real Monday with a real deadline: where do <em>you</em> actually start? Not with the
+      full layered harness this book spent twenty pages describing — that's the destination, not the on-ramp.
+      This page is the on-ramp: the five smallest pieces that still close the loop. A scrappy harness that
+      <em>exists</em> beats a magnificent one that's still a plan.
+    </p>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      A <strong>minimum viable harness</strong> is the smallest set of controls that still does the whole job:
+      shape the work before the agent acts, grade it after, and refuse to let red merge. Everything earlier in
+      this playbook describes a <em>full</em> harness. This page is the on-ramp: what you put in place on day
+      one, before the codebase even has a shape, so the very first agent-written change lands inside a loop
+      instead of outside one. Five pieces, one of each kind that matters:
+    </p>
+    <ol>
+      <li><strong>One guide file</strong> — a single checked-in
+        <a href="../20-harness/01-guides-feedforward.html">agent instruction file</a> (<code>CLAUDE.md</code>,
+        <code>AGENTS.md</code>) holding where the code lives, the non-negotiable conventions, and the exact
+        commands to build and test. This is your
+        <a href="../00-foundations/03-harness-engineering.html">feedforward</a>.</li>
+      <li><strong>A formatter and a linter</strong> — the cheapest
+        <a href="../20-harness/03-sensors-feedback.html">sensors</a> there are. They catch style drift and a
+        class of obvious mistakes deterministically, in milliseconds, with no judgement call.</li>
+      <li><strong>A type check</strong> — if your language has one, the single highest-signal free sensor you
+        will ever get: a proof, run on every change, that whole categories of bug <em>cannot</em> be in the
+        diff. If your language is untyped, skip this and lean harder on the test.</li>
+      <li><strong>A gate that blocks on red</strong> — a
+        <a href="../20-harness/04-keep-quality-left.html">pre-push hook</a> (or the earliest stage you can
+        enforce) that runs those checks and <em>refuses the push</em> when any fail. A check that only warns is
+        not a gate.</li>
+      <li><strong>One real behaviour test</strong> — a single end-to-end test that proves the app's one most
+        important thing actually works. Not a test of what the code <em>does</em> — a test of what the product
+        <em>needs</em>. This is the seed of your
+        <a href="../20-harness/05-behaviour-harness.html">behaviour harness</a>, and it's the piece teams skip
+        first and regret first.</li>
+    </ol>
+    <p>
+      Notice what's <em>not</em> on it: no fitness functions, no mutation testing, no AI reviewer, no design
+      guide, no CI matrix. Those are all real, and they all come later (the
+      <a href="02-growing-the-harness.html">next page</a> is about adding them). Week one is about getting
+      <em>one of each control type</em> working end to end, not getting any of them complete.
+    </p>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      A harness is only a harness when the loop closes — feedforward shapes the attempt, a sensor grades it,
+      and a gate enforces the verdict. Miss any one of the three and you don't have a small harness, you have
+      no harness:
+    </p>
+
+    <div class="fig">
+      <div class="diagram wide">
+        <svg viewBox="0 0 440 250" role="img" aria-label="A three-node loop: feedforward shapes, a sensor grades, a gate enforces — all three required">
+          <rect class="oa" x="24" y="26" width="150" height="48" rx="8"/>
+          <text x="99" y="48" font-size="12.5" text-anchor="middle">Feedforward</text>
+          <text x="99" y="64" font-size="10" text-anchor="middle">shape the attempt</text>
+          <rect class="oa" x="266" y="26" width="150" height="48" rx="8"/>
+          <text x="341" y="48" font-size="12.5" text-anchor="middle">Sensor</text>
+          <text x="341" y="64" font-size="10" text-anchor="middle">grade the result</text>
+          <rect class="oa" x="145" y="176" width="150" height="48" rx="8"/>
+          <text x="220" y="198" font-size="12.5" text-anchor="middle">Gate</text>
+          <text x="220" y="214" font-size="10" text-anchor="middle">enforce the verdict</text>
+          <path class="lc" d="M178 50 L256 50"/><path class="lc" d="M250 45 l9 5 l-9 5"/>
+          <path class="lc" d="M362 78 C 392 122, 326 168, 296 190"/><path class="lc" d="M305 180 l-9 11 l13 1"/>
+          <path class="lc" d="M144 190 C 104 162, 60 120, 78 80"/><path class="lc" d="M72 91 l6 -12 l12 6"/>
+          <text x="220" y="126" font-size="11.5" text-anchor="middle">all three —</text>
+          <text x="220" y="143" font-size="11.5" text-anchor="middle">or it isn't a harness</text>
+        </svg>
+      </div>
+      <p class="fig-cap">The minimum viable harness is the smallest configuration where all three are present at once</p>
+    </div>
+
+    <div class="fig">
+      <div class="cases">
+        <div class="case partial">
+          <span class="case-tag">Guides, no gate</span>
+          <h4>A suggestion box</h4>
+          <p>The agent reads your conventions, ignores half under pressure (it doesn't reliably self-follow rules), and nothing stops the result.</p>
+        </div>
+        <div class="case partial">
+          <span class="case-tag">Sensors, no gate</span>
+          <h4>A dashboard nobody reads</h4>
+          <p>The linter is red, the build is broken, and the change merges anyway — because failing was never <em>blocking</em>.</p>
+        </div>
+        <div class="case partial">
+          <span class="case-tag">Gate over nothing</span>
+          <h4>A green check that proves nothing</h4>
+          <p>The gate blocks on a <a href="../40-anti-patterns/01-failure-modes.html">vacuous sensor</a> that passes whether or not the work happened.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Drop any one leg and the loop doesn't close — three half-harnesses, zero whole ones</p>
+    </div>
+
+    <p>
+      The minimum viable harness is weak — one behaviour test covers one path, the linter misses semantic bugs
+      — but it is <em>whole</em>. And a whole-but-weak loop is the thing you can actually improve, because the
+      <a href="02-growing-the-harness.html">steering loop</a> that grows a harness needs a harness to grow:
+      you watch it miss something, you add the guide or sensor that would have caught it, you re-run. You can't
+      steer a loop that doesn't exist yet.
+    </p>
+    <p>
+      There's a second reason to start small, the same lesson as
+      <a href="../20-harness/04-keep-quality-left.html">keeping a hook fast enough that nobody skips it</a>:
+      <strong>a harness the team actually adopts beats a bigger one they route around.</strong> A five-line
+      guide file gets read and kept current; a five-page one goes stale and gets ignored. And there's a timing
+      argument: <strong>an empty new repo is the cheapest moment you will ever have to do this.</strong>
+      <a href="../00-foundations/03-harness-engineering.html">Harnessability</a> is something you bank early or
+      pay for forever.
+    </p>
+
+    <p class="pull">Minimum viable isn't a compromise you'll grow out of — it's the only version that survives contact with a real team under a real deadline.</p>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <p>
+      Work the checklist top to bottom. Each item is one sitting, and the whole thing is a day, not a sprint.
+    </p>
+    <ul>
+      <li><strong>Write the guide file first, and keep it short.</strong> Repo layout in a few lines, the
+        conventions you refuse to compromise on, the literal build and test commands. The test for every line:
+        <em>would the agent get this wrong without it?</em> If not, cut the line — a bloated guide file is a
+        <a href="../00-foundations/02-context-engineering.html">tax paid on every task</a>. A skeleton:</li>
+    </ul>
+
+    <div class="fig">
+      <pre><code># &lt;Project&gt; — agent guide
+
+## Layout
+- app code: &lt;where&gt;
+- tests: &lt;where&gt;
+- specs/contracts: &lt;where&gt;
+
+## Conventions (non-negotiable)
+- &lt;the 3–5 rules you will not bend&gt;
+
+## Commands
+- build:  &lt;command&gt;
+- test:   &lt;command&gt;
+- check:  &lt;lint + types + test, the one command the gate runs&gt;</code></pre>
+      <p class="fig-cap">The whole guide file — short enough to stay read and kept current</p>
+    </div>
+
+    <ul>
+      <li><strong>Wire the formatter, linter, and type check as one command.</strong> Make a single entry
+        point — call it <code>check</code> — that runs all three and exits non-zero if any fail. One command is
+        what the guide file points at, what the gate runs, and what a human runs by hand.</li>
+      <li><strong>Put the gate at the earliest stage you can enforce, and make it block.</strong> A pre-push
+        hook is the usual sweet spot. The non-negotiable property is that <strong>a failing check fails the
+        push</strong> — warn-only is not a gate. (When you add CI later, the <em>authoritative</em> gate moves
+        there, where it
+        <a href="../20-harness/04-keep-quality-left.html">can't be bypassed with a local flag</a>.)</li>
+      <li><strong>Write one behaviour test against the spec, not the code.</strong> Pick the single most
+        important thing the product must do and prove it end to end — and assert the
+        <a href="../20-harness/03-sensors-feedback.html">observable end-state</a>, never just "it ran without
+        throwing." Add it to the <code>check</code> command so the gate runs it too.</li>
+      <li><strong>Do:</strong> keep every piece small enough to finish in week one; make the gate block, not
+        warn; point the guide file at the same <code>check</code> command the gate runs.</li>
+      <li><strong>Don't:</strong> wait for the "real" harness before shipping the first feature; pile every
+        check you can think of onto day one (you'll learn what this repo needs by
+        <a href="02-growing-the-harness.html">watching it fail</a>); skip the behaviour test because lint and
+        types are "probably enough" — they check the code is <em>clean</em>, never that it does the
+        <em>right thing</em>.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>
+      Two teams start the same new service in the same week.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">Team A</span>
+          <h4>Ship first, harness later</h4>
+          <ul>
+            <li>The agent is pointed at an empty repo with a one-line prompt. It's fast and feels great.</li>
+            <li>By week two: forty files, no guide file, no gate, a linter nobody runs — and three different ways to talk to the database, because nothing rejected the wrong ones.</li>
+            <li>The first real bug returns the wrong total; it passes review because it <em>looks</em> right and there's no test that would have caught it.</li>
+          </ul>
+          <p class="outcome-line">Now comes the expensive version of every week-one task — retrofitting types onto forty files, reconciling three conventions. <b>The harness arrives as cleanup instead of scaffolding</b>.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">Team B</span>
+          <h4>Day one on the minimum viable harness</h4>
+          <ul>
+            <li>Before the first feature: a short guide file, format-lint-type wired into one <code>check</code>, a pre-push hook that blocks on red, one end-to-end test.</li>
+            <li>The agent reads the conventions on every task; the gate rejects the pushes that ignore them. The database is talked to one way from the first commit.</li>
+            <li>When a feature returns the wrong total in week two, the behaviour test goes red before the push lands.</li>
+          </ul>
+          <p class="outcome-line">Not slower for the day they spent — <b>faster by week two, because every change landed inside a loop that caught its own mistakes</b>.</p>
+        </div>
+      </div>
+      <p class="fig-cap">The harness isn't overhead you add once there's a mess — it's what keeps the mess from forming</p>
+    </div>
+
+    <p>
+      The lesson the example carries: the cost of standing up the minimum viable harness is a day at the
+      start. The cost of skipping it is paid back, with interest, as cleanup — and some of it (the conventions
+      that diverged, the bug that shipped) you don't get to pay back at all.
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>The someday harness.</strong> Waiting for the perfect, complete setup before standing up
+        <em>any</em> of it — so it never ships and the first agent PRs land completely ungated. Small and whole
+        beats big and someday.</li>
+      <li><strong>The big-bang harness.</strong> The opposite mistake — wiring fitness functions, mutation
+        testing, an AI reviewer, and a full CI matrix on day one. It stalls and it's over-engineered for a repo
+        with no shape yet. Ship one of each control type; <a href="02-growing-the-harness.html">grow the
+        rest</a>.</li>
+      <li><strong>The half-loop.</strong> Guides with no gate (a suggestion box), or sensors with no gate (a
+        dashboard nobody reads). All three — feedforward, sensor, gate — or it isn't a harness.</li>
+      <li><strong>The decorative gate.</strong> A hook or check that runs and <em>warns</em> but doesn't
+        block, so red still merges. A gate that can't say no is set dressing.</li>
+      <li><strong>The lint-only start.</strong> Format, lint, and types but no behaviour test — so the harness
+        proves the code is clean and never once proves it does what the product needs. The
+        <a href="../20-harness/05-behaviour-harness.html">behaviour test is the piece</a> hardest to add later
+        and easiest to skip now.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — Growing the Harness</div>
+      <p>
+        The minimum viable harness is whole but deliberately weak. The good news is that a whole-but-weak loop
+        is exactly the thing you <em>can</em> improve. Next, the engine that turns it into the full harness —
+        not by sitting down to design one, but by growing it one real failure at a time.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="../40-anti-patterns/01-failure-modes.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Failure Modes</div>
+    </a>
+    <a class="next" href="02-growing-the-harness.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Growing the Harness</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="../20-harness/01-guides-feedforward.html">Guides — Feedforward</a>
+      <a href="../20-harness/03-sensors-feedback.html">Sensors — Feedback</a>
+      <a href="../20-harness/04-keep-quality-left.html">Keep Quality Left</a>
+      <a href="../20-harness/05-behaviour-harness.html">Behaviour Harness</a>
+      <a href="../00-foundations/03-harness-engineering.html">Harness Engineering</a>
+      <a href="02-growing-the-harness.html">Growing the Harness</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verify — Proof, Not Vibes — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#lifecycle">Lifecycle</a>
+    <span class="sep">›</span>
+    <span class="here">Verify — Proof, Not Vibes</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">10 · Lifecycle — Chapter 05</div>
+    <h1>Verify — Proof, Not Vibes</h1>
+    <p class="lede">
+      "It runs" is not "it works," and <strong>"all tests passing" is not proof when the agent wrote the
+      tests from its own code</strong>. A change is done when someone other than the author has checked
+      it against the spec and attached the evidence — proof a reviewer can <em>see</em>, not a claim they
+      have to trust.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      You steered the agent through the code, nudging it off the wrong turns in real time. It now beams up
+      at you: <em>"Done! All tests passing."</em> Resist the urge to high-five. The agent wrote those
+      tests, from its own code, with finishing as its goal — which is a bit like letting a student grade
+      their own exam and act surprised everyone got an A.
+    </p>
+    <p>
+      This chapter is where "it runs" stops counting as "it works." We trade vibes for proof: graded
+      against the spec, by someone other than the author, with the evidence stapled on.
+    </p>
+
+    <div class="fig">
+      <div class="pipe">
+        <div class="step c1"><div class="dot"></div><div class="s-n">01</div><div class="s-t">Spec</div></div>
+        <div class="step c2"><div class="dot"></div><div class="s-n">02</div><div class="s-t">Plan</div></div>
+        <div class="step c3"><div class="dot"></div><div class="s-n">03</div><div class="s-t">Slice</div></div>
+        <div class="step c4"><div class="dot"></div><div class="s-n">04</div><div class="s-t">Code</div></div>
+        <div class="step c5 on"><div class="dot"></div><div class="s-n">05</div><div class="s-t">Verify</div></div>
+        <div class="step c6"><div class="dot"></div><div class="s-n">06</div><div class="s-t">Review</div></div>
+      </div>
+      <p class="fig-cap">The governed lifecycle — you are here</p>
+    </div>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      Verification is not the optional last step — it's the step that decides whether anything before it
+      counts. And it has a specific shape, because the easy version of it doesn't work on agent output.
+      Three rules:
+    </p>
+
+    <div class="fig">
+      <div class="cases">
+        <div class="case plain">
+          <span class="case-tag">Rule 01</span>
+          <h4>Grade against the spec, not the implementation</h4>
+          <p>The question is never "does the code do what the code does" — it always does. It's "does it do what the <a href="01-spec-the-contract.html">contract</a> said." A test written <em>from</em> the code mirrors the code, so it passes whether the behaviour is right or wrong.</p>
+        </div>
+        <div class="case plain">
+          <span class="case-tag">Rule 02</span>
+          <h4>A separate, skeptical evaluator grades it — never the author</h4>
+          <p>Ask the agent that wrote the code whether it's good and it will confidently say yes; finishing was its target. This is the <strong>self-evaluation failure</strong>. The only fix is to split the roles: a different human, or a fresh agent with the spec in hand.</p>
+        </div>
+        <div class="case plain">
+          <span class="case-tag">Rule 03</span>
+          <h4>Proof is an artifact, not an adjective</h4>
+          <p>"Verified" attached to nothing is a vibe. Attach the <strong>evidence</strong>: for UI, screenshots of the real screen in the real states; for backend, saved log excerpts and state dumps. A reviewer should be able to <em>see</em> the proof.</p>
+        </div>
+      </div>
+      <p class="fig-cap">The three rules — because the easy version of verification doesn't work on agent output</p>
+    </div>
+
+    <p>
+      One distinction keeps the second rule from being misread: <strong>self-checking and self-gating are
+      not the same act.</strong> Have the agent verify its own work <em>hard</em> — read the logs, query
+      the state, walk the edge cases, capture the evidence — because that first pass catches most
+      mechanical defects at the lowest cost there is. Demanding that self-check is right; it is <em>not</em>
+      the thing the rule forbids. What the agent's self-check can never be is the <strong>final word</strong>
+      — the verdict that the change matches the contract goes to a separate evaluator with the spec in
+      hand. So the shape is two passes, not zero: the agent self-verifies as the cheap first line, and an
+      independent grader owns the gate. "Necessary but not sufficient" — never "don't bother."
+    </p>
+    <p>
+      In practice that means three concrete things: <strong>read the logs and check the state
+      yourself</strong> (did the row actually land? did the log show the path you expected, or a swallowed
+      error?); <strong>walk the spec's edge cases</strong> — the boundaries the happy path skips (empty,
+      the second user, the second click, the cleared flag), using the acceptance criteria as your
+      checklist; and keep an <strong>audit spec</strong> for anything that must keep working — a standing
+      end-to-end walk-through you re-run later to catch <em>drift</em>.
+    </p>
+    <p>
+      None of that is possible without something to observe. Evidence has a precondition: a
+      <strong>runnable environment the agent can actually drive</strong> — a bootable app, a queryable
+      datastore, a browser the agent can click through (for example a Playwright driver wired into the
+      agent). Where that substrate is missing, "attach the proof" is an instruction the agent physically
+      cannot follow, and <em>proof not vibes</em> quietly degrades back to vibes. Provisioning the runnable
+      environment is what makes agent self-verification possible at all.
+    </p>
+
+    <div class="callout">
+      <div class="c-label">Experimental — the LLM-as-judge</div>
+      <p>
+        A local agent that reads the diff and the spec and scores the match is a promising way to
+        <em>scale</em> the skeptical-evaluator idea. But wiring it into the gate as a trusted method is not
+        yet proven: <strong>measure its false-positive rate, its cost, and how consistent it is
+        run-to-run</strong> before you rely on it, and keep a human signing off until it earns its place.
+        Treat it as an experiment to validate, not a recommendation.
+      </p>
+    </div>
+
+    <p class="pull">Agents optimise for <em>task-complete</em>, not <em>task-correct</em> — so self-grading inherits the bias of the thing it's grading.</p>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      Agents optimise for <em>task-complete</em>, not <em>task-correct</em> — so self-grading inherits the
+      bias of the thing it's grading. The same process that produced the code produces the praise, and
+      "I'm done" quietly becomes "it's good." Only an evaluator with no stake and the spec in front of them
+      asks the question that actually matters — <em>does this match the contract?</em> — instead of the one
+      the author already answered for themselves: <em>did I finish?</em>
+    </p>
+    <p>
+      The implementation-mirroring problem is structural, not a matter of effort. A test derived from the
+      code encodes the code's current behaviour as "expected." If the code has a bug, the test enshrines
+      the bug and goes green. So the suite proves the code does what it does — which you already knew — and
+      is silent on whether that's what was needed. The only test that can catch a wrong behaviour is one
+      derived from the <em>spec</em>. (The structural way to make tests resist this —
+      <a href="../20-harness/05-behaviour-harness.html">property-based and mutation testing</a> — lives in
+      the harness chapter.)
+    </p>
+    <p>
+      And proof-as-artifact changes <em>who</em> can check, and <em>when</em>. A claim ("I verified it") can
+      only be trusted. A screenshot of the two-user case, or a state dump showing one user's flag absent
+      from another user's query, can be <em>checked</em> — by a reviewer today, by a teammate at merge, by
+      you next week when something regresses. Evidence travels and outlasts the conversation; trust does
+      neither.
+    </p>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <ul>
+      <li><strong>Grade against the spec, by someone other than the author.</strong> A fresh reviewer or a
+        fresh agent, acceptance criteria in hand. The author never self-certifies — the same separation
+        that makes <a href="06-review-and-convergence.html">review</a> work.</li>
+      <li><strong>Read logs, check real state.</strong> Don't accept "ran without throwing." Confirm the
+        write landed, the value is right, and the error path isn't silently swallowing the case it was
+        meant to handle.</li>
+      <li><strong>Walk the edge cases.</strong> Empty, boundary, second-actor, undo, repeat. The spec's
+        acceptance criteria are the floor; add the boundaries they imply.</li>
+      <li><strong>Attach the evidence to the change.</strong> Screenshots for UI; log excerpts and state
+        dumps for backend. Make the proof reviewable, not recountable.</li>
+      <li><strong>Give the agent a runnable environment to verify in.</strong> A bootable app, a queryable
+        store, a browser driver. Without one the agent can't produce the screenshot or read the state back,
+        and verification falls back to a claim.</li>
+      <li><strong>Keep an audit spec for anything that must keep working.</strong> A standing walk-through
+        you re-run to catch drift — the runtime sibling of the spec-vs-code reconciliation in
+        <a href="01-spec-the-contract.html">Spec — The Contract</a>. Past merge, this extends into
+        <a href="../30-delivery/03-observability.html">observability</a>.</li>
+      <li><strong>If you trial an LLM-as-judge, measure it before you trust it.</strong> False positives,
+        cost, run-to-run consistency — and keep a human in the loop until the numbers earn the gate.</li>
+      <li><strong>Don't:</strong> let the author grade their own work; accept "tests pass" as proof when
+        the tests were written from the code; or call anything verified with nothing attached.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>
+      Take the <em>per-user deal priority</em> feature, sliced and built across the previous pages. Now
+      prove it.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">Vibe verification</span>
+          <h4>"Done — all tests passing"</h4>
+          <ul>
+            <li>The tests it wrote: <code>flagDeal</code> inserts a row (passes); the list query returns deals (passes). Green across the board.</li>
+            <li>But it self-graded, and its tests mirror its code — <em>not one of them logs in as a second user</em>.</li>
+            <li>REQ-002, the privacy rule that was the whole risk, was never actually exercised.</li>
+          </ul>
+          <p class="outcome-line">Ship it on that vibe and <b>the first time two reps use the app, one sees the other's flags</b>.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">Proof</span>
+          <h4>A separate reviewer takes the AC list</h4>
+          <ul>
+            <li>Verifies each acceptance criterion — not the code's tests — capturing an artifact for each.</li>
+            <li>The two-user case is checked from the query + DB, not the UI.</li>
+            <li>The walk-through becomes an <strong>audit spec</strong>, re-run after later changes.</li>
+          </ul>
+          <p class="outcome-line">"Verified" now means something a reviewer can <b>see</b> — a state dump showing the privacy rule holding, not a claim asking them to trust it.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Vibe vs proof — the green suite mirrored the code; the AC walk-through grades against the contract</p>
+    </div>
+
+    <p>The separate reviewer verifies each acceptance criterion, capturing an artifact for each:</p>
+
+    <div class="fig">
+      <pre><code>AC-002  (the one that matters — flags stay private)
+  Open two sessions. User A flags deal #314. Read user B's list straight from
+  the query + DB — not the UI.
+  → state dump attached:  B's result set for deal #314 → { flagged_for_B: false }
+    A's flag is absent from B's view. PASS, and the dump is the evidence.
+
+AC-001 / AC-003  (flag surfaces, unflag restores)
+  A flags #314 → screenshot: it jumps to the top, every other deal still below it.
+  A unflags    → screenshot: it returns to its normal position.
+
+Edge case the spec implied but didn't spell out
+  A deal nobody has flagged → still appears, in normal order. Checked.</code></pre>
+      <p class="fig-cap">Proof as artifact — the two-user state dump a reviewer can see, not "all tests passing" they must trust</p>
+    </div>
+
+    <p>
+      And that two-user walk-through doesn't get thrown away — it becomes an <strong>audit spec</strong>,
+      re-run after later changes, so if someone refactors the query next month and breaks isolation, it's
+      caught on purpose rather than by a confused customer.
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>Vibe verification.</strong> "It runs, ship it." Proof by feeling, with nothing checked
+        and nothing attached — the failure this whole page exists to prevent.
+        (<a href="../40-anti-patterns/01-failure-modes.html">Failure modes</a>)</li>
+      <li><strong>Author self-certification.</strong> The agent (or engineer) grading its own work. The
+        self-evaluation bias all but guarantees a yes, so the grade is worthless.</li>
+      <li><strong>Implementation-mirroring tests.</strong> AI tests written from the code, so green means
+        "the code does what the code does," not "the code does what the spec said." The structural fix is
+        in <a href="../20-harness/05-behaviour-harness.html">the behaviour harness</a>.</li>
+      <li><strong>The unattached claim.</strong> "Verified," "tested," "looks good" — attached to no
+        screenshot, log, or state dump. A reviewer can't check an adjective.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — Review and Convergence</div>
+      <p>
+        Verification proved the change is correct. Now the last lifecycle step guards two slower threats —
+        the <strong>zombie code</strong> that <em>reads</em> perfectly while doing the wrong thing, and the
+        quiet pile-up of near-duplicates that turns a tidy codebase into one nobody dares touch.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="04-code-with-the-agent.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Code With the Agent</div>
+    </a>
+    <a class="next" href="06-review-and-convergence.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Review and Convergence</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="01-spec-the-contract.html">Spec — The Contract</a>
+      <a href="03-task-slicing.html">Task Slicing</a>
+      <a href="06-review-and-convergence.html">Review and Convergence</a>
+      <a href="../20-harness/03-sensors-feedback.html">Sensors — Feedback</a>
+      <a href="../20-harness/05-behaviour-harness.html">Behaviour Harness</a>
+      <a href="../30-delivery/03-observability.html">Observability</a>
+      <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

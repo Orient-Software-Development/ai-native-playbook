@@ -1,0 +1,36 @@
+<!--
+  Harness Adoption Starter — AGENTS.md adapter.
+
+  Paste this block into your repository's AGENTS.md (the cross-tool guide
+  file read by Copilot, Cursor, Codex, and most local agents). It teaches
+  any agent how to run the three harness skills. Adjust the path if you
+  vendored the starter somewhere other than ./harness-adoption/.
+-->
+
+## Harness engineering
+
+This repo uses the Harness Adoption Starter to assess and grow its
+engineering harness. The skills are tool-neutral runbooks under
+`harness-adoption/skills/`.
+
+When asked to **assess / score / find gaps**, read and execute
+`harness-adoption/skills/assess.md` (read-only).
+
+When asked to **adopt / set up a control / close the top gap**, read and
+execute `harness-adoption/skills/adopt.md` (writes one control at a time,
+with approval).
+
+When asked to **audit** the harness, read and execute
+`harness-adoption/skills/audit.md`.
+
+The control library the skills reason from is `harness-adoption/patterns/`;
+shared theory and templates (harness model, readiness rubric, scorecard,
+spec/ADR templates) are under `harness-adoption/reference/`.
+
+Conventions for this repo's harness:
+- The canonical guide file is **this `AGENTS.md`**. Keep it concrete and
+  current; every path it references must exist.
+- There is one `check` command that runs format + lint + types; the gate
+  runs exactly that. A check that only warns is not a gate.
+- Fast checks run pre-commit/pre-push; expensive and LLM-based checks run
+  in CI. Never put an LLM gate on the fast path.

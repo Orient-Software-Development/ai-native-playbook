@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">A field manual for agentic delivery</div>
+        <h1>The AI-Native <em>Harness</em> Playbook</h1>
+        <p class="intro">
+          Humans steer, agents execute. The payoff doesn't come from a smarter model — it comes from the
+          system <em>around</em> the model: the <strong>guides</strong> that shape what the agent does before
+          it acts, and the <strong>sensors</strong> that grade what it produced after. This is how you build
+          that system for your codebase, and run the governed lifecycle — spec → plan → code → verify →
+          review → ship — that turns a capable agent into production-grade delivery.
+        </p>
+        <nav class="toc">
+          <a href="#foundations">Foundations <span class="n">3</span></a>
+          <a href="#lifecycle">Lifecycle <span class="n">6</span></a>
+          <a href="#harness">Harness <span class="n">5</span></a>
+          <a href="#delivery">Delivery <span class="n">4</span></a>
+          <a href="#anti-patterns">Anti-Patterns <span class="n">1</span></a>
+          <a href="#adoption">Adoption <span class="n">5</span></a>
+          <a href="#reference">Reference <span class="n">2</span></a>
+        </nav>
+      </div>
+      <div class="hero-fig">
+        <svg viewBox="0 0 300 392" class="loop-fig" id="loopFig" role="img" aria-label="The harness loop: launch a task and it runs guides → agent → sensors. Sensors pass it (it ships out the right) or fail it (it re-steers back up the left to retry).">
+          <!-- re-steer rail: sensors back up the left to guides -->
+          <path class="rail" d="M150 340 H40 a16 16 0 0 1 -16 -16 V89 a16 16 0 0 1 16 -16 H150"/>
+          <text class="edge-lbl l" x="29" y="206" transform="rotate(-90 29 206)">re-steer</text>
+
+          <!-- ship-out exit on the right -->
+          <path class="exit" d="M228 307 H290"/>
+          <path class="exit-head" d="M283 300 l8 7 l-8 7"/>
+          <text class="edge-lbl r" x="259" y="293">ship</text>
+          <circle class="ship-ripple" cx="286" cy="307" r="9"/>
+
+          <!-- forward chevrons between stages -->
+          <path class="chev c1" d="M141 121 l9 8 l9 -8"/>
+          <path class="chev c2" d="M141 238 l9 8 l9 -8"/>
+
+          <!-- GUIDES -->
+          <rect class="node guides" id="guidesNode" x="72" y="40" width="156" height="66" rx="10"/>
+          <text class="node-t" x="150" y="72">GUIDES</text>
+          <text class="node-s" x="150" y="92">specs · plans · AGENTS.md</text>
+
+          <!-- AGENT -->
+          <rect class="node agent" id="agentNode" x="72" y="157" width="156" height="66" rx="10"/>
+          <text class="node-t" x="150" y="189">AGENT</text>
+          <text class="node-s agent-s" id="agentStatus" x="150" y="209">model executes</text>
+
+          <!-- SENSORS -->
+          <rect class="node sensors" id="sensorsNode" x="72" y="274" width="156" height="66" rx="10"/>
+          <text class="node-t" x="150" y="306">SENSORS</text>
+          <text class="node-s" x="150" y="326">tests · types · CI</text>
+
+          <!-- the travelling task token -->
+          <g class="token" id="token" opacity="0" transform="translate(150 73)">
+            <circle class="token-dot" r="11"/>
+            <text class="token-ic" x="0" y="3.5">›_</text>
+          </g>
+
+          <!-- shipped tally -->
+          <text class="tally" id="tally" x="150" y="384">◆ shipped · 0</text>
+        </svg>
+        <button type="button" class="loop-launch" id="loopLaunch">
+          <span class="play"></span> Launch a task
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================== 00 · Foundations ============================== -->
+  <section id="foundations">
+    <div class="sec-head"><span class="idx">00</span><h2>Foundations</h2><span class="count">3 chapters</span></div>
+    <p class="sec-intro">
+      What the whole thing rests on. A coding agent is a model plus a harness — you don't train the model,
+      you choose it; what you own is the harness. Read these first.
+    </p>
+    <div class="grid">
+      <a class="card" href="00-foundations/01-why-ai-native.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="wh" x="8" y="14" width="44" height="52" rx="5"/>
+          <line class="ln" x1="16" y1="26" x2="44" y2="26"/><line class="ln" x1="16" y1="36" x2="40" y2="36"/>
+          <line class="ln" x1="16" y1="46" x2="44" y2="46"/><line class="ln" x1="16" y1="56" x2="36" y2="56"/>
+          <path class="lc" d="M56 40 L72 40" /><path class="lc" d="M66 34 L72 40 L66 46"/>
+          <circle class="cl" cx="96" cy="40" r="20"/>
+          <path class="lc" d="M88 40 l6 6 l12 -14"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Why AI-Native Development</div>
+          <div class="desc">Autocomplete vs a governed lifecycle, and why the system around the model is the whole game.</div>
+          <div class="file"><span>01-why-ai-native.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="00-foundations/02-context-engineering.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="oa" x="10" y="16" width="100" height="48" rx="5"/>
+          <rect class="cl" x="16" y="22" width="34" height="36" rx="3"/>
+          <rect class="fl" x="56" y="22" width="22" height="36" rx="3"/>
+          <rect class="wh" x="84" y="22" width="20" height="36" rx="3"/>
+          <line class="lc" x1="33" y1="10" x2="33" y2="22"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Context Engineering</div>
+          <div class="desc">The context window is a budget, not a backpack; the right context, not the most.</div>
+          <div class="file"><span>02-context-engineering.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="00-foundations/03-harness-engineering.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <circle class="cl" cx="24" cy="40" r="6"/>
+          <rect class="wh" x="46" y="26" width="28" height="28" rx="5"/>
+          <circle class="ol" cx="96" cy="40" r="6"/>
+          <path class="lc" d="M30 40 L46 40"/><path class="ln" d="M74 40 L90 40"/>
+          <line class="ln" x1="60" y1="14" x2="60" y2="26"/><circle class="fl" cx="60" cy="12" r="4"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Harness Engineering</div>
+          <div class="desc">Guides (before) and sensors (after); computational before inferential; grow it, don't design it.</div>
+          <div class="file"><span>03-harness-engineering.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================== 10 · Lifecycle ============================== -->
+  <section id="lifecycle">
+    <div class="sec-head"><span class="idx">10</span><h2>Lifecycle</h2><span class="count">6 chapters</span></div>
+    <p class="sec-intro">
+      Running one change, end to end: spec → plan → slice → code → verify → review. Catch a wrong approach
+      while it's still a paragraph; grade against the spec with evidence attached.
+    </p>
+    <div class="grid">
+      <a class="card" href="10-lifecycle/01-spec-the-contract.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="wh" x="34" y="8" width="52" height="64" rx="5"/>
+          <line class="ln" x1="42" y1="22" x2="78" y2="22"/><line class="ln" x1="42" y1="32" x2="72" y2="32"/>
+          <line class="ln" x1="42" y1="42" x2="78" y2="42"/>
+          <circle class="cl" cx="60" cy="60" r="8"/><path class="lc" d="M55 60 l4 4 l7 -8"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Spec — The Contract</div>
+          <div class="desc">A short, normative, business-legible statement of <em>what</em> and how you'll know it's done.</div>
+          <div class="file"><span>01-spec-the-contract.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="10-lifecycle/02-plan-before-code.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <line class="ln" x1="16" y1="14" x2="16" y2="66"/>
+          <circle class="cl" cx="16" cy="18" r="5"/><circle class="ol" cx="16" cy="40" r="5"/><circle class="fl" cx="16" cy="62" r="5"/>
+          <rect class="fl" x="30" y="14" width="48" height="4" rx="2"/><rect class="fl" x="30" y="36" width="42" height="4" rx="2"/>
+          <rect class="fl" x="30" y="58" width="44" height="4" rx="2"/>
+          <rect class="oa" x="88" y="12" width="26" height="22" rx="4"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Plan Before Code</div>
+          <div class="desc">Explore → plan → code; catch a wrong approach while it's still a paragraph.</div>
+          <div class="file"><span>02-plan-before-code.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="10-lifecycle/03-task-slicing.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="oa" x="10" y="50" width="100" height="14" rx="3"/>
+          <rect class="cl" x="10" y="32" width="68" height="14" rx="3"/>
+          <rect class="ol" x="10" y="14" width="40" height="14" rx="3"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Task Slicing</div>
+          <div class="desc">One deliverable, one test, one commit; bottom-up by layer.</div>
+          <div class="file"><span>03-task-slicing.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="10-lifecycle/04-code-with-the-agent.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="wh" x="10" y="14" width="100" height="52" rx="5"/>
+          <line class="lc" x1="20" y1="28" x2="40" y2="28"/><line class="ln" x1="46" y1="28" x2="84" y2="28"/>
+          <line class="ln" x1="20" y1="40" x2="74" y2="40"/>
+          <line class="lc" x1="20" y1="52" x2="34" y2="52"/><line class="ln" x1="40" y1="52" x2="92" y2="52"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Code With the Agent</div>
+          <div class="desc">Steer with the concrete thing, not an analogy; enforcement lives outside the agent.</div>
+          <div class="file"><span>04-code-with-the-agent.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="10-lifecycle/05-verify-proof-not-vibes.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <circle class="st" cx="48" cy="38" r="22"/>
+          <line class="lc" x1="64" y1="54" x2="100" y2="74"/>
+          <path class="lc" d="M38 38 l7 8 l13 -16"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Verify — Proof, Not Vibes</div>
+          <div class="desc">Grade against the spec, by someone other than the author, with evidence attached.</div>
+          <div class="file"><span>05-verify-proof-not-vibes.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="10-lifecycle/06-review-and-convergence.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="ol" x="12" y="20" width="40" height="8" rx="3" opacity=".5"/>
+          <rect class="cl" x="12" y="34" width="32" height="8" rx="3" opacity=".5"/>
+          <line class="ln" x1="12" y1="50" x2="48" y2="50"/>
+          <path class="lc" d="M60 36 L78 36"/><path class="lc" d="M72 30 L78 36 L72 42"/>
+          <rect class="wh" x="84" y="22" width="28" height="28" rx="5"/>
+          <path class="lc" d="M90 36 l5 5 l10 -12"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Review and Convergence</div>
+          <div class="desc">Read the diff deliberately; extract the shared piece before the third copy.</div>
+          <div class="file"><span>06-review-and-convergence.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================== 20 · Harness ============================== -->
+  <section id="harness">
+    <div class="sec-head"><span class="idx">20</span><h2>Harness</h2><span class="count">5 chapters</span></div>
+    <p class="sec-intro">
+      The controls you build. Guides shape the work before it happens; sensors grade it after. A layered
+      gate, computational-first, resting on sensor integrity — passing it must require the work.
+    </p>
+    <div class="grid">
+      <a class="card" href="20-harness/01-guides-feedforward.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <circle class="fl" cx="24" cy="40" r="6"/>
+          <path class="lc" d="M34 40 L96 40"/><path class="lc" d="M88 32 L96 40 L88 48"/>
+          <line class="ln" x1="48" y1="22" x2="48" y2="58"/><line class="ln" x1="68" y1="22" x2="68" y2="58"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Guides — Feedforward</div>
+          <div class="desc">Instruction files, blueprints, anti-cheat constraints, and computational guides that barely cost a token.</div>
+          <div class="file"><span>01-guides-feedforward.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="20-harness/02-repo-structure-and-legibility.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="oa" x="12" y="14" width="28" height="18" rx="3"/>
+          <rect class="wh" x="48" y="14" width="28" height="18" rx="3"/>
+          <rect class="wh" x="84" y="14" width="24" height="18" rx="3"/>
+          <rect class="wh" x="30" y="46" width="28" height="18" rx="3"/>
+          <rect class="cl" x="66" y="46" width="28" height="18" rx="3"/>
+          <line class="ln" x1="26" y1="32" x2="44" y2="46"/><line class="ln" x1="80" y1="32" x2="80" y2="46"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Repo Structure and Legibility</div>
+          <div class="desc">How the repo is laid out <em>is</em> a guide — it broadcasts intent for free.</div>
+          <div class="file"><span>02-repo-structure-and-legibility.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="20-harness/03-sensors-feedback.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="wh" x="14" y="12" width="92" height="14" rx="3"/>
+          <rect class="wh" x="14" y="33" width="92" height="14" rx="3"/>
+          <rect class="wh" x="14" y="54" width="92" height="14" rx="3"/>
+          <circle class="ol" cx="96" cy="19" r="4"/><circle class="oa" cx="96" cy="40" r="4"/><circle class="cl" cx="96" cy="61" r="4"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Sensors — Feedback</div>
+          <div class="desc">A layered gate, computational-first, resting on sensor integrity: passing must require the work.</div>
+          <div class="file"><span>03-sensors-feedback.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="20-harness/04-keep-quality-left.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <line class="ln" x1="12" y1="64" x2="108" y2="64"/>
+          <circle class="cl" cx="24" cy="64" r="6"/><circle class="ol" cx="54" cy="64" r="5"/>
+          <circle class="fl" cx="80" cy="64" r="5"/><circle class="fl" cx="100" cy="64" r="5"/>
+          <line class="lc" x1="24" y1="58" x2="24" y2="20"/><rect class="oa" x="16" y="12" width="16" height="10" rx="2"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Keep Quality Left</div>
+          <div class="desc">Each check at the earliest stage whose speed it can afford, and no further.</div>
+          <div class="file"><span>04-keep-quality-left.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="20-harness/05-behaviour-harness.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <circle class="st" cx="40" cy="40" r="22"/>
+          <circle class="cl" cx="40" cy="18" r="5"/><circle class="ol" cx="62" cy="40" r="5"/>
+          <circle class="fl" cx="40" cy="62" r="5"/><circle class="fl" cx="18" cy="40" r="5"/>
+          <rect class="oa" x="80" y="26" width="30" height="28" rx="4"/>
+          <path class="lc" d="M86 40 l5 5 l10 -12"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Behaviour Harness</div>
+          <div class="desc">Bind the test to the invariant, not the code; property-based and mutation testing.</div>
+          <div class="file"><span>05-behaviour-harness.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================== 30 · Delivery ============================== -->
+  <section id="delivery">
+    <div class="sec-head"><span class="idx">30</span><h2>Delivery</h2><span class="count">4 chapters</span></div>
+    <p class="sec-intro">
+      Shipping at agent throughput. One shared line, small verified slices merged behind a green gate, and
+      sensors that extend past the merge gate into production.
+    </p>
+    <div class="grid">
+      <a class="card" href="30-delivery/01-trunk-based-development.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <line class="ln" x1="10" y1="40" x2="110" y2="40"/>
+          <circle class="cl" cx="30" cy="40" r="5"/><circle class="cl" cx="60" cy="40" r="5"/><circle class="cl" cx="90" cy="40" r="5"/>
+          <path class="lc" d="M30 40 C 40 20, 50 20, 60 40"/>
+          <path class="lc" d="M60 40 C 70 60, 80 60, 90 40"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Trunk-Based Development</div>
+          <div class="desc">One shared line, small verified slices, merged behind a green gate.</div>
+          <div class="file"><span>01-trunk-based-development.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="30-delivery/02-ci-and-cd.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="wh" x="10" y="30" width="24" height="20" rx="4"/>
+          <rect class="oa" x="48" y="30" width="24" height="20" rx="4"/>
+          <rect class="cl" x="86" y="30" width="24" height="20" rx="4"/>
+          <path class="lc" d="M34 40 L48 40"/><path class="lc" d="M72 40 L86 40"/>
+          <path class="ln" d="M44 40 l-4 -3 v6 z" /><path class="ln" d="M82 40 l-4 -3 v6 z"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">CI and CD</div>
+          <div class="desc">CI gates the merge, CD gates the release; keep the seam.</div>
+          <div class="file"><span>02-ci-and-cd.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="30-delivery/03-observability.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="wh" x="12" y="14" width="96" height="52" rx="5"/>
+          <path class="lc" d="M20 54 L40 40 L56 48 L76 24 L100 34" fill="none"/>
+          <circle class="cl" cx="40" cy="40" r="3"/><circle class="cl" cx="76" cy="24" r="3"/>
+          <line class="ln" x1="20" y1="60" x2="100" y2="60"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Observability</div>
+          <div class="desc">The sensor that extends past the merge gate into production.</div>
+          <div class="file"><span>03-observability.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="30-delivery/04-drift-and-health-sensors.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <circle class="st" cx="60" cy="42" r="26"/>
+          <line class="lc" x1="60" y1="42" x2="60" y2="22"/><line class="ln" x1="60" y1="42" x2="76" y2="50"/>
+          <circle class="cl" cx="60" cy="42" r="3"/>
+          <line class="ln" x1="60" y1="14" x2="60" y2="18"/><line class="ln" x1="88" y1="42" x2="84" y2="42"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Drift and Health Sensors</div>
+          <div class="desc">Controls that run on a clock, to catch the rot no single change causes.</div>
+          <div class="file"><span>04-drift-and-health-sensors.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================== 40 · Anti-Patterns ============================== -->
+  <section id="anti-patterns">
+    <div class="sec-head"><span class="idx">40</span><h2>Anti-Patterns</h2><span class="count">1 chapter</span></div>
+    <p class="sec-intro">
+      How it goes wrong. One root cause — task-complete, not task-correct — in eight disguises, each paired
+      with its fix.
+    </p>
+    <div class="grid">
+      <a class="card" href="40-anti-patterns/01-failure-modes.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <path class="oa" d="M60 12 L104 64 L16 64 Z"/>
+          <line class="lc" x1="60" y1="30" x2="60" y2="48"/>
+          <circle class="cl" cx="60" cy="56" r="3.5"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Failure Modes</div>
+          <div class="desc">One root cause (task-complete, not task-correct) in eight disguises, each paired with its fix.</div>
+          <div class="file"><span>01-failure-modes.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================== 50 · Adoption ============================== -->
+  <section id="adoption">
+    <div class="sec-head"><span class="idx">50</span><h2>Adoption</h2><span class="count">5 chapters</span></div>
+    <p class="sec-intro">
+      Getting there from where you are. The smallest loop that still closes, grown from real failures —
+      trust allocated by zone, a human owning every merge, and a rubric to score any repo.
+    </p>
+    <div class="grid">
+      <a class="card" href="50-adoption/01-minimum-viable-harness.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <circle class="lc" cx="60" cy="40" r="26" fill="none"/>
+          <path class="lc" d="M78 28 l6 -2 l-2 6"/>
+          <circle class="cl" cx="60" cy="40" r="5"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">The Minimum Viable Harness</div>
+          <div class="desc">The smallest loop that still closes, standable in week one.</div>
+          <div class="file"><span>01-minimum-viable-harness.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="50-adoption/02-growing-the-harness.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <line class="ln" x1="60" y1="68" x2="60" y2="36"/>
+          <path class="lc" d="M60 40 C 44 36, 40 22, 56 24 C 58 30, 60 36, 60 40"/>
+          <path class="lc" d="M60 48 C 76 44, 80 30, 64 32 C 62 38, 60 44, 60 48"/>
+          <ellipse class="oa" cx="60" cy="70" rx="20" ry="4"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Growing the Harness</div>
+          <div class="desc">Grow from real failures, prune as the model improves.</div>
+          <div class="file"><span>02-growing-the-harness.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="50-adoption/03-responsible-team-and-ai-debt.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <circle class="oa" cx="36" cy="34" r="12"/><path class="ln" d="M20 62 C 22 48, 50 48, 52 62" fill="none"/>
+          <circle class="cl" cx="78" cy="34" r="12"/><path class="lc" d="M62 62 C 64 48, 92 48, 94 62" fill="none"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">The Responsible Team and AI Debt</div>
+          <div class="desc">Allocate trust by zone; manage AI debt as a budget; a human owns every merge.</div>
+          <div class="file"><span>03-responsible-team-and-ai-debt.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="50-adoption/04-legacy-and-brownfield.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="fl" x="14" y="34" width="40" height="32" rx="3"/>
+          <rect class="oa" x="14" y="22" width="40" height="12" rx="2"/>
+          <rect class="wh" x="66" y="20" width="40" height="46" rx="4"/>
+          <path class="lc" d="M54 40 L66 40"/><line class="lc da" x1="58" y1="40" x2="62" y2="40"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Legacy and Brownfield</div>
+          <div class="desc">Earn a foothold one high-risk seam at a time; net before you trapeze.</div>
+          <div class="file"><span>04-legacy-and-brownfield.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="50-adoption/05-scoring-an-existing-harness.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="ol" x="16" y="50" width="14" height="16" rx="2"/>
+          <rect class="oa" x="36" y="40" width="14" height="26" rx="2"/>
+          <rect class="cl" x="56" y="28" width="14" height="38" rx="2"/>
+          <rect class="fl" x="76" y="44" width="14" height="22" rx="2"/>
+          <rect class="fl" x="96" y="34" width="14" height="32" rx="2"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Scoring an Existing Harness</div>
+          <div class="desc">A five-layer rubric an agent can score any repo against, with evidence attached to every number.</div>
+          <div class="file"><span>05-scoring-an-existing-harness.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================== Reference ============================== -->
+  <section id="reference">
+    <div class="sec-head"><span class="idx">★</span><h2>Reference</h2><span class="count">2 items</span></div>
+    <p class="sec-intro">
+      The terms of art and the templates that drive the scoring chapter — a fillable report and the agent
+      instruction behind it.
+    </p>
+    <div class="grid">
+      <a class="card" href="glossary.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="wh" x="30" y="10" width="60" height="60" rx="5"/>
+          <line class="lc" x1="40" y1="22" x2="44" y2="22"/><line class="ln" x1="50" y1="22" x2="80" y2="22"/>
+          <line class="lc" x1="40" y1="34" x2="44" y2="34"/><line class="ln" x1="50" y1="34" x2="76" y2="34"/>
+          <line class="lc" x1="40" y1="46" x2="44" y2="46"/><line class="ln" x1="50" y1="46" x2="80" y2="46"/>
+          <line class="lc" x1="40" y1="58" x2="44" y2="58"/><line class="ln" x1="50" y1="58" x2="72" y2="58"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Glossary</div>
+          <div class="desc">Plain-language definitions of every term of art, each linked to the page that treats it most fully.</div>
+          <div class="file"><span>glossary.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+      <a class="card" href="templates/harness-scorecard.html">
+        <div class="thumb"><svg viewBox="0 0 120 80">
+          <rect class="wh" x="20" y="10" width="56" height="60" rx="5"/>
+          <rect class="oa" x="28" y="18" width="40" height="10" rx="2"/>
+          <line class="ln" x1="28" y1="36" x2="60" y2="36"/><line class="ln" x1="28" y1="46" x2="56" y2="46"/>
+          <circle class="cl" cx="84" cy="48" r="20"/><path class="lc" d="M77 48 l5 5 l11 -12"/>
+        </svg></div>
+        <div class="body">
+          <div class="title">Scorecard Template &amp; Scoring Prompt</div>
+          <div class="desc">The fillable report and the agent instruction that drive the scoring chapter.</div>
+          <div class="file"><span>harness-scorecard.html</span><span class="arrow">→</span></div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span>The AI-Native Harness Playbook · <a href="00-foundations/01-why-ai-native.html">Start here →</a></span>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ── scroll reveal: stagger each grid's cards in as it enters view ── */
+  document.documentElement.classList.add('has-reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    document.querySelectorAll('.grid').forEach(function (g) { io.observe(g); });
+  } else {
+    document.querySelectorAll('.grid').forEach(function (g) { g.classList.add('in'); });
+  }
+
+  /* ── magnetic tilt: cards lean toward the pointer ── */
+  if (!reduce && window.matchMedia('(hover: hover)').matches) {
+    var MAX = 6; // degrees
+    document.querySelectorAll('a.card').forEach(function (card) {
+      var raf = null, rx = 0, ry = 0;
+      card.addEventListener('pointermove', function (ev) {
+        var r = card.getBoundingClientRect();
+        var px = (ev.clientX - r.left) / r.width - 0.5;
+        var py = (ev.clientY - r.top) / r.height - 0.5;
+        rx = (px * MAX).toFixed(2);
+        ry = (-py * MAX).toFixed(2);
+        if (raf) return;
+        raf = requestAnimationFrame(function () {
+          raf = null;
+          card.style.setProperty('--rx', rx + 'deg');
+          card.style.setProperty('--ry', ry + 'deg');
+        });
+      });
+      card.addEventListener('pointerleave', function () {
+        card.style.setProperty('--rx', '0deg');
+        card.style.setProperty('--ry', '0deg');
+      });
+    });
+  }
+
+  /* ── "Run the loop" launcher ──────────────────────────────────────
+     Launch a task token; it drops Guides → Agent → Sensors. The sensors
+     gate it: PASS → it ships out the right and the tally ticks up;
+     FAIL → it turns clay and re-steers up the left rail to retry. A run
+     always converges (retries get likelier to pass), so it ends shipped. */
+  var fig    = document.getElementById('loopFig');
+  var token  = document.getElementById('token');
+  var btn     = document.getElementById('loopLaunch');
+  var tally   = document.getElementById('tally');
+  var status  = document.getElementById('agentStatus');
+  var guides  = document.getElementById('guidesNode');
+  var agentN  = document.getElementById('agentNode');
+  var sensorN = document.getElementById('sensorsNode');
+
+  if (fig && token && btn) {
+    var shipped = 0, running = false, failChance = 0.45;
+
+    var at = function (x, y) { token.setAttribute('transform', 'translate(' + x + ' ' + y + ')'); };
+
+    // ping a node: a quick springy emphasis
+    var ping = function (node, cls) {
+      if (!node) return;
+      node.classList.remove('ping', 'ok', 'fail-flash');
+      void node.getBoundingClientRect();
+      node.classList.add(cls || 'ping');
+      setTimeout(function () { node.classList.remove(cls || 'ping'); }, 620);
+    };
+
+    // ease a token through a list of [x,y] waypoints over totalDur ms
+    var move = function (pts, totalDur, done) {
+      if (reduce) { var last = pts[pts.length - 1]; at(last[0], last[1]); done && done(); return; }
+      var segs = pts.length - 1, per = totalDur / segs, i = 0;
+      var ease = function (t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; };
+      (function seg() {
+        if (i >= segs) { done && done(); return; }
+        var a = pts[i], b = pts[i + 1], start = null;
+        requestAnimationFrame(function frame(ts) {
+          if (start === null) start = ts;
+          var t = Math.min(1, (ts - start) / per), e = ease(t);
+          at(a[0] + (b[0] - a[0]) * e, a[1] + (b[1] - a[1]) * e);
+          if (t < 1) requestAnimationFrame(frame);
+          else { i++; seg(); }
+        });
+      })();
+    };
+
+    var bumpTally = function () {
+      shipped++;
+      tally.textContent = '◆ shipped · ' + shipped;
+      tally.classList.remove('pop'); void tally.getBoundingClientRect();
+      tally.classList.add('pop');
+    };
+
+    var burst = function () {
+      fig.classList.remove('boost'); void fig.getBoundingClientRect();
+      fig.classList.add('boost');
+      setTimeout(function () { fig.classList.remove('boost'); }, 800);
+    };
+
+    var setStatus = function (txt) { if (status) status.textContent = txt; };
+
+    // — stages —
+    function descend() {                 // guides → agent → sensors → verdict
+      ping(guides);
+      move([[150, 73], [150, 190]], 480, function () {
+        ping(agentN); agentN.classList.add('busy'); setStatus('working…');
+        setTimeout(function () {
+          agentN.classList.remove('busy'); setStatus('model executes');
+          move([[150, 190], [150, 307]], 480, function () {
+            ping(sensorN);
+            setTimeout(verdict, 380);
+          });
+        }, 620);
+      });
+    }
+    function verdict() {
+      if (Math.random() > failChance) ship();
+      else reSteer();
+    }
+    function ship() {
+      ping(sensorN, 'ok');
+      move([[150, 307], [304, 307]], 460, function () {
+        token.setAttribute('opacity', '0');
+        bumpTally(); burst();
+        running = false; failChance = 0.45;
+        btn.disabled = false; btn.classList.remove('busy');
+      });
+    }
+    function reSteer() {
+      ping(sensorN, 'fail-flash');
+      token.classList.add('fail');
+      failChance = Math.max(0.12, failChance - 0.25);   // retries converge toward shipping
+      move([[150, 307], [40, 307], [24, 291], [24, 89], [40, 73], [150, 73]], 1050, function () {
+        token.classList.remove('fail');
+        setTimeout(descend, 220);
+      });
+    }
+
+    var launch = function () {
+      if (running) return;
+      running = true;
+      btn.disabled = true; btn.classList.add('busy');
+      token.classList.remove('fail');
+      at(150, 73); token.setAttribute('opacity', '1');
+      descend();
+    };
+
+    btn.addEventListener('click', launch);
+    agentN.style.cursor = 'pointer';
+    agentN.addEventListener('click', launch);
+  }
+})();
+</script>
+</body>
+</html>

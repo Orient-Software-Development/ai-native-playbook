@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Responsible Team and AI Debt — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#adoption">Adoption</a>
+    <span class="sep">›</span>
+    <span class="here">The Responsible Team and AI Debt</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">50 · Adoption — Chapter 03</div>
+    <h1>The Responsible Team and AI Debt</h1>
+    <p class="lede">
+      Responsibility doesn't transfer to the model — <strong>the human who merges owns the code</strong>, full
+      stop. So the team does two things the agent can't: it maps the zones where the agent reliably flops and
+      decides what stays human, and it treats the debt the agent generates as a managed budget — visible, and
+      paid down before it compounds.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      Every page so far has been about making the agent more capable. Not one of them makes the agent
+      <em>accountable</em> — and that isn't an oversight, it's the whole point. The agent has no stake in the
+      outcome: no reputation to protect, no 2 a.m. pager, not a flicker of shame at a 300-line function. So the
+      human who hits merge owns the code, full stop. This page is about the two jobs that fall out of that
+      uncomfortable fact: mapping the zones where the agent reliably flops, and managing AI debt before it
+      quietly compounds into a codebase nobody can change.
+    </p>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      Everything in this playbook makes the agent more capable. None of it makes the agent
+      <em>responsible</em>. The agent has no stake in the outcome — no career on the line, no recoil at a
+      300-line function. It optimises for the task in front of it and moves on. That means it can never be the
+      party accountable for what ships. <strong>The human who merges the change is the author of record</strong>
+      — not the model that wrote it.
+    </p>
+    <p>
+      This isn't a moral nicety; it's load-bearing. The "humans steer, agents execute" division of labour only
+      works if a human is genuinely steering. Drop that, and you get the failure mode where
+      <a href="../40-anti-patterns/01-failure-modes.html">debt compounds invisibly</a> precisely because no one
+      feels accountable for code they didn't write. Two responsibilities follow: <strong>allocate trust by
+      zone, not uniformly</strong>, and <strong>manage AI debt as a budget</strong>.
+    </p>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      <strong>Uniform trust over-trusts the agent exactly where it's weakest.</strong> The agent is genuinely
+      strong in well-harnessed, verifiable zones — typed CRUD against a real test suite — and genuinely weak in
+      others. Treat it as uniformly trustworthy and you apply the <em>same</em> light review to a routine list
+      endpoint and a change to how money is calculated. The routine change didn't need you; the money change
+      needed you most, and got the same glance. Mapping the <strong>flop zones</strong> is how you put human
+      attention where it has the most leverage.
+    </p>
+
+    <div class="fig">
+      <div class="outcomes">
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <rect class="wh" x="5" y="6" width="22" height="15" rx="2"/>
+            <line class="ln" x1="16" y1="21" x2="16" y2="25"/><line class="ln" x1="11" y1="25" x2="21" y2="25"/>
+            <text x="13" y="17" font-size="11" fill="#D97757">?</text>
+          </svg></div>
+          <h4>Subjective frontend &amp; design</h4>
+          <p>Weakest where it's most confident — it declares a screen "looks right" without being able to see it, and gravitates to bland layouts. The <a href="../10-lifecycle/05-verify-proof-not-vibes.html">self-verify blind spot</a>.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <circle class="cl" cx="16" cy="16" r="4"/>
+            <path class="ln" d="M16 12 V5"/><path class="ln" d="M16 20 V27"/><path class="ln" d="M12 16 H5"/><path class="ln" d="M20 16 H27"/>
+          </svg></div>
+          <h4>Cross-cutting refactors</h4>
+          <p>It replicates the patterns already in the repo — <em>including</em> the bad ones — so a sweeping change spreads existing flaws and drifts the architecture rather than cleaning it up.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <rect class="wh" x="7" y="5" width="18" height="22" rx="2"/>
+            <line class="ln" x1="11" y1="11" x2="21" y2="11"/><line class="ln da" x1="11" y1="16" x2="21" y2="16"/><line class="lc" x1="11" y1="21" x2="16" y2="21"/>
+          </svg></div>
+          <h4>Ambiguous business rules</h4>
+          <p>A vague spec doesn't make the agent cautious, it makes it
+            <a href="../10-lifecycle/01-spec-the-contract.html">confidently wrong</a>: it fills the gap with a plausible guess and writes tests that confirm the guess.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <rect class="oa" x="9" y="14" width="14" height="12" rx="2"/>
+            <path class="lc" d="M12 14 v-3 a4 4 0 0 1 8 0 v3"/>
+          </svg></div>
+          <h4>Security-sensitive code</h4>
+          <p>Auth, permissions, data exposure — the stakes are high and the failure is plausible-looking, the worst combination for a skim review.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Four flop zones that recur across codebases — name them, and put human attention where it pays</p>
+    </div>
+
+    <p>
+      <strong>AI debt compounds invisibly, so it needs a process, not goodwill.</strong> The agent produces
+      plausible code faster than humans can carefully read it, so unreviewed shortcuts pile up. And because no
+      one <em>wrote</em> the code, no one feels the ownership that normally makes an engineer go back and clean
+      it up — the debt has no one to pay it. Left alone it compounds until the codebase is one neither human nor
+      agent can change safely.
+    </p>
+    <p>
+      <strong>Debt is a high-interest loan — pay it continuously.</strong> It's almost always cheaper to pay
+      debt down in small, regular increments than to let it accumulate and tackle it in a painful burst. The
+      "we'll spend a day a quarter cleaning up the slop" approach doesn't scale; by the quarter mark the slop
+      has already spread into everything built on top of it.
+    </p>
+
+    <div class="fig">
+      <div class="diagram">
+        <svg viewBox="0 0 440 210" role="img" aria-label="Two debt curves: left to accumulate it compounds steeply; paid down weekly it stays flat">
+          <line class="ln" x1="52" y1="18" x2="52" y2="178"/>
+          <line class="ln" x1="52" y1="178" x2="424" y2="178"/>
+          <path class="lc" d="M54 168 C 210 166, 320 150, 414 30"/>
+          <path class="ln da" d="M54 168 L414 150"/>
+          <text x="286" y="64" font-size="11">let it accumulate</text>
+          <text x="232" y="142" font-size="11">pay down weekly</text>
+          <text x="44" y="14" text-anchor="end" font-size="11">AI debt</text>
+          <text x="372" y="196" font-size="11">time →</text>
+        </svg>
+      </div>
+      <p class="fig-cap">Capture the standard once, enforce it continuously — the burst version compounds before you reach it</p>
+    </div>
+
+    <p class="pull">Whatever the agent writes, a person still owns the merge. Responsibility is the one thing the harness can't <em>externalise</em>.</p>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <ul>
+      <li><strong>Write the flop zones down, with a harness plan for each.</strong> Don't keep "the agent is
+        bad at design" in your head — name the zone and decide its controls.
+        <em>Frontend/design</em> → a <a href="../20-harness/05-behaviour-harness.html">design guide and
+        evidence images</a>, graded by a
+        <a href="../10-lifecycle/05-verify-proof-not-vibes.html">separate evaluator</a>.
+        <em>Refactors</em> → a human owns the scope; lean on
+        <a href="../20-harness/03-sensors-feedback.html">fitness functions</a> to catch drift.
+        <em>Business rules</em> → pin the rule in a
+        <a href="../10-lifecycle/01-spec-the-contract.html">normative spec</a> first.
+        <em>Security</em> → mandatory human review, never auto-merge.</li>
+      <li><strong>For each zone, decide: automate, guard, or keep human.</strong> The default of "trust it
+        everywhere" is a decision too, just an unexamined one.</li>
+    </ul>
+
+    <div class="fig">
+      <div class="cases">
+        <div class="case whole">
+          <span class="case-tag">Automate</span>
+          <h4>The verifiable</h4>
+          <p>Typed CRUD against a real test suite — let the agent run, because a miss is caught cheaply by a strong sensor.</p>
+        </div>
+        <div class="case plain">
+          <span class="case-tag">Guard</span>
+          <h4>The regressable</h4>
+          <p>Let the agent work, but stand a sensor — a fitness function, a boundary rule — between it and the trunk to catch drift the diff hides.</p>
+        </div>
+        <div class="case partial">
+          <span class="case-tag">Keep human</span>
+          <h4>The subjective &amp; high-stakes</h4>
+          <p>Security and money logic stay human — never auto-merged. The one zone where the gate is a person, on purpose, maybe indefinitely.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Decide each zone deliberately — automate the verifiable, guard the regressable, keep the dangerous human</p>
+    </div>
+
+    <ul>
+      <li><strong>Earn autonomy zone by zone.</strong> Tie this to
+        <a href="02-growing-the-harness.html">growing the harness</a>: a zone earns more autonomy as its
+        controls prove they catch mistakes. Some zones (security, money) may stay human indefinitely, on
+        purpose.</li>
+      <li><strong>Make AI debt visible — in the repo, not in someone's head.</strong> Keep a tracked list of
+        the known shortcuts and weak areas. A debt in the
+        <a href="../00-foundations/02-context-engineering.html">system of record</a> can be scheduled; a debt
+        in a Slack thread is invisible the moment the thread scrolls away.</li>
+      <li><strong>Schedule paydown on a continuous cadence.</strong> Pay down a little every cycle. Cleanup is
+        itself good agent work — point the agent at the tracked debt on a regular rhythm and review the small
+        diffs.</li>
+      <li><strong>Keep a named human accountable for every merge.</strong> "Who owns this if it breaks?" must
+        always have an answer that is a person.</li>
+      <li><strong>Don't:</strong> auto-merge on green across the board as if the agent were uniformly reliable;
+        treat responsibility as something the model now carries; let debt accumulate for a someday cleanup; or
+        hand a security or business-rule change to the agent end-to-end with no human gate.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>
+      A team has a fast, productive agent workflow and a habit they're proud of: if CI is green, it merges.
+      It's served them well on dozens of routine features. Then the agent picks up a change to billing — how a
+      subscription is prorated when a customer upgrades mid-cycle.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">Uniform auto-trust</span>
+          <h4>Merge on green, everywhere</h4>
+          <ul>
+            <li>The billing spec was a loose paragraph — it never pinned how proration rounds, or what a same-day upgrade does.</li>
+            <li>The agent filled the gap with a guess, and — because it also wrote the tests — those tests assert the guess. CI is green.</li>
+            <li>The change ships with the same glance a list endpoint would get.</li>
+          </ul>
+          <p class="outcome-line">Customers are mischarged on upgrade, and the post-mortem's hardest question — <em>who owned this?</em> — <b>has no honest answer, because responsibility was left with the model</b>.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">Stay accountable</span>
+          <h4>Two flop zones at once, treated as such</h4>
+          <ul>
+            <li>Money logic is never auto-merged; its spec must state the rounding and edge cases normatively before any code.</li>
+            <li>The vague paragraph gets sent back and pinned down; a human signs off that it matches what the business wants.</li>
+            <li>The change gets a real review, not a glance — and the wrong proration assumption surfaces there.</li>
+          </ul>
+          <p class="outcome-line">The mistake is caught while it's a paragraph and a diff, not a billing run — <b>and the small shortcuts elsewhere are tracked and paid down weekly</b>.</p>
+        </div>
+      </div>
+      <p class="fig-cap">The agent isn't uniformly trustworthy — pretending it is spends your least attention where you needed the most</p>
+    </div>
+
+    <p>
+      The lesson the example carries: the defence isn't to trust the agent less everywhere — it's to decide, on
+      purpose and zone by zone, what's automated, what's guarded, and what stays human. And whatever the agent
+      writes, a person still owns the merge. Responsibility is the one thing the harness can't externalise.
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>Uniform auto-trust.</strong> Merging on green everywhere, as if a billing change and a list
+        endpoint carried the same risk. The agent's reliability is not uniform, so neither should your trust
+        be.</li>
+      <li><strong>"The model is responsible."</strong> Treating accountability as transferred to the agent. A
+        merge with no human owner is a miss with no one to catch it and a debt with no one to pay it.</li>
+      <li><strong>The invisible debt.</strong> Shortcuts and known-weak areas that live in people's heads
+        instead of a tracked list. What isn't written down can't be scheduled, and
+        <a href="../40-anti-patterns/01-failure-modes.html">compounds silently</a>.</li>
+      <li><strong>The big cleanup day.</strong> Letting debt batch up for a quarterly "slop sprint" instead of
+        paying it down continuously. By the time the sprint arrives, the debt has spread into everything built
+        on top of it.</li>
+      <li><strong>The un-gated flop zone.</strong> Handing the agent a security or business-rule change
+        end-to-end with no human in the loop — full autonomy granted to exactly the zone that hasn't earned
+        it.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — Legacy and Brownfield</div>
+      <p>
+        Everything so far has quietly assumed you could buy harnessability cheaply — true on day one of an empty
+        repo. Most teams aren't on day one of an empty repo. Next: how to harness a ten-year-old, untyped,
+        barely-tested codebase without betting the company on a rewrite.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="02-growing-the-harness.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Growing the Harness</div>
+    </a>
+    <a class="next" href="04-legacy-and-brownfield.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Legacy and Brownfield</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="04-legacy-and-brownfield.html">Legacy and Brownfield</a>
+      <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>
+      <a href="02-growing-the-harness.html">Growing the Harness</a>
+      <a href="../20-harness/05-behaviour-harness.html">Behaviour Harness</a>
+      <a href="../10-lifecycle/05-verify-proof-not-vibes.html">Verify — Proof, Not Vibes</a>
+      <a href="../10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a>
+      <a href="../00-foundations/01-why-ai-native.html">Why AI-Native</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

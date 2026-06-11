@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harness Engineering — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#foundations">Foundations</a>
+    <span class="sep">›</span>
+    <span class="here">Harness Engineering</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">00 · Foundations — Chapter 03</div>
+    <h1>Harness Engineering</h1>
+    <p class="lede">
+      A coding agent is a model plus a harness — and the harness is
+      <strong>everything that isn't the model</strong>. It's the guides that shape what the agent
+      does before it acts and the sensors that grade what it produced after. Engineering that
+      harness — not picking the model — is what makes agent output reliable.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      Page 01 made one claim above all others: the payoff comes from the system <em>around</em> the
+      model, not the model. Page 02 opened up the one resource that system runs on — context, what
+      the agent can see. This page is the system itself. It has a name — the <strong>harness</strong>
+      — and building it is the highest-leverage thing you can do as an AI-native engineer.
+    </p>
+    <p>
+      Start with the definition, because it's broader than it sounds. The harness is
+      <em>everything in an agent system except the model itself</em>. Some of it the vendor ships —
+      the agent's tooling and runtime. But the part you own, the part this whole playbook is about,
+      is the harness <em>your team</em> builds for <em>your</em> codebase. And it turns out that
+      whole thing reduces to just two kinds of control, both of which reach the agent through the
+      context channel you just met.
+    </p>
+
+    <h2><span class="idx">01</span>The harness is the lever you actually control</h2>
+    <p>
+      Here is why this is the page that matters most. You don't train the model — at most you
+      <em>choose</em> it, from a short list everyone else can choose from too. What you fully own is
+      the harness. And that ownership counts for more than it sounds, because the harness isn't a
+      small adjustment around a fixed result: hand two teams the identical model — one wrapping it
+      in sharp guides and honest sensors, the other prompting it raw — and their output quality
+      diverges hard. The scaffolding around the model is roughly as decisive as the model itself.
+    </p>
+
+    <p class="pull">The same model in a better harness produces <em>meaningfully better</em> work.</p>
+
+    <p>
+      That's the whole reason this playbook bets where it does. Chasing the next model release is
+      the lever you don't control and everyone shares; engineering the harness is the lever you
+      <em>do</em> control and that a competitor can't copy for free. So when the output disappoints,
+      the reflex to wait for a smarter model is usually the wrong one — the higher-return move is
+      almost always to tighten the harness around the model you already have.
+    </p>
+
+    <h2><span class="idx">02</span>Guides and sensors — before and after</h2>
+    <p>
+      Everything you build to steer an agent is either a <strong>guide</strong> or a
+      <strong>sensor</strong> — one acting before the agent moves, the other after.
+    </p>
+
+    <div class="fig">
+      <div class="pipe">
+        <div class="step c1">
+          <div class="dot"></div>
+          <div class="s-n">before</div>
+          <div class="s-t">Guide</div>
+          <div class="s-d">Feedforward — context, constraints, conventions, a curated example, put up front.</div>
+        </div>
+        <div class="step c4">
+          <div class="dot"></div>
+          <div class="s-n">act</div>
+          <div class="s-t">Agent acts</div>
+          <div class="s-d">The model produces the diff, working from whatever the guide put in front of it.</div>
+        </div>
+        <div class="step c2">
+          <div class="dot"></div>
+          <div class="s-n">after</div>
+          <div class="s-t">Sensor</div>
+          <div class="s-d">Feedback — tests, linters, type checkers, an AI reviewer grading the output.</div>
+        </div>
+      </div>
+      <p class="fig-cap">Two controls, one timeline — a guide before the act, a sensor after</p>
+    </div>
+
+    <p>
+      A <strong>guide</strong> works <em>before</em> the agent acts. It's feedforward — it raises
+      the odds of a correct first attempt by putting context, constraints, and conventions in front
+      of the agent up front. Instruction files, conventions, architecture boundaries, a curated
+      example of the pattern you want copied: all guides. (This is the channel from the last page in
+      action — a guide is only as good as your ability to fit it into the budget without crowding
+      out the task.)
+    </p>
+    <p>
+      A <strong>sensor</strong> works <em>after</em> the agent acts. It's feedback — it observes the
+      output so the agent (or you) can self-correct. Tests, linters, type checkers, architecture
+      fitness functions, an AI reviewer reading the diff: all sensors.
+    </p>
+    <p>The trap is thinking you can get away with one. You can't:</p>
+
+    <ul>
+      <li><strong>Guides without sensors</strong> never verify that the rules were followed. The
+        agent reads your convention, believes it complied, and merges something that quietly didn't.
+        A rule with nothing to enforce it is a <em>wish</em>.</li>
+      <li><strong>Sensors without guides</strong> catch mistakes after the fact but never teach the
+        agent what was expected — so it re-makes the same mistake every single run. Expensive, and
+        it never converges.</li>
+    </ul>
+
+    <p class="pull">Guides set the expectation; sensors prove it was met. Bugs live in the gap between the two — which is exactly why you need <em>both</em> halves.</p>
+
+    <h2><span class="idx">03</span>Reach for the cheap check first</h2>
+    <p>
+      Not all sensors cost the same. They come in two modes, and the cheaper one is usually enough:
+    </p>
+
+    <div class="fig">
+      <table class="spec-table">
+        <thead>
+          <tr><th>Mode</th><th>What it's like</th><th>Examples</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Computational<span class="mono-note">reach for this first</span></th>
+            <td>Deterministic, fast (ms–s), cheap, never falsely confident.</td>
+            <td>Tests, linters, type checkers, formatters.</td>
+          </tr>
+          <tr>
+            <th>Inferential<span class="mono-note">only when you must</span></th>
+            <td>Semantic, AI-driven, slower, non-deterministic, costs tokens.</td>
+            <td>LLM code reviewers, spec-to-code validators.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="fig-cap">Two sensor modes — and the rule for choosing between them</p>
+    </div>
+
+    <p>
+      The rule of thumb: <strong>encode a rule as a computational check before you reach for an
+      inferential one.</strong> A type error is caught for free by a type checker; "this variable is
+      misnamed" genuinely needs an AI to judge. Don't pay for inference where a deterministic check
+      would do — and don't <em>trust</em> inference where determinism is available, because an AI
+      reviewer can be talked out of a real finding in a way a failing test cannot.
+    </p>
+
+    <h2><span class="idx">04</span>Three things you're regulating — hardest last</h2>
+    <p>
+      Guides and sensors get pointed at three kinds of target, and they get harder in order:
+    </p>
+
+    <ol>
+      <li><strong>Maintainability</strong> — the internal quality a good engineer notices reading a
+        diff: complexity, duplication, dead code, style. Computational sensors catch the structural
+        ones reliably.</li>
+      <li><strong>Architecture fitness</strong> — automated assertions about the system's
+        <em>shape</em>: "no cross-module imports," "p95 &lt; 200ms," dependency direction. The agent
+        should be <em>blocked from merging</em> anything that breaks one.</li>
+      <li><strong>Behaviour</strong> — does the code do what the <em>business</em> actually wanted?
+        This is the hard one, and still unsolved for high autonomy: a spec is the guide, tests are
+        the sensor — but an agent can write tests that match its own <em>wrong</em> implementation,
+        so human verification stays essential.
+        (<a href="../20-harness/05-behaviour-harness.html">The behaviour harness</a> goes deep on
+        this.)</li>
+    </ol>
+
+    <h2><span class="idx">05</span>Some codebases take the harness better than others</h2>
+    <p>
+      Before you build a single control, notice the ground you're building on. The same three
+      targets are far cheaper to regulate in some codebases than others, and that property has a
+      name: <strong>harnessability</strong>. Four things raise it:
+    </p>
+
+    <div class="fig">
+      <div class="outcomes">
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <polyline class="lc" points="13,9 7,16 13,23" stroke-linejoin="round"/>
+            <polyline class="lc" points="19,9 25,16 19,23" stroke-linejoin="round"/>
+          </svg></div>
+          <h4>Strong static types</h4>
+          <p>A type checker is a high-signal sensor you get for <em>free</em> — it catches a whole class of errors the instant the agent writes them, with zero tokens and no false confidence.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <rect class="st" x="4" y="11" width="9" height="10" rx="1.5"/>
+            <rect class="st" x="19" y="11" width="9" height="10" rx="1.5"/>
+            <line class="lc da" x1="16" y1="7" x2="16" y2="25"/>
+          </svg></div>
+          <h4>Clear module boundaries</h4>
+          <p>When the system's shape is explicit, "this module must not import that one" becomes a one-line lint rather than a judgement call — architecture fitness functions get easy to write.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <rect class="oa" x="6" y="18" width="20" height="7" rx="1.5"/>
+            <rect class="oa" x="9" y="11" width="14" height="6" rx="1.5"/>
+            <rect class="cl" x="12" y="5" width="8" height="5" rx="1.5"/>
+          </svg></div>
+          <h4>Established frameworks</h4>
+          <p>Agents have training data on them, so the conventions they reach for by default are the ones you actually want — half the guide is written before you start.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <path class="oa" d="M16 3 L27 8 V16 C27 23 22 27 16 29 C10 27 5 23 5 16 V8 Z" stroke-linejoin="round"/>
+            <path class="lc" d="M11 16 l4 4 l7 -9" stroke-linejoin="round"/>
+          </svg></div>
+          <h4>High test coverage</h4>
+          <p>A real test suite <em>is</em> the behaviour harness — the hardest category to build from scratch already exists, watching every change.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Four properties that make a codebase cheaper to regulate</p>
+    </div>
+
+    <p>
+      The payoff is the part worth internalising: <strong>investing in harnessability pays off
+      twice.</strong> Types, modular architecture, and test coverage were always good engineering —
+      they make the codebase easier for <em>humans</em>. The same investments now also make it
+      easier for <em>agents</em>, because each one turns into a cheaper, more reliable sensor or a
+      more predictable guide. The work you'd do anyway to keep a codebase healthy is the same work
+      that makes it agent-ready.
+    </p>
+
+    <div class="callout">
+      <div class="c-label">The converse — read it as a warning</div>
+      <p>
+        A sprawling, untyped, untested codebase <strong>resists every control</strong> you try to
+        add — and that's exactly when teams reach for an AI reviewer to paper over the gap, paying
+        inference costs for what a type checker should have caught for free.
+      </p>
+    </div>
+
+    <p>
+      Raising harnessability on purpose — repo legibility, module boundaries, coverage that
+      compounds — is its own practice, picked up in
+      <a href="../20-harness/02-repo-structure-and-legibility.html">repo structure as feedforward</a>
+      and <a href="../50-adoption/02-growing-the-harness.html">growing the harness</a>. Here the
+      point is only to read the ground before you build on it.
+    </p>
+
+    <h2><span class="idx">06</span>You don't design the harness — you grow it</h2>
+    <p>
+      The last idea is the one that changes how you work. You do <strong>not</strong> sit down and
+      design the complete harness up front. You can't predict every way an agent will go wrong.
+      Instead you run a loop:
+    </p>
+
+    <div class="fig">
+      <pre><code>Agent acts → a sensor fires → you look at the failure →
+  you add a guide or a sensor → the agent acts again</code></pre>
+      <p class="fig-cap">The steering loop — a control encoded per real failure, compounding</p>
+    </div>
+
+    <p>
+      You observe <em>one real failure</em>, then encode the fix as a durable control so it can't
+      recur — and the agent can help build that control (ask it to write the fitness function from a
+      description of the rule). Each turn makes the next run more reliable. That's how a harness
+      <em>compounds</em>, and it's why a mature one looks designed but was actually grown one failure
+      at a time.
+    </p>
+
+    <h2><span class="idx">07</span>An open question: how do you grade the harness?</h2>
+    <p>
+      One honest caveat sits under all of this. You can grade your <em>code</em> — coverage tells
+      you what ran, mutation testing tells you whether the tests have teeth. But how do you grade the
+      <em>harness itself</em>? A quiet harness, with sensors that never fire, is ambiguous: it could
+      mean the work is genuinely clean, or it could mean the harness is blind and catching nothing.
+      There's no settled equivalent of mutation testing for "are these controls any good?" —
+      <strong>harness coverage</strong> is still an open frontier, not a solved practice.
+    </p>
+    <p>
+      The working discipline until there is one: treat a harness that never complains with the same
+      suspicion you'd give a test that always passes, and periodically confirm each control
+      <em>can</em> still fire (the
+      <a href="../30-delivery/04-drift-and-health-sensors.html">silent-scan check</a> is one
+      instance of this). Don't mistake silence for safety.
+    </p>
+
+    <h2><span class="idx">08</span>What it looks like on a real rule</h2>
+    <p>
+      Take an invariant every layered codebase has some version of: <strong>"API routes must not
+      contain business logic — they call functions in the product package."</strong> Watch each
+      control do its job.
+    </p>
+
+    <div class="fig">
+      <div class="cases">
+        <div class="case partial">
+          <span class="case-tag">Guide only</span>
+          <h4>Stated, never enforced</h4>
+          <p>The rule lives in the instruction file. The agent obeys it most of the time — but on a rushed task it inlines a database query straight into a route handler. Nothing catches it: it compiles, its own tests pass, it merges. Weeks later a second route diverges and a bug is born.</p>
+        </div>
+        <div class="case partial">
+          <span class="case-tag">Sensor only</span>
+          <h4>Caught, never learned</h4>
+          <p>The rule isn't written anywhere, but a sharp reviewer spots the inlined query and asks for a fix. Good — except nothing told the agent the expectation, so on the <em>next</em> route it inlines logic again. Same catch, same fix, every run. It never converges.</p>
+        </div>
+        <div class="case whole">
+          <span class="case-tag">Both</span>
+          <h4>Applies everywhere at once</h4>
+          <p>The convention lives in the instruction file (guide) <em>and</em> a lint rule forbids any route file from importing the database layer (sensor). The agent gets a red build the instant it inlines a query and self-corrects before you see the diff.</p>
+        </div>
+      </div>
+      <p class="fig-cap">One rule, three controls — only the pair actually holds the line</p>
+    </div>
+
+    <p>
+      And notice <em>how the lint got there</em>: someone saw the inlined-query failure once, then
+      encoded a sensor so it couldn't happen again. That's the steering loop — the harness grew a
+      control in response to a real failure. The one example carries the whole page: guides and
+      sensors are different controls doing different jobs, you need both, you reach for the cheap
+      computational one first, and you build the set iteratively from failures rather than designing
+      it all at once.
+    </p>
+    <p>
+      One thing the harness can't do is replace you. It <em>externalises</em> tacit judgment — the
+      disgust at a 300-line function, the knowledge that this module must not import that one — into
+      explicit guides and sensors. What it can't externalise (social accountability, taste,
+      organisational context) stays human. The harness redirects your effort to those calls; it
+      doesn't remove it.
+    </p>
+    <p>
+      That's the foundations: <em>why</em> the governed lifecycle beats autocomplete, <em>how</em>
+      the agent perceives the world through its context, and <em>what</em> the harness is made of.
+      The rest of the playbook is the practice of running that loop — and it starts where every good
+      task starts, with the <a href="../10-lifecycle/01-spec-the-contract.html">spec as the
+      contract</a>.
+    </p>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="02-context-engineering.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Context Engineering</div>
+    </a>
+    <a class="next" href="../10-lifecycle/01-spec-the-contract.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Spec — The Contract</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="01-why-ai-native.html">Why AI-Native</a>
+      <a href="02-context-engineering.html">Context Engineering</a>
+      <a href="../20-harness/01-guides-feedforward.html">Guides — Feedforward</a>
+      <a href="../20-harness/03-sensors-feedback.html">Sensors — Feedback</a>
+      <a href="../20-harness/04-keep-quality-left.html">Keep Quality Left</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

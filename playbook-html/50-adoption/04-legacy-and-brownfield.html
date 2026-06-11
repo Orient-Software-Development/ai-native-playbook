@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legacy and Brownfield — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#adoption">Adoption</a>
+    <span class="sep">›</span>
+    <span class="here">Legacy and Brownfield</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">50 · Adoption — Chapter 04</div>
+    <h1>Legacy and Brownfield</h1>
+    <p class="lede">
+      The harness is hardest to build exactly where it's needed most: an old, untested codebase with no types,
+      no boundaries, no tests to lean on. You don't fix that with a big rewrite — you <strong>earn a
+      foothold</strong>. Pin the current behaviour, draw one real boundary at a time, and spend your first
+      effort on the highest-risk seams.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      The minimum-viable-harness page made one quiet, very convenient assumption: an empty repo, where every
+      harnessability investment is nearly free. Most teams don't live there. They live in a <em>brownfield</em>
+      — years old, sparsely tested, untyped in the corners that matter, with boundaries that exist only in
+      someone's memory and possibly their resignation letter. And here's the cruel joke at the centre of this
+      page: the harness is hardest to build exactly where it would help the most. The way in isn't a heroic
+      rewrite. It's earning one foothold, on the seam that matters most, and widening from there.
+    </p>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      The <a href="01-minimum-viable-harness.html">minimum viable harness</a> page assumed an empty repo. Day
+      one, no code to protect, every harnessability investment nearly free. That's the <em>easy</em> case — and
+      it's not the case most teams are in. Most have a <strong>brownfield</strong> codebase: years old, large,
+      sparsely tested, untyped where it matters, boundaries that exist only in someone's memory. And here's the
+      cruel part — <strong>the harness is hardest to build precisely where it would help the most.</strong> The
+      codebase that most needs guarding against a fast agent is the one that gives you the least to guard it
+      <em>with</em>.
+    </p>
+
+    <p class="pull">The harness is hardest to build <em>precisely where it would help the most</em> — and you close that gap a foothold at a time, not by fiat.</p>
+
+    <p>
+      You cannot close that gap by fiat. Pointing an agent at a 200,000-line untested codebase with "add types
+      and tests everywhere" is a rewrite in disguise, and it will fail the way rewrites fail. The brownfield
+      move is the opposite of big-bang: <strong>earn a foothold, then widen it.</strong> Three practices do
+      that work:
+    </p>
+
+    <div class="fig">
+      <div class="layers">
+        <div class="layer l1">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <line class="ln" x1="5" y1="9" x2="27" y2="9"/>
+            <path class="lc" d="M5 9 C 13 24, 19 24, 27 9"/>
+            <line class="lc" x1="11" y1="9" x2="13" y2="20"/><line class="lc" x1="16" y1="9" x2="16" y2="22"/><line class="lc" x1="21" y1="9" x2="19" y2="20"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Characterization tests pin what the code does <em>now</em></h4>
+            <p>Before you can safely change a tangled function, capture its <em>current</em> behaviour — bugs and all — so a refactor's effects become visible instead of silent. Not what it <em>should</em> do; what it <em>does</em>.</p>
+          </div>
+          <div class="l-dur">the net</div>
+        </div>
+        <div class="layer l2">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <rect class="fl" x="5" y="8" width="9" height="16" rx="2"/><rect class="oa" x="18" y="8" width="9" height="16" rx="2"/>
+            <line class="lc" x1="16" y1="5" x2="16" y2="27"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Boundaries get drawn incrementally</h4>
+            <p>You don't reorganise the whole codebase. Find one place where two responsibilities are tangled, draw a single clean <a href="../20-harness/02-repo-structure-and-legibility.html">boundary</a> there, make <em>that</em> seam checkable. Then the next one.</p>
+          </div>
+          <div class="l-dur">one seam</div>
+        </div>
+        <div class="layer l3">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <circle class="st" cx="16" cy="16" r="10"/><circle class="st" cx="16" cy="16" r="6"/><circle class="cl" cx="16" cy="16" r="2.5"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>High-risk seams come first</h4>
+            <p>You'll never harness all of it, so don't try. Spend scarce early effort where a mistake is most expensive — the payment path, the auth check — the <a href="03-responsible-team-and-ai-debt.html">flop zone</a> with the largest blast radius.</p>
+          </div>
+          <div class="l-dur">risk-first</div>
+        </div>
+      </div>
+      <p class="fig-cap">In a greenfield repo you bank harnessability for free; in a brownfield you <em>buy</em> it, seam by seam</p>
+    </div>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      <strong>A characterization test makes change visible — the precondition for any safe change.</strong>
+      What makes legacy code terrifying to touch is that you can't tell what your change broke, because nothing
+      told you what "working" looked like before. A characterization test records the current outputs, so the
+      moment a refactor alters them, a test goes red and points at the difference. You're not asserting the
+      behaviour is <em>correct</em> — you're asserting it <em>didn't change without you noticing</em>.
+    </p>
+
+    <div class="fig">
+      <div class="diagram">
+        <svg viewBox="0 0 440 210" role="img" aria-label="A tangled function dropping into a safety net of characterization tests strung between two posts">
+          <rect class="oa" x="184" y="14" width="72" height="38" rx="5"/>
+          <text x="220" y="38" font-size="10.5" text-anchor="middle">tangled fn</text>
+          <line class="ln da" x1="210" y1="56" x2="210" y2="76"/>
+          <line class="ln da" x1="230" y1="56" x2="230" y2="76"/>
+          <line class="ln" x1="48" y1="92" x2="48" y2="162"/>
+          <line class="ln" x1="392" y1="92" x2="392" y2="162"/>
+          <line class="lc" x1="48" y1="100" x2="392" y2="100"/>
+          <path class="lc" d="M48 100 C 180 170, 260 170, 392 100"/>
+          <path class="lc" d="M92 100 L106 152"/><path class="lc" d="M150 100 L150 165"/><path class="lc" d="M220 100 L220 168"/><path class="lc" d="M290 100 L290 165"/><path class="lc" d="M348 100 L334 152"/>
+          <text x="220" y="196" font-size="11" text-anchor="middle">characterization tests — the net under the trapeze</text>
+        </svg>
+      </div>
+      <p class="fig-cap">The net goes up <em>first</em> — without it, every agent refactor is a coin flip you can't see the result of</p>
+    </div>
+
+    <p>
+      <strong>Incremental boundaries beat the rewrite because the rewrite never lands.</strong> The instinct
+      in a messy codebase is to fix it all at once — and that instinct has killed more projects than almost
+      anything else, because a big-bang rewrite is a long-lived divergence from a moving target (the same
+      reason <a href="../30-delivery/01-trunk-based-development.html">long-lived branches rot</a>, at the scale
+      of a whole codebase). Drawing one boundary at a time keeps every step small, shippable, and verified
+      against the characterization net.
+    </p>
+    <p>
+      <strong>Triaging by risk is the only honest budget.</strong> You have finite effort and an effectively
+      infinite codebase, so "harness all of it" isn't a plan, it's a wish. The auth seam, where a mistake is a
+      breach, earns a characterization test and a typed boundary today; the rarely-touched reporting helper
+      earns nothing until the day someone changes it. This is the same logic as
+      <a href="../20-harness/04-keep-quality-left.html">keeping quality left</a> — spend the control where it
+      pays — applied to <em>where in the codebase</em> you invest.
+    </p>
+    <p>
+      <strong>And the agent is the lever that makes it affordable.</strong> Characterization tests are tedious
+      to write by hand — which is exactly why they often don't get written. But "read this function and write
+      tests that capture its current behaviour" is a task an agent is genuinely good at, because it's
+      archaeology, not invention. <a href="02-growing-the-harness.html">Using the agent to build the
+      harness</a> turns the costliest part of brownfield adoption into reviewable agent work.
+    </p>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <ul>
+      <li><strong>Net before you trapeze.</strong> Before changing any tangled code, have the agent write
+        characterization tests that capture its <em>current</em> behaviour — feed in representative inputs,
+        record the actual outputs, assert they don't change. The net goes up <em>first</em>.</li>
+      <li><strong>Pick the seam by blast radius, not by how annoying it is.</strong> List the places a mistake
+        hurts most — money, auth, data integrity, the
+        <a href="03-responsible-team-and-ai-debt.html">zones where the agent reliably flops</a> — and harness
+        those first. The ugliest file isn't the priority; the <em>most dangerous</em> one is.</li>
+      <li><strong>Draw one boundary, make it checkable, move on.</strong> Extract a clean interface or typed
+        contract, and add the <a href="../20-harness/03-sensors-feedback.html">fitness function</a> that keeps
+        it from re-tangling. One boundary, landed and gated, beats five started.</li>
+      <li><strong>Let the un-dangerous tangle wait.</strong> Code that's low-risk and rarely changes does not
+        need a harness yet. Harness it the day it becomes a flop zone or a change target, not before.</li>
+      <li><strong>Use the agent for the archaeology.</strong> Generating characterization tests, mapping which
+        modules call which, drafting the first boundary interface from observed usage — these are agent tasks.
+        Describe the seam, have it produce the tests, and
+        <a href="../10-lifecycle/06-review-and-convergence.html">review the output</a>.</li>
+      <li><strong>Bank each win as permanent.</strong> A seam you've characterized and bounded doesn't slide
+        back — it's a standing increase in
+        <a href="../00-foundations/03-harness-engineering.html">harnessability</a>. Brownfield adoption isn't a
+        phase you finish; it's a ratchet you turn, highest-risk seam first.</li>
+      <li><strong>Don't:</strong> try to type or test the whole codebase at once; start refactoring before the
+        characterization net exists; spend early effort on low-risk corners because they're easier; or treat
+        "we'll harness it eventually" as covering the payment path <em>today</em>.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>
+      A team inherits a six-year-old order-processing service: 80,000 lines, a 4% test suite that mostly checks
+      getters, no types on the core pricing logic, and a single 600-line function that calculates what a
+      customer owes. They want to start using an agent on it.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">The big-bang attempt</span>
+          <h4>Clean it all up first</h4>
+          <ul>
+            <li>They task the agent with "add type annotations and unit tests across the service."</li>
+            <li>Three weeks later: a 4,000-line branch that won't merge, diverged from a codebase six people kept shipping into.</li>
+            <li>Half the new tests encode the <em>current bugs</em> as if intended, and nobody can review a change that large.</li>
+          </ul>
+          <p class="outcome-line">The branch is quietly abandoned. <b>The codebase is exactly as un-harnessed as before, minus three weeks</b>.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">The brownfield approach</span>
+          <h4>Earn one seam, risk-first</h4>
+          <ul>
+            <li>Ask: <em>where does a mistake hurt most?</em> The 600-line pricing function goes first.</li>
+            <li>The agent writes characterization tests pinning today's outputs — bugs included; the team reviews and merges. Now there's a net.</li>
+            <li><em>Then</em> the agent refactors into a typed module, the suite proving on every change that the numbers didn't move.</li>
+          </ul>
+          <p class="outcome-line">When one refactor shifts a result, a test goes red — and it's a real old bug, now fixed <em>deliberately</em>. <b>One seam typed, bounded, covered; the service stays alive the whole way</b>.</p>
+        </div>
+      </div>
+      <p class="fig-cap">The rewrite buys all the harnessability at once and lands none; the foothold buys it seam by seam, and every increment is permanent</p>
+    </div>
+
+    <p>
+      The lesson the example carries: you don't harness a legacy codebase by fixing it all — you earn a
+      foothold on the seam that matters most, pin its behaviour so change is visible, draw one real boundary,
+      and turn the ratchet again.
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>The harness-it-all rewrite.</strong> Trying to add types and tests across the whole codebase
+        in one push — a <a href="01-minimum-viable-harness.html">big-bang</a> at codebase scale, which diverges
+        from a moving target and never merges.</li>
+      <li><strong>Refactoring without a net.</strong> Changing tangled legacy code before any characterization
+        test pins its current behaviour — every refactor a coin flip you can't see the result of.
+        (<a href="../20-harness/03-sensors-feedback.html">Sensors — Feedback</a>)</li>
+      <li><strong>Characterizing the bug as the spec.</strong> Writing characterization tests and then
+        mistaking them for <em>correctness</em> tests — they record what the code <em>does</em>, not what it
+        <em>should</em>; when one goes red, ask whether the behaviour was right before.</li>
+      <li><strong>Easy-corner-first.</strong> Spending the scarce early effort on low-risk, easy-to-test
+        modules because they're pleasant, while the payment and auth seams stay
+        <a href="03-responsible-team-and-ai-debt.html">un-harnessed</a>.</li>
+      <li><strong>The eventual harness.</strong> Treating "we'll get to it" as if it covers the dangerous
+        seams, so the highest-risk code keeps getting agent changes with no net under it indefinitely.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — Scoring an Existing Harness</div>
+      <p>
+        Greenfield or brownfield, one fair question keeps surfacing — how good is the harness you've actually
+        got? The foundations chapter left that one wide open. The final page closes it with a working answer: a
+        five-layer rubric an agent can score any repo against, with evidence stapled to every number.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="03-responsible-team-and-ai-debt.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">The Responsible Team and AI Debt</div>
+    </a>
+    <a class="next" href="05-scoring-an-existing-harness.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Scoring an Existing Harness</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="01-minimum-viable-harness.html">The Minimum Viable Harness</a>
+      <a href="02-growing-the-harness.html">Growing the Harness</a>
+      <a href="03-responsible-team-and-ai-debt.html">The Responsible Team and AI Debt</a>
+      <a href="../20-harness/02-repo-structure-and-legibility.html">Repo Structure and Legibility</a>
+      <a href="../20-harness/05-behaviour-harness.html">Behaviour Harness</a>
+      <a href="../00-foundations/03-harness-engineering.html">Harness Engineering</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

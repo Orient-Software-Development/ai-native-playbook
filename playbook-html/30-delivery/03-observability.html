@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Observability — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#delivery">Delivery</a>
+    <span class="sep">›</span>
+    <span class="here">Observability</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">30 · Delivery — Chapter 03</div>
+    <h1>Observability</h1>
+    <p class="lede">
+      Your sensors don't get to stop at the merge gate. <strong>Observability</strong> — structured logs,
+      metrics, and traces from running code — is the feedback loop that extends <em>past merge into
+      production</em>, so you can see what the system actually does for real users, not just that the deploy
+      succeeded.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      Every sensor we've built so far fires <em>before</em> the code goes live — tests, type checks, evidence
+      captured at verification. They prove the change is correct against the inputs you <em>thought of</em>, in
+      an environment you <em>controlled</em>. Production is neither of those things: real volumes, real
+      concurrency, real edge cases nobody specced. This page builds the sensor for that messier world —
+      because the most dangerous sentence in all of delivery is "the deploy succeeded," said as though it
+      meant the feature actually works.
+    </p>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      Every sensor in this playbook so far fires <em>before</em> the change is live —
+      <a href="../20-harness/03-sensors-feedback.html">tests, type checks, fitness functions</a> in
+      <a href="02-ci-and-cd.html">CI</a>,
+      <a href="../10-lifecycle/05-verify-proof-not-vibes.html">evidence captured at verification</a>. They
+      prove the change is correct against the inputs you <em>thought of</em>, in the environment you
+      <em>controlled</em>. Production is neither: real data volumes, real concurrency, real edge cases nobody
+      specced. <strong>Observability</strong> is the sensor for <em>that</em> world — the runtime feedback loop
+      that tells you how the system behaves once it's actually running.
+    </p>
+    <p>
+      It's built from three kinds of signal, and a junior reader should keep all three straight:
+    </p>
+
+    <div class="fig">
+      <div class="layers">
+        <div class="layer l1">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <rect class="wh" x="6" y="5" width="20" height="22" rx="3"/>
+            <line class="lc" x1="10" y1="11" x2="12" y2="11"/><line class="ln" x1="15" y1="11" x2="22" y2="11"/>
+            <line class="lc" x1="10" y1="16" x2="12" y2="16"/><line class="ln" x1="15" y1="16" x2="22" y2="16"/>
+            <line class="lc" x1="10" y1="21" x2="12" y2="21"/><line class="ln" x1="15" y1="21" x2="20" y2="21"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Logs</h4>
+            <p>A timestamped record of discrete things that happened (<code>write to deal 412 failed: constraint violation</code>). Most useful when they're <em>structured</em>, not free-text prose.</p>
+          </div>
+          <div class="l-dur">what happened</div>
+        </div>
+        <div class="layer l2">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <line class="ln" x1="5" y1="27" x2="27" y2="27"/>
+            <rect class="ol" x="8" y="16" width="4" height="11"/><rect class="oa" x="15" y="11" width="4" height="16"/><rect class="cl" x="22" y="19" width="4" height="8"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Metrics</h4>
+            <p>Numbers aggregated over time: request counts, error rates, latencies, queue depths. They tell you <em>that</em> something changed — and let you alert on it automatically.</p>
+          </div>
+          <div class="l-dur">how much</div>
+        </div>
+        <div class="layer l3">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <circle class="cl" cx="7" cy="10" r="3"/><circle class="oa" cx="16" cy="22" r="3"/><circle class="ol" cx="25" cy="12" r="3"/>
+            <path class="ln" d="M9 12 L14 20"/><path class="ln" d="M18 20 L23 14"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Traces</h4>
+            <p>The path of a single request as it moves across functions and services, with timing at each hop. When a metric says "checkout got slow," the trace tells you <em>where</em> the time went.</p>
+          </div>
+          <div class="l-dur">where</div>
+        </div>
+      </div>
+      <p class="fig-cap">Three signals that together answer: is this working in production, right now, for real users?</p>
+    </div>
+
+    <p>
+      Together they answer the question CI structurally cannot: <em>is this working in production, right now,
+      for real users?</em> CI proves <em>safe to ship</em>; observability proves <em>actually working once
+      shipped</em> — and the two are not the same claim.
+    </p>
+
+    <p class="pull">CI proves <em>safe to ship</em>; observability proves <em>actually working once shipped</em>. They are not the same claim.</p>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      <strong>A successful deploy is not a working feature.</strong> The deploy pipeline's job ends at "the
+      new artifact is running" — it has no idea whether the feature <em>does the right thing</em> under real
+      load. A change can pass every CI check, deploy green, and still be broken: a query that's instant on
+      seed data crawls on a million real rows; a third-party call that always succeeded in tests times out for
+      real users. Without observability, the <em>only</em> sensor left for these is a user complaint — late,
+      from the worst possible source, with no signal pointing at the cause.
+    </p>
+
+    <div class="fig">
+      <div class="diagram">
+        <svg viewBox="0 0 440 210" role="img" aria-label="A latency graph that steps sharply up at the moment of deploy, triggering an alert">
+          <line class="ln" x1="52" y1="18" x2="52" y2="178"/>
+          <line class="ln" x1="52" y1="178" x2="424" y2="178"/>
+          <path class="lc" d="M52 150 L120 148 L180 152 L238 150"/>
+          <line class="lc da" x1="238" y1="22" x2="238" y2="178"/>
+          <path class="lc" d="M238 150 L240 68 L300 72 L360 66 L420 70"/>
+          <circle class="cl" cx="240" cy="68" r="5"/>
+          <text x="246" y="40" font-size="12">deploy</text>
+          <text x="300" y="56" font-size="11.5">alert: latency regressed</text>
+          <text x="48" y="14" font-size="11" text-anchor="end">latency</text>
+          <text x="380" y="196" font-size="11">time →</text>
+          <text x="118" y="142" font-size="10.5">steady</text>
+        </svg>
+      </div>
+      <p class="fig-cap">The clearest signal there is: a graph that steps up <em>exactly</em> at the deploy time</p>
+    </div>
+
+    <p>
+      Observability turns that silent gap into a visible one: the error rate spikes, the latency graph steps
+      up right at the deploy, the failed-write log appears — and the failure announces itself instead of
+      festering.
+    </p>
+    <p>
+      <strong>Structured signal is what makes diagnosis — human or agent — possible.</strong> A log line
+      that's prose ("something went wrong saving the deal") can be read by a person but not <em>queried</em>;
+      you can't ask "how many of these in the last hour, and for which tenant?" A <strong>structured</strong>
+      log can be filtered, counted, and correlated. This matters doubly in an AI-native team: when you hand a
+      production problem to an agent, structured logs and metrics are <em>evidence it can actually consume and
+      reason over</em> — the same way
+      <a href="../10-lifecycle/05-verify-proof-not-vibes.html">evidence artifacts</a> make verification
+      checkable rather than a vibe.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">Prose log</span>
+          <h4>A sentence a human reads one at a time</h4>
+          <ul>
+            <li><code>something went wrong saving the deal</code></li>
+            <li>Can't be counted, filtered, or correlated.</li>
+            <li>Can't answer "how many in the last hour, for which tenant?"</li>
+            <li>An agent handed the incident can only guess.</li>
+          </ul>
+          <p class="outcome-line">Readable, but <b>not queryable — the opposite of evidence you can check</b>.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">Structured log</span>
+          <h4>Machine-readable fields</h4>
+          <ul>
+            <li><code>event=deal_write_failed deal_id=412 tenant=acme reason=constraint</code></li>
+            <li>Filter, count, and correlate across millions of lines.</li>
+            <li>"How many, broken down by customer?" is one query.</li>
+            <li>An agent can read the fields, find the pattern, locate the fault.</li>
+          </ul>
+          <p class="outcome-line">Signal a person <em>and</em> an agent can reason over — <b>diagnosis instead of guesswork</b>.</p>
+        </div>
+      </div>
+      <p class="fig-cap">The test: could you answer "how many in the last hour, by customer?" without grepping prose?</p>
+    </div>
+
+    <p>
+      <strong>It closes the loop back to the spec.</strong> What production tells you — this query is slow at
+      real scale, this edge case happens more than anyone guessed — is <em>input to the next change</em>. The
+      runtime signal becomes a finding, the finding becomes a
+      <a href="../10-lifecycle/01-spec-the-contract.html">normative requirement</a> or an acceptance criterion,
+      and the loop runs again. A harness with no production sensor can only react to complaints; a harness with
+      one <em>learns from reality</em> and feeds it forward into the next spec.
+    </p>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <ul>
+      <li><strong>Emit structured logs, not prose.</strong> Log events as machine-readable fields so they can
+        be filtered, counted, and correlated. The test: could you answer "how many of these in the last hour,
+        broken down by customer?" without grepping prose? If not, it isn't structured enough.</li>
+      <li><strong>Instrument as you build, not after an incident.</strong> Adding the log, the metric, and the
+        trace span is part of the <a href="../10-lifecycle/03-task-slicing.html">slice</a>, the same way its
+        test is. Observability bolted on after a fire is always missing the one signal you needed.</li>
+      <li><strong>Measure what the spec cares about.</strong> Turn the feature's real requirements into
+        metrics: if a requirement is "the export must finish in reasonable time," there should be a latency
+        metric on the export and an alert when it regresses. The
+        <a href="../10-lifecycle/01-spec-the-contract.html">acceptance criteria</a> tell you what to watch.</li>
+      <li><strong>Alert on symptoms users feel.</strong> Page on error rate, latency, and failed operations —
+        not every internal blip. An alert that fires constantly gets muted, and a
+        <a href="../20-harness/04-keep-quality-left.html">muted alert is no sensor</a>.</li>
+      <li><strong>Watch the deploy.</strong> Make "what did the last deploy do to error rate and latency?" a
+        question you can answer in seconds — a graph that steps up at the deploy time is your fastest, clearest
+        signal that <em>this change</em> caused <em>that regression</em>.</li>
+      <li><strong>Feed findings back into specs.</strong> When production surfaces a slow path or an unhandled
+        case, write it into the next spec — don't just hot-patch it and move on. The loop only compounds if the
+        lesson lands in the durable contract.</li>
+      <li><strong>Don't:</strong> treat a green deploy as proof the feature works; log unqueryable prose; bolt
+        on observability only after an outage; alert so noisily the alerts get ignored; or fix a production
+        finding without folding it back into the spec.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>
+      The <em>per-user deal priority</em> feature ships — fully
+      <a href="../10-lifecycle/05-verify-proof-not-vibes.html">verified</a>,
+      <a href="02-ci-and-cd.html">merged behind a green gate</a>, deployed clean. The deploy pipeline reports
+      success. Everyone moves on.
+    </p>
+    <p>
+      <strong>Without observability.</strong> In production the deals-list query — instant against the handful
+      of seed rows in CI — has to left-join each user's priorities across hundreds of thousands of real deals,
+      and it's slow. There's no metric on the query and no structured log, so nothing fires. The page just
+      feels sluggish. Two weeks later a frustrated account manager mentions it in passing; by then the slow
+      query is buried under a dozen later changes. The sensor of last resort — an annoyed human — caught it,
+      late and vague.
+    </p>
+    <p>
+      <strong>With observability.</strong> The query slice shipped with a latency metric and a structured log
+      on the list endpoint. The afternoon of the deploy, the latency graph steps up sharply right at release
+      time and an alert fires: <em>deals-list latency regressed.</em> The structured logs show the slow
+      endpoint and the join, the trace shows the time going into the priority left-join, and that evidence —
+      queryable, not prose — is handed to an agent. With the fault localised it adds the missing index and the
+      latency drops back. Then the loop closes: the finding becomes a new acceptance criterion in the spec —
+      <em>the deals list must stay under its latency budget at production scale</em> — wired to the very metric
+      that caught it, so the next change that regresses it fails <em>before</em> a user ever feels it.
+    </p>
+    <p>
+      The lesson the example carries: the bug existed in both worlds — the difference was purely whether the
+      system could <em>see itself</em>. CI proved the feature safe to ship; only observability proved whether
+      it actually worked once shipped, turned a vague "it feels slow" into a precise, agent-readable signal,
+      and fed the lesson back into the contract.
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>"It deployed, so it works."</strong> Treating a green deploy as proof the feature is correct
+        in production — when the pipeline only knows the artifact is <em>running</em>, not that it does the
+        right thing under real load. (<a href="../40-anti-patterns/01-failure-modes.html">Failure modes</a>)</li>
+      <li><strong>Prose logs.</strong> Free-text lines a human can read but nobody can <em>query</em> — the
+        opposite of <a href="../10-lifecycle/05-verify-proof-not-vibes.html">evidence you can check</a>.</li>
+      <li><strong>Observability-after-the-fire.</strong> Adding the missing log or metric only once an outage
+        has already happened — guaranteeing the one signal you needed wasn't there when it mattered.</li>
+      <li><strong>The alert that cried wolf.</strong> So many low-value alerts that the team mutes them, so the
+        one real alert is ignored too — a
+        <a href="../20-harness/04-keep-quality-left.html">sensor everyone learns to skip</a>.</li>
+      <li><strong>The unclosed loop.</strong> Hot-patching a production finding without writing it back into
+        the spec, so the lesson never becomes a durable requirement and the same class of bug ships again.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — Drift and Health Sensors</div>
+      <p>
+        Observability watches production in real time. But some rot isn't caused by any single change at all —
+        it accumulates quietly between them, or arrives from outside your repo entirely. The last delivery page
+        builds the sensors that run on a <em>clock</em> to catch exactly that slow slide.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="02-ci-and-cd.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">CI and CD</div>
+    </a>
+    <a class="next" href="04-drift-and-health-sensors.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Drift and Health Sensors</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="04-drift-and-health-sensors.html">Drift and Health Sensors</a>
+      <a href="../20-harness/03-sensors-feedback.html">Sensors — Feedback</a>
+      <a href="../10-lifecycle/05-verify-proof-not-vibes.html">Verify — Proof, Not Vibes</a>
+      <a href="02-ci-and-cd.html">CI and CD</a>
+      <a href="../10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a>
+      <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

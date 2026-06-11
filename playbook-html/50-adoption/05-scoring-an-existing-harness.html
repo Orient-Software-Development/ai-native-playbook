@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scoring an Existing Harness — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#adoption">Adoption</a>
+    <span class="sep">›</span>
+    <span class="here">Scoring an Existing Harness</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">50 · Adoption — Chapter 05</div>
+    <h1>Scoring an Existing Harness</h1>
+    <p class="lede">
+      Before you grow a harness you should know where it stands. This is the working answer: a
+      <strong>five-layer rubric</strong> an agent can score <em>any</em> repo against, in one pass, with
+      evidence attached to every number. It won't tell you the harness is <em>good</em>; it tells you, layer by
+      layer, what's present, what's missing, and what to build next.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      Before you grow a harness — or grow an existing one — it helps to know where it actually stands.
+      Foundations left that question dangling on purpose: there's no settled way to grade a harness the way
+      coverage grades code. This final chapter is the pragmatic stand-in. Point an agent at any repo and it
+      scores five layers, each number backed by a command you can re-run. It won't hand you a gold star that
+      says the harness is <em>good</em>; it'll tell you, plainly and with receipts, where it's blind — which is
+      the only thing you can actually act on.
+    </p>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      <a href="../00-foundations/03-harness-engineering.html">Harness engineering</a> ended on an honest
+      caveat: you can grade your <em>code</em> — coverage tells you what ran, mutation testing tells you
+      whether the tests have teeth — but there's no settled way to grade the <em>harness itself</em>. A quiet
+      harness is ambiguous; silence could mean clean work or a blind sensor. <em>Harness coverage</em> is still
+      an open frontier.
+    </p>
+    <p>
+      This page is the pragmatic stand-in: not a coverage metric, but a <strong>structured assessment</strong>.
+      You point an agent at a repository, and it scores five layers — the three regulation categories from the
+      foundations plus the two control layers that sit around them — each on a 1–10 scale, each line backed by
+      a concrete, reproducible measurement. The output is a <strong>scorecard</strong>: where this repo is
+      strong, where it is blind, and a ranked list of what to build next.
+    </p>
+
+    <div class="fig">
+      <table class="spec-table">
+        <thead>
+          <tr><th>Layer</th><th>What it grades</th><th>Mostly…</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Feedforward<span class="mono-note">Guides</span></th>
+            <td>Instruction files, conventions, blueprints, repo legibility — what steers the agent <em>before</em> it acts.</td>
+            <td>guides</td>
+          </tr>
+          <tr>
+            <th>Maintainability<span class="mono-note">harness</span></th>
+            <td>Linters, formatters, type checks, dead-code and complexity sensors.</td>
+            <td>computational sensors</td>
+          </tr>
+          <tr>
+            <th>Architecture<span class="mono-note">fitness</span></th>
+            <td>Boundary rules, dependency-direction checks, fitness functions, performance budgets.</td>
+            <td>computational sensors</td>
+          </tr>
+          <tr>
+            <th>Behaviour<span class="mono-note">harness</span></th>
+            <td>The spec-as-guide plus the tests that prove the code does what the business wanted.</td>
+            <td>guides + sensors</td>
+          </tr>
+          <tr>
+            <th>Inferential<span class="mono-note">sensors</span></th>
+            <td>AI reviewers and spec-to-code validators — semantic checks computation can't reach.</td>
+            <td>inferential sensors</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="fig-cap">The five layers — three regulation categories, plus the two control layers around them</p>
+    </div>
+
+    <p>
+      The rubric and the fillable report live next to this page: the
+      <a href="../templates/harness-scorecard.html">scorecard template</a> is what the agent fills in; the
+      <a href="../templates/harness-scorecard.html">scoring prompt</a> is what you hand the agent to run it.
+      This page is the <em>why</em> and the <em>how to read it</em>.
+    </p>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      <strong>A rubric makes a vague question answerable.</strong> "Is our harness any good?" has no answer;
+      "score these five layers 1–10 against these band anchors, and cite the command behind each score" does.
+      The anchors — what makes Maintainability a 3 versus a 7 — are what let two different repos, or two
+      different models, produce <em>comparable</em> numbers instead of two people's gut feelings.
+    </p>
+
+    <p class="pull">Without anchors a score is a vibe; with them it's a <em>measurement</em>.</p>
+
+    <p>
+      <strong>Evidence-per-line is what separates an audit from an opinion.</strong> The rule the rubric
+      enforces is that every score cites the grep, the file, the config line, or the GitHub setting behind it.
+      That discipline is what makes the audit <em>re-runnable</em> and the score <em>defensible</em>. A finding
+      without a command behind it can't be checked, can't be diffed next quarter, and quietly rots.
+    </p>
+
+    <div class="callout">
+      <div class="c-label">The one rule that keeps the number honest</div>
+      <p>
+        <strong>Every score cites a command.</strong> Not "feels mature" — the <code>git grep</code>, the
+        config line, the workflow setting that earns it. A number you can't reproduce is worse than no number:
+        it looks like signal.
+      </p>
+    </div>
+
+    <p>
+      <strong>It answers the open question well enough to act on.</strong> This isn't mutation testing for
+      harnesses — it doesn't prove a sensor <em>can fire</em>. But it reliably surfaces the blunt facts that
+      matter most: a layer scoring 1 is a layer that is <em>absent</em>, and an absent layer is a decision you
+      want to have made on purpose, not by omission. Most of the value is in the zeros and ones the scan makes
+      impossible to ignore.
+    </p>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <ul>
+      <li><strong>Discover the repo's signals — never assume them.</strong> The rubric grades
+        <em>capabilities</em>, not specific tools. "Multi-tenancy is enforced by a checkable rule" is the
+        capability; whether that's a <code>withTenant</code> wrapper, a row-level-security policy, or a
+        <code>default_scope</code> is for the agent to <em>find</em>.</li>
+      <li><strong>Measure tracked source only, and emit the command.</strong> The single most important
+        integrity rule: a suppression count that includes <code>node_modules</code> can read 1,700 when the
+        real figure is zero. Scope every measurement to version-controlled source (<code>git grep</code>, not a
+        store-walking <code>grep -r</code>), and write the exact command into the report.</li>
+      <li><strong>Record harnessability first, because it sets the ceiling.</strong> An untyped,
+        boundary-less, framework-less repo <em>cannot</em> score a 9 on Maintainability no matter how
+        disciplined the team — the cheap sensors that earn those points
+        <a href="../00-foundations/03-harness-engineering.html">aren't available to it</a>. Capture the stack
+        up front so a low score reads as "low ceiling," not "lazy team."</li>
+      <li><strong>First run is a baseline; the value compounds on the second.</strong> A single snapshot tells
+        you where you stand; the real signal is the <em>delta</em> against a prior scorecard — what moved, what
+        regressed, which recommendation was actioned. Date and keep every scorecard so the next one can diff
+        it.</li>
+      <li><strong>Score the lived layer, not just the committed one.</strong> A control that lives entirely in
+        org settings — an AI reviewer toggled on outside the repo — can vanish without a trace in version
+        control. Note both what the tree enforces <em>and</em> what's actually running, and flag any control
+        that leaves no in-repo record as fragile.</li>
+      <li><strong>Run it with either model, and treat a disagreement as a finding.</strong> The rubric is
+        model-agnostic by design. If you run two and the scores diverge on a layer, that gap is itself worth
+        reading: usually one model found a signal the other missed.</li>
+      <li><strong>Don't:</strong> let the agent score from impressions instead of commands; reuse one repo's
+        grep patterns on a different stack; report a single snapshot as a trend; mistake an advisory check
+        (<code>continue-on-error</code>) for a gate; or read a low harnessability-capped score as a moral
+        failing rather than a structural ceiling.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>
+      You inherit a service and want to know what you're standing on. You hand the agent the scoring prompt
+      pointed at the repo. It runs discovery first — language, framework, build system, where the boundaries
+      and tests live — and records that the repo is TypeScript with clear package boundaries: harnessability is
+      high, so the ceiling is high. Then it walks the five layers.
+    </p>
+
+    <div class="fig">
+      <div class="scorecard">
+        <div class="sc-row">
+          <div class="sc-name">Feedforward<span class="sc-ev">instruction file + spec corpus — but a dangling DoD link, cited by path</span></div>
+          <div class="sc-meter"><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg"></span><span class="sc-seg"></span></div>
+          <div class="sc-score">8<small>/10</small></div>
+        </div>
+        <div class="sc-row">
+          <div class="sc-name">Maintainability<span class="sc-ev">linter, formatter, strict types, pre-commit gate · <code>git grep '@ts-ignore'</code> = 0</span></div>
+          <div class="sc-meter"><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg"></span></div>
+          <div class="sc-score">9<small>/10</small></div>
+        </div>
+        <div class="sc-row">
+          <div class="sc-name">Architecture fitness<span class="sc-ev">a boundary rule enforced in CI, workflow line quoted</span></div>
+          <div class="sc-meter"><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg on"></span><span class="sc-seg"></span><span class="sc-seg"></span><span class="sc-seg"></span></div>
+          <div class="sc-score">7<small>/10</small></div>
+        </div>
+        <div class="sc-row">
+          <div class="sc-name">Behaviour harness<span class="sc-ev">tests trace to scenarios, but a green PR ships <em>no</em> rendered-UI evidence — top recommendation</span></div>
+          <div class="sc-meter"><span class="sc-seg warn"></span><span class="sc-seg warn"></span><span class="sc-seg warn"></span><span class="sc-seg warn"></span><span class="sc-seg"></span><span class="sc-seg"></span><span class="sc-seg"></span><span class="sc-seg"></span><span class="sc-seg"></span><span class="sc-seg"></span></div>
+          <div class="sc-score">4<small>/10</small></div>
+        </div>
+        <div class="sc-row">
+          <div class="sc-name">Inferential sensors<span class="sc-ev">no in-repo gating AI sensor; the org-settings reviewer went quiet on the last 20 PRs</span></div>
+          <div class="sc-meter"><span class="sc-seg warn"></span><span class="sc-seg"></span><span class="sc-seg"></span><span class="sc-seg"></span><span class="sc-seg"></span><span class="sc-seg"></span><span class="sc-seg"></span><span class="sc-seg"></span><span class="sc-seg"></span><span class="sc-seg"></span></div>
+          <div class="sc-score">1<small>/10</small></div>
+        </div>
+      </div>
+      <p class="fig-cap">Five numbers, every one with a command behind it — a map of where the harness is blind, not a verdict that it's "good"</p>
+    </div>
+
+    <p>
+      It finds a strong <strong>Feedforward</strong> layer but with a <em>dangling</em> Definition-of-Done
+      reference, so it scores an 8, not a 9, with the broken link cited by path.
+      <strong>Maintainability</strong> is a 9 — and the <code>@ts-ignore</code> count is reported as
+      <code>git grep</code> = 0, <em>not</em> the 1,700 a naïve <code>grep -r</code> would have invented.
+      <strong>Architecture fitness</strong> scores well because a boundary rule is enforced in CI. The
+      <strong>Behaviour</strong> harness is the soft spot: tests trace to scenarios, but a green PR ships no
+      rendered-UI evidence a reviewer can inspect. <strong>Inferential</strong> scores a 1: the one AI reviewer
+      that <em>was</em> running lives in org settings and went quiet — a control with no version-controlled
+      trace. You didn't get a verdict on whether the harness is "good" — you got a map of where it's blind.
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>Scoring from vibes.</strong> Assigning a 7 because the repo "feels mature" instead of citing
+        the checks that earn it. An unsourced score can't be reproduced, diffed, or defended — it's an opinion
+        wearing a number.</li>
+      <li><strong>The node_modules count.</strong> Reporting a metric measured over vendored or generated
+        files as if it were the source signal. One unscoped <code>grep -r</code> and the whole audit loses its
+        credibility. Scope to tracked source, always.</li>
+      <li><strong>Idiom transplant.</strong> Grepping for <em>this</em> repo's conventions in a repo that's
+        never heard of them, and scoring the absence as a gap. The rubric grades capabilities; the agent must
+        discover how <em>this</em> repo realises them.</li>
+      <li><strong>Snapshot-as-trend.</strong> Presenting a first-run number as if it showed movement. A score
+        is a point; a trend needs a prior scorecard to diff against.</li>
+      <li><strong>Advisory mistaken for gate.</strong> Counting a <code>continue-on-error</code> job or an
+        unprotected branch as enforcement. A sensor that can't fail the merge is a report, not a gate — and the
+        difference is the whole point of the
+        <a href="../20-harness/03-sensors-feedback.html">layered gate</a>.</li>
+      <li><strong>Ceiling blindness.</strong> Scoring an untyped, untested legacy repo against the same bar as
+        a typed, modular one and reading the low number as negligence. Record harnessability first so the score
+        is read against the ceiling the codebase actually allows.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">That's the playbook — for now</div>
+      <p>
+        You came in not sure what "AI-native" even meant, and you're leaving able to score a harness and rank
+        what to build next. Fittingly, this book is itself a harness we're still growing — expect these pages to
+        keep changing. From here, the <a href="../glossary.html">Glossary</a> defines every term of art, and the
+        <a href="../templates/harness-scorecard.html">scorecard template &amp; scoring prompt</a> are ready to
+        point at your own repo. Go turn the ratchet.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="04-legacy-and-brownfield.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Legacy and Brownfield</div>
+    </a>
+    <a class="next" href="../glossary.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Glossary</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="../00-foundations/03-harness-engineering.html">Harness Engineering</a>
+      <a href="01-minimum-viable-harness.html">The Minimum Viable Harness</a>
+      <a href="02-growing-the-harness.html">Growing the Harness</a>
+      <a href="../20-harness/03-sensors-feedback.html">Sensors — Feedback</a>
+      <a href="../30-delivery/04-drift-and-health-sensors.html">Drift and Health Sensors</a>
+      <a href="../templates/harness-scorecard.html">Scorecard Template &amp; Scoring Prompt</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

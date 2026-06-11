@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Behaviour Harness — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#harness">Harness</a>
+    <span class="sep">›</span>
+    <span class="here">Behaviour Harness</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">20 · Harness — Chapter 05</div>
+    <h1>Behaviour Harness</h1>
+    <p class="lede">
+      The hardest harness to build is the one that proves the code does what the <em>business</em> wanted.
+      The lever is the <strong>invariant</strong>: bind a test to the rule rather than to the code the agent
+      wrote, and you escape its favourite failure — tests that merely <em>confirm the implementation</em>.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      Foundations named three things a harness regulates, hardest last: is the code clean, is it the right
+      shape, and — the genuinely brutal one — does it do what the business actually <em>wanted</em>? The
+      first two you can check against the code itself. The third you can't, because the code <em>is</em> the
+      agent's answer to that question, and asking the agent to test its own answer is exactly how you end up
+      with a suite that's a mirror, not a check.
+    </p>
+    <p>
+      This page is the way out, and it hinges on one word: bind the test to the <strong>invariant</strong>,
+      not the implementation.
+    </p>
+
+    <div class="fig">
+      <div class="harness-bar">
+        <div class="hb-half hb-guides">
+          <div class="hb-tag">Feedforward · before</div>
+          <div class="hb-name">Guides</div>
+          <div class="hb-sub">shape what the agent does</div>
+        </div>
+        <div class="hb-mid">
+          <span class="hb-arrow">→</span>
+          <span class="hb-agent">agent<br>acts</span>
+          <span class="hb-arrow">→</span>
+        </div>
+        <div class="hb-half hb-sensors on">
+          <div class="hb-tag">Feedback · after</div>
+          <div class="hb-name">Sensors</div>
+          <div class="hb-sub">the hardest one: <em>behaviour</em></div>
+        </div>
+      </div>
+      <p class="fig-cap">The last sensor in the section — and the one that keeps a human in the loop</p>
+    </div>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      <a href="../00-foundations/03-harness-engineering.html">Foundations</a> named three things a harness
+      regulates, hardest last. The first two pages of concrete sensors mostly served the first two
+      categories. This page is the third — and it's the hard one, still unsolved for high-autonomy work, the
+      reason a human stays in the loop.
+    </p>
+
+    <div class="fig">
+      <div class="layers">
+        <div class="layer l1">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <path class="lc" d="M6 9 h20 M6 16 h20 M6 23 h13"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Maintainability — is the code clean?</h4>
+            <p>A linter reads the code and tells you. Checkable against the code itself.</p>
+          </div>
+          <div class="l-dur">vs the code</div>
+        </div>
+        <div class="layer l2">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <circle class="oa" cx="9" cy="9" r="4"/><circle class="oa" cx="23" cy="9" r="4"/><circle class="oa" cx="16" cy="24" r="4"/>
+            <path class="ln" d="M11 12 L14 20 M21 12 L18 20 M13 9 h6"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Architecture fitness — is it the right shape?</h4>
+            <p>A fitness function reads the dependency graph and tells you. Still checkable against the code.</p>
+          </div>
+          <div class="l-dur">vs the code</div>
+        </div>
+        <div class="layer l3">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <circle class="ol" cx="16" cy="16" r="12"/>
+            <circle class="cl" cx="16" cy="16" r="3.5"/>
+            <path class="lc" d="M16 4 v4 M16 24 v4 M4 16 h4 M24 16 h4"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Behaviour — does it do what the business wanted?</h4>
+            <p><em>Can't</em> be answered from the code, because the code is the agent's answer. The hard one — and the whole of this page.</p>
+          </div>
+          <div class="l-dur">needs intent</div>
+        </div>
+      </div>
+      <p class="fig-cap">Three things a harness regulates, hardest last — only the third needs a source outside the code</p>
+    </div>
+
+    <p>
+      Here's what makes it hard. Handed the job of testing its own work <em>with only that code in
+      context</em>, the agent reverse-engineers a test from the code it just wrote, so the test proves the
+      code does what it does — never what the business <em>needed</em>. A green suite built that way is a
+      mirror, not a check. The cure is not to distrust every agent-written test — it's to change the
+      <strong>source the test is derived from</strong>: give the agent the spec or the invariant, not just
+      the code, and it writes a test that can actually disagree with the implementation.
+    </p>
+    <p>
+      The tool for that is the <strong>invariant</strong>: a statement of what must <em>always</em> be true
+      for a scenario, no matter the input or the implementation. "After any transfer between accounts, the
+      total money across all accounts is unchanged." "A posted invoice can never have a negative line total."
+      An invariant is a property of the <em>problem</em>, so a test built from it is bound to the business
+      rule — it can't silently encode the code's current bug, because it was never derived from the code.
+    </p>
+    <p>The practice that operationalises this names each scenario and pins its invariant:</p>
+    <ul>
+      <li><strong>Name the scenario.</strong> Give each behaviour contract a stable identifier — an
+        <strong>SCN</strong> (a scenario id, e.g. <code>SCN-LEDGER-014</code>). The test cites the scenario,
+        not the function.</li>
+      <li><strong>State its invariant precisely</strong>, in business language, and have the person who owns
+        the <em>intent</em> — a domain owner, not the implementer — approve it. That approved description is
+        the <a href="../10-lifecycle/01-spec-the-contract.html">contract</a> the behaviour test proves.</li>
+      <li><strong>Trace it both ways.</strong> Every approved scenario must have a test; every test must cite
+        a real scenario. Then a dropped contract is <em>visible</em> instead of silently going uncovered.</li>
+    </ul>
+
+    <p class="pull">A test is only as honest as the thing it's <em>derived from</em>.</p>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      Derive a test from the code and it inherits the code's bugs; derive it from the invariant and it stands
+      <em>outside</em> the code, able to disagree with it. That's the whole move — and two techniques sharpen
+      it, each attacking the confirms-the-implementation failure from a different side.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">Derived from the code</span>
+          <h4>A mirror, not a check</h4>
+          <ul>
+            <li>The agent reverse-engineers the test from the happy path it just coded.</li>
+            <li>It asserts exactly what the code does — so it passes <em>by construction</em>.</li>
+            <li>The branch the code gets wrong is the branch the example never touches.</li>
+          </ul>
+          <p class="outcome-line">A green, high-coverage suite that <b>verifies nothing the code didn't already claim</b>.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">Derived from the invariant</span>
+          <h4>A check that can disagree</h4>
+          <ul>
+            <li>The property comes from the problem — "money is conserved" — not the function body.</li>
+            <li>A tool <em>generates</em> hundreds of inputs, including the weird edges no one typed.</li>
+            <li>The invariant fails on the overdraw case the agent never hand-wrote.</li>
+          </ul>
+          <p class="outcome-line">The bug surfaces <b>before merge, from a test that stands outside the code</b>.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Same agent, same code — change the <em>source the test is derived from</em>, and it gains teeth</p>
+    </div>
+
+    <p>
+      <strong>Property-based testing</strong> changes how the test gets its inputs: you assert the
+      <em>invariant</em> and let a tool generate hundreds of inputs, so it catches the case the agent's
+      hand-picked example skipped. <strong>Mutation testing</strong> tests the tests themselves: it injects
+      small deliberate bugs — flips a <code>&lt;</code> to <code>&lt;=</code>, deletes a line — to produce a
+      "mutant," then reruns the suite. A killed mutant means the suite noticed; a <em>surviving</em> mutant is
+      proof, in one concrete example, that your tests would <em>not</em> have caught that bug. This is the
+      empirical answer to the <a href="03-sensors-feedback.html">coverage illusion</a>.
+    </p>
+
+    <div class="fig">
+      <div class="diagram wide">
+        <svg viewBox="0 0 480 184" role="img" aria-label="A loop: property tests feed mutation score, which surfaces surviving mutants, which the agent kills to strengthen the assertions">
+          <rect class="wh" x="8" y="26" width="130" height="46" rx="6"/>
+          <text x="73" y="46" text-anchor="middle" font-size="12">property</text>
+          <text x="73" y="61" text-anchor="middle" font-size="12">tests</text>
+          <rect class="oa" x="175" y="26" width="130" height="46" rx="6"/>
+          <text x="240" y="46" text-anchor="middle" font-size="12">mutation</text>
+          <text x="240" y="61" text-anchor="middle" font-size="12">score</text>
+          <rect class="wh" x="342" y="26" width="130" height="46" rx="6"/>
+          <text x="407" y="46" text-anchor="middle" font-size="12">surviving</text>
+          <text x="407" y="61" text-anchor="middle" font-size="12">mutants</text>
+          <path class="lc" d="M138 49 L175 49"/><path class="lc" d="M167 43 L175 49 L167 55"/>
+          <path class="lc" d="M305 49 L342 49"/><path class="lc" d="M334 43 L342 49 L334 55"/>
+          <path class="lc" d="M407 72 V126 H73 V72" fill="none"/>
+          <path class="lc" d="M67 84 L73 72 L79 84"/>
+          <text x="240" y="118" text-anchor="middle" font-size="11">agent kills the survivors</text>
+          <text x="240" y="150" text-anchor="middle" font-size="11">→ each round, the assertions get stronger</text>
+        </svg>
+      </div>
+      <p class="fig-cap">Put them in a loop and they compound — and killing a named surviving mutant is a task the agent is genuinely good at</p>
+    </div>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <ul>
+      <li><strong>Start from the invariant, not the example.</strong> For each scenario, ask "what must be
+        true here <em>no matter the input</em>?" and write that down. The example test comes second, if at
+        all — the invariant is the contract.</li>
+      <li><strong>Name and pin each scenario; bind the test to the name.</strong> Give every behaviour
+        contract a stable id, cite it from the test, and keep the trace bidirectional so a missing test is
+        loud, not silent.</li>
+      <li><strong>Let the person who owns the intent approve the contract.</strong> The domain owner signs off
+        on the invariant, independently of whoever (or whatever) implements it — so the test proves the
+        <em>business's</em> need, not the implementer's guess at it.</li>
+      <li><strong>Use property-based tests for invariants you can state.</strong> Assert the property; let the
+        tool generate the inputs; ground the property in the spec's semantics (docstring, types, names), never
+        in the function body.</li>
+      <li><strong>Grade the suite with mutation testing, not coverage.</strong> Run it on the high-value
+        modules, treat a high coverage number with surviving mutants as the warning it is, and feed the
+        survivors back to the agent to kill.</li>
+      <li><strong>Make UI quality gradable.</strong> Check in design tokens so "looks right" becomes a
+        named-value match, and capture an
+        <a href="../10-lifecycle/05-verify-proof-not-vibes.html">evidence image</a> on the passing run so a
+        reviewer sees the real rendered screen — not a green check that only proves a locator resolved.</li>
+      <li><strong>Keep the human on the question of intent.</strong> A behaviour harness can prove the code
+        satisfies the invariant; it can't prove the <em>invariant itself</em> is what the business meant.
+        That call stays with a person — and a separate, skeptical reviewer grades the result against the spec
+        rather than letting the author <a href="../10-lifecycle/05-verify-proof-not-vibes.html">self-certify</a>.</li>
+      <li><strong>Don't:</strong> let the agent write the behaviour test from the code it just wrote; treat a
+        coverage percentage as proof of behaviour; or treat a green structure-only UI test as proof the
+        screen is actually right.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>
+      A teammate asks the agent to build <code>transfer(from, to, amount)</code> — move money between two
+      accounts. <em>Without</em> the behaviour harness, the agent writes its own test from the happy path it
+      coded: transfer $100, assert A dropped $100 and B rose $100. Green — but the code has a bug: on a
+      transfer that would overdraw <code>from</code>, it deducts the full amount but silently caps the credit
+      to B, so the difference vanishes. The clean-$100 example never touches that branch. <em>With</em> the
+      behaviour harness, the scenario is named and its invariant approved <em>before</em> code is written:
+    </p>
+
+    <div class="fig">
+      <pre><code>// SCN-LEDGER-014 — money is neither created nor destroyed
+//   approved by the domain owner, before any code
+property("sum of all balances is unchanged after any transfer", () =&gt; {
+  forAll(accounts(), transfers(), (opening, txns) =&gt; {
+    const closing = applyAll(opening, txns)
+    return total(closing) === total(opening)   // conservation — independent of the code
+  })
+})
+// the tool generates hundreds of transfers, including the OVERDRAW case
+// nobody hand-wrote → the property fails on it → the bug surfaces before merge</code></pre>
+      <p class="fig-cap">The conservation property is derived from the rule, not the code — so it catches the branch the agent's example skipped</p>
+    </div>
+
+    <p>
+      Then <strong>mutation testing</strong> runs on the module: it flips the sign on the deduction, the
+      property test catches the mutant — confirming the suite has real teeth — while a <em>surviving</em>
+      mutant in a rounding helper the property didn't cover is handed to the agent, which writes the assertion
+      that kills it. And because the balances also render on a screen, a captured <strong>evidence image</strong>
+      on the green run lets the reviewer see the figures are right, not just trust the DOM had numbers in it.
+    </p>
+    <p>
+      The lesson the example carries: the behaviour harness works by binding the check to the business
+      <em>rule</em> — the invariant, named as a scenario and owned by the domain — instead of to the code the
+      agent wrote. Property-based testing derives the test from the rule and generates the inputs that break
+      it; mutation testing proves the suite can catch a bug at all; evidence images make subjective UI
+      gradable; and a human still owns the one thing none of it can settle — whether the rule is what the
+      business actually meant.
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>The confirms-the-implementation test.</strong> A test reverse-engineered from the code it's
+        meant to check, so it proves the code does what it does — not what was needed. The failure this whole
+        page exists to prevent. (<a href="03-sensors-feedback.html">Sensors — Feedback</a> ·
+        <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>)</li>
+      <li><strong>The coverage mirage.</strong> High coverage, surviving mutants — a suite that
+        <em>executes</em> everything and <em>verifies</em> nothing. Mutation score measures the right thing.
+        (<a href="03-sensors-feedback.html">Sensors — Feedback</a>)</li>
+      <li><strong>The unowned contract.</strong> A behaviour test with no domain-approved invariant behind
+        it, so nobody ever confirmed the rule it checks is the business's actual intent.
+        (<a href="../10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a>)</li>
+      <li><strong>The DOM-only "looks right."</strong> Treating a passing structure-only UI test as proof the
+        screen renders correctly — no evidence image, no design-token grading — so a visually broken but
+        DOM-intact page ships green. (<a href="../10-lifecycle/05-verify-proof-not-vibes.html">Verify — Proof,
+        Not Vibes</a> · <a href="01-guides-feedforward.html">Guides — Feedforward</a>)</li>
+      <li><strong>The closed loop on intent.</strong> Letting the harness convince you the behaviour question
+        is settled, with no separate human check that the result is what the business meant.
+        (<a href="../50-adoption/03-responsible-team-and-ai-debt.html">Responsible Team and AI Debt</a>)</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — Trunk-Based Development</div>
+      <p>
+        That completes the harness — guides before, sensors after, behaviour pinned to intent. You can now
+        turn out correct change after correct change. The next section is about <em>shipping</em> them at the
+        speed the agent unlocks, without the integration pile-up that speed usually drags in. First stop: one
+        shared line of code, kept relentlessly green.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="04-keep-quality-left.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Keep Quality Left</div>
+    </a>
+    <a class="next" href="../30-delivery/01-trunk-based-development.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Trunk-Based Development</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="../00-foundations/03-harness-engineering.html">Harness Engineering</a>
+      <a href="01-guides-feedforward.html">Guides — Feedforward</a>
+      <a href="03-sensors-feedback.html">Sensors — Feedback</a>
+      <a href="../10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a>
+      <a href="../10-lifecycle/05-verify-proof-not-vibes.html">Verify — Proof, Not Vibes</a>
+      <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>
+      <a href="../50-adoption/03-responsible-team-and-ai-debt.html">Responsible Team and AI Debt</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

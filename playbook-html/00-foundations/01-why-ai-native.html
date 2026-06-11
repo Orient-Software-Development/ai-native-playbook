@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why AI-Native Development — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#foundations">Foundations</a>
+    <span class="sep">›</span>
+    <span class="here">Why AI-Native Development</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">00 · Foundations — Chapter 01</div>
+    <h1>Why AI-Native Development</h1>
+    <p class="lede">
+      "AI-native" isn't "we use an AI autocomplete." It's a different operating model:
+      the agent executes the work, and the human's job moves up to steering it — specifying
+      intent, shaping the environment, and building the loops that catch when the work is
+      <strong>wrong</strong>.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      Most teams meet AI coding the same way: a model finishes your line, suggests the next
+      function, drafts a file. Useful — but it's still <em>you</em> doing the engineering, just
+      typing a little less. That's autocomplete. It is not what this playbook is about.
+    </p>
+    <p>
+      AI-native development is the shift that happens when the agent does most of the
+      implementation and your attention moves up a level — to deciding <em>what</em> gets built,
+      setting the rules it must follow, and proving it actually did the right thing.
+    </p>
+
+    <p class="pull">Humans <em>steer</em>, agents <em>execute</em>. The scarce resource stops being keystrokes and becomes judgment.</p>
+
+    <p>
+      That sounds like a productivity tweak. It isn't. It changes what your day is made of — so
+      the whole point is to spend human time where judgment matters and let the agent absorb the
+      rest.
+    </p>
+
+    <h2><span class="idx">01</span>What you're actually trying to get</h2>
+    <p>
+      Four outcomes justify the shift, and each has a real mechanism behind it — not a vibe:
+    </p>
+
+    <div class="fig">
+      <div class="outcomes">
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <polyline class="lc" points="5,24 13,14 19,19 27,8" stroke-linejoin="round"/>
+            <polyline class="lc" points="22,8 27,8 27,13" stroke-linejoin="round"/>
+          </svg></div>
+          <h4>Velocity</h4>
+          <p>Throughput is bounded by how fast you can <em>specify and verify</em>, not how fast you can hand-write code. The bottleneck moves up to judgment — where you want it.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <circle class="st" cx="16" cy="17" r="11"/>
+            <path class="lc" d="M16 11 L16 17 L21 20"/>
+          </svg></div>
+          <h4>Time saved</h4>
+          <p>Most wasted time is rework. A concrete spec and reviewed plan mean the agent builds the right thing more often — the long debugging tail collapses.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <path class="oa" d="M16 3 L27 8 V16 C27 23 22 27 16 29 C10 27 5 23 5 16 V8 Z" stroke-linejoin="round"/>
+            <path class="lc" d="M11 16 l4 4 l7 -9" stroke-linejoin="round"/>
+          </svg></div>
+          <h4>Quality</h4>
+          <p>Encoded rules apply <em>everywhere at once</em>. A convention a reviewer enforced unevenly becomes a lint, a type, or a test the agent can't violate without going red.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <path class="lc" d="M16 27 C16 27 5 20 5 12 C5 8 8 5 11.5 5 C14 5 16 7 16 9 C16 7 18 5 20.5 5 C24 5 27 8 27 12 C27 20 16 27 16 27 Z" stroke-linejoin="round"/>
+          </svg></div>
+          <h4>Client value</h4>
+          <p>The first three compound into what the payer feels: features land sooner and break less, because the loop that produced them was governed, not improvised.</p>
+        </div>
+      </div>
+      <p class="fig-cap">The four payoffs — and the mechanism behind each</p>
+    </div>
+
+    <div class="callout">
+      <div class="c-label">The thread through all four</div>
+      <p>
+        <strong>None of this comes from the model being smart.</strong> It comes from the system
+        <em>around</em> the model. A capable model in a sloppy environment is slow and unreliable;
+        the same model in a well-built one is fast and trustworthy. That system is the
+        <strong>harness</strong> — the spine of everything that follows.
+      </p>
+    </div>
+
+    <h2><span class="idx">02</span>A feature, two ways</h2>
+    <p>
+      The fastest way to feel the difference is to watch the same small task —
+      <em>"add CSV export to the accounts list"</em> — go two ways. The model is identical in
+      both. Only the operating model around it changes.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">As autocomplete</span>
+          <h4>One prompt, one diff, ship</h4>
+          <ul>
+            <li>Exports only the page you're looking at — nobody told the agent about pagination.</li>
+            <li>Runs an unscoped query that can leak one tenant's accounts into another's file.</li>
+            <li>Columns come out in an order finance didn't ask for — redone by hand.</li>
+          </ul>
+          <p class="outcome-line">The prompt <em>felt</em> fast. The real cost arrives as a <b>debugging-and-rework tail</b> in QA and prod. Velocity was an illusion.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">As a governed lifecycle</span>
+          <h4>spec → plan → code → verify</h4>
+          <ul>
+            <li>Spec states the contract: all accounts for the current tenant, finance's column order, role permissions respected.</li>
+            <li>Plan slices it: tenant-scoped query, thin auth-checked route, a client button — each verifiable alone.</li>
+            <li>Sensors make "done" checkable; the tenant-filter test goes red and the agent fixes it before a human sees the diff.</li>
+          </ul>
+          <p class="outcome-line">It <b>merges clean</b> — the right columns, the first time, with the tenant rule enforced on every future export.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Same model, same feature — only the loop around it changed</p>
+    </div>
+
+    <p>
+      Now reread the four outcomes against that second story. Velocity is real because there's no
+      debugging tail. Time saved is the rework that never happened. Quality is the tenant rule
+      enforced by a sensor that fires on <em>every</em> future export. Client value is finance
+      getting the right columns the first time. The model didn't get smarter between the two
+      stories — <strong>the governed loop is the entire difference.</strong>
+    </p>
+
+    <div class="fig">
+      <div class="pipe">
+        <div class="step c1">
+          <div class="dot"></div>
+          <div class="s-n">01</div>
+          <div class="s-t">Spec</div>
+          <div class="s-d">The contract: what, and how you'll know it's done.</div>
+        </div>
+        <div class="step c2">
+          <div class="dot"></div>
+          <div class="s-n">02</div>
+          <div class="s-t">Plan</div>
+          <div class="s-d">Slice into verifiable pieces before any code.</div>
+        </div>
+        <div class="step c3">
+          <div class="dot"></div>
+          <div class="s-n">03</div>
+          <div class="s-t">Code</div>
+          <div class="s-d">The agent implements against the sliced plan.</div>
+        </div>
+        <div class="step c4">
+          <div class="dot"></div>
+          <div class="s-n">04</div>
+          <div class="s-t">Verify</div>
+          <div class="s-d">Sensors prove it — red before a human sees it.</div>
+        </div>
+      </div>
+      <p class="fig-cap">The governed lifecycle — the spine the rest of the playbook builds on</p>
+    </div>
+
+    <h2><span class="idx">03</span>Humans don't leave — they move up</h2>
+    <p>
+      It's worth saying plainly, because it's the most common fear: AI-native development does
+      <strong>not</strong> remove humans. It <em>relocates</em> them. You stop typing
+      implementations and start prioritising work, turning user feedback into acceptance criteria,
+      approving plans, reviewing diffs, and validating outcomes. Spec approval, architecture,
+      review, and deploy stay human judgment calls. What the harness does is make that judgment
+      <em>compound</em> — captured once as a guide or a sensor, it applies to every run thereafter
+      instead of evaporating in a chat window.
+    </p>
+    <p>
+      There are two opposite ways to get this wrong. One is adopting the model without the
+      lifecycle — treating AI as faster autocomplete, then concluding "AI doesn't help" when an
+      ungoverned loop produces plausible-but-wrong code at higher volume. The other is the mirror
+      image, and it's worth naming outright:
+    </p>
+
+    <p class="pull">AI-native, spec-driven development is <em>not</em> vibe coding.</p>
+
+    <p>
+      Vibe coding is prompting, accepting whatever the agent returns on a feel, and shipping it —
+      no spec to check it against, no sliced plan, no sensor that has to pass, no diff anyone
+      actually read. The first story above <em>was</em> vibe coding, and it's exactly what
+      spec-driven development is built to prevent. In the governed loop, nothing merges on vibes:
+      the spec is the contract, the sensors are the proof, and a human still owns the call.
+      <strong>"The agent wrote it and the tests it wrote pass" is not verification</strong> — and
+      mistaking one for the other is the trap this playbook exists to close.
+    </p>
+    <p>
+      The fix for <em>both</em> traps is the same: the system around the model. Building it is the
+      rest of this book — and it starts with the one resource that system runs on. Before we can
+      assemble guides and sensors, we have to understand what the agent can actually <em>see</em>.
+      That's context — the next page.
+    </p>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev disabled">
+      <div class="dir">← Previous</div>
+      <div class="nm">Foundations</div>
+    </a>
+    <a class="next" href="02-context-engineering.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Context Engineering</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="02-context-engineering.html">Context Engineering</a>
+      <a href="03-harness-engineering.html">Harness Engineering</a>
+      <a href="../10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a>
+      <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

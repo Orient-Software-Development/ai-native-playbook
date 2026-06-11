@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glossary — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="index.html#reference">Reference</a>
+    <span class="sep">›</span>
+    <span class="here">Glossary</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">★ · Reference</div>
+    <h1>Glossary</h1>
+    <p class="lede">
+      Plain-language definitions of the terms of art used across the playbook. Every page also defines its
+      terms in-line on first use — this is the <strong>backstop</strong> for when you forget one, and the
+      single place each definition lives so two pages never drift apart.
+    </p>
+  </header>
+
+  <nav class="gloss-az" aria-label="Jump to letter">
+    <a href="#L-A">A</a><a href="#L-B">B</a><a href="#L-C">C</a><a href="#L-D">D</a><a href="#L-E">E</a>
+    <a href="#L-F">F</a><a href="#L-G">G</a><a href="#L-H">H</a><a href="#L-I">I</a><a href="#L-K">K</a>
+    <a href="#L-L">L</a><a href="#L-M">M</a><a href="#L-N">N</a><a href="#L-O">O</a><a href="#L-P">P</a>
+    <a href="#L-Q">Q</a><a href="#L-R">R</a><a href="#L-S">S</a><a href="#L-T">T</a><a href="#L-Z">Z</a>
+  </nav>
+
+  <div class="glossary">
+
+    <h2 class="gloss-letter" id="L-A">A</h2>
+
+    <div class="gloss-item" id="acceptance-criteria">
+      <h3 class="gloss-term">Acceptance criteria</h3>
+      <p>The observable checks that decide whether a requirement is "done" — stated so another person can make the call without interpreting. If you can't name the check that proves a requirement, the requirement is too vague to build.</p>
+      <div class="gloss-see"><a href="10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a></div>
+    </div>
+
+    <div class="gloss-item" id="agent-instruction-file">
+      <h3 class="gloss-term">Agent instruction file</h3>
+      <p>The short, checked-in file an agent reads first on every task (commonly <code>CLAUDE.md</code> or <code>AGENTS.md</code>): repo layout, non-negotiable conventions, build/test commands, and pointers to deeper context. Keep it lean and current — it's read every time, so length is a recurring tax and staleness teaches the wrong thing with authority.</p>
+      <div class="gloss-see"><a href="20-harness/01-guides-feedforward.html">Guides — Feedforward</a></div>
+    </div>
+
+    <div class="gloss-item" id="ai-technical-debt">
+      <h3 class="gloss-term">AI technical debt</h3>
+      <p>The plausible-but-mediocre code an agent accumulates faster than anyone reviews it — stubs, shortcuts, guessed shapes. It compounds <em>invisibly</em> because no one feels accountable for code they didn't write, so it has no natural owner to pay it down. Treat it as a managed budget: make it visible in the <a href="#system-of-record">system of record</a> and pay it down continuously, like a high-interest loan.</p>
+      <div class="gloss-see"><a href="50-adoption/03-responsible-team-and-ai-debt.html">The Responsible Team and AI Debt</a></div>
+    </div>
+
+    <div class="gloss-item" id="anti-cheat-constraint">
+      <h3 class="gloss-term">Anti-cheat constraint</h3>
+      <p>An explicit feedforward rule that forbids the agent from faking success — "you may not weaken a failing test to pass it," "you may not patch source merely to satisfy a test," "tests must assert real state." The feedforward half of stopping <a href="#reward-hacking">reward hacking</a>; only holds when a state-asserting sensor enforces it.</p>
+      <div class="gloss-see"><a href="20-harness/01-guides-feedforward.html">Guides — Feedforward</a></div>
+    </div>
+
+    <div class="gloss-item" id="attention-budget">
+      <h3 class="gloss-term">Attention budget</h3>
+      <p>The context window seen as a <em>budget</em> rather than storage: the agent has limited attention to spend, so every token you load competes with the tokens that actually matter. The goal is the smallest high-signal set the task needs, not the most you can fit.</p>
+      <div class="gloss-see"><a href="00-foundations/02-context-engineering.html">Context Engineering</a></div>
+    </div>
+
+    <div class="gloss-item" id="audit-spec">
+      <h3 class="gloss-term">Audit spec</h3>
+      <p>A standing, end-to-end walk-through of a feature that you re-run <em>later</em> to catch drift — a feature that worked at merge but quietly broke a few changes on. The runtime sibling of reconciling a spec against its code: it makes a silent regression surface on purpose.</p>
+      <div class="gloss-see"><a href="10-lifecycle/05-verify-proof-not-vibes.html">Verify — Proof, Not Vibes</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-B">B</h2>
+
+    <div class="gloss-item" id="behaviour-harness">
+      <h3 class="gloss-term">Behaviour harness</h3>
+      <p>The hardest of the three regulation categories: the guides and sensors that prove the code does what the <em>business</em> wanted — not just that it's clean (maintainability) or well-shaped (architecture fitness). Its core lever is the <a href="#invariant">invariant</a>, bound to a named scenario so the test derives from the intent, not the code. Still insufficient for high autonomy, so human verification stays.</p>
+      <div class="gloss-see"><a href="20-harness/05-behaviour-harness.html">Behaviour Harness</a></div>
+    </div>
+
+    <div class="gloss-item" id="blueprint">
+      <h3 class="gloss-term">Blueprint</h3>
+      <p>A curated, canonical example of a pattern — one correct implementation the agent is pointed at by name ("new endpoints look like this one") instead of having the pattern described in prose. A worked example removes the interpretation a rule leaves open.</p>
+      <div class="gloss-see"><a href="20-harness/01-guides-feedforward.html">Guides — Feedforward</a></div>
+    </div>
+
+    <div class="gloss-item" id="brownfield-legacy-adoption">
+      <h3 class="gloss-term">Brownfield (legacy adoption)</h3>
+      <p>An existing, often years-old codebase you adopt the harness <em>into</em> — typically large, sparsely tested, and untyped where it matters, so the harness is hardest to build precisely where it's needed most. You don't fix it in one rewrite; you earn it one high-risk <em>seam</em> (a place two responsibilities meet) at a time, pinning current behaviour with <a href="#characterization-test">characterization tests</a> and drawing boundaries incrementally, highest-risk first.</p>
+      <div class="gloss-see"><a href="50-adoption/04-legacy-and-brownfield.html">Legacy and Brownfield</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-C">C</h2>
+
+    <div class="gloss-item" id="characterization-test">
+      <h3 class="gloss-term">Characterization test</h3>
+      <p>A test that captures what a piece of code <em>currently does</em> — bugs and all — rather than what it <em>should</em> do, so that when the code is refactored, any change in behaviour turns a test red instead of slipping by silently. The safety net you raise <em>before</em> touching tangled <a href="#brownfield-legacy-adoption">legacy code</a>: not a correctness test, a change-detector.</p>
+      <div class="gloss-see"><a href="50-adoption/04-legacy-and-brownfield.html">Legacy and Brownfield</a></div>
+    </div>
+
+    <div class="gloss-item" id="code-graph-structural-index">
+      <h3 class="gloss-term">Code graph (structural index)</h3>
+      <p>A machine-generated index of a codebase's symbols and how they connect (files → functions → classes → call chains) that an agent queries directly instead of grepping the tree file by file. Feedforward the repo generates about <em>itself</em> — it cuts the tokens spent locating prior context and improves navigation on a large codebase.</p>
+      <div class="gloss-see"><a href="20-harness/02-repo-structure-and-legibility.html">Repo Structure and Legibility</a></div>
+    </div>
+
+    <div class="gloss-item" id="codemod">
+      <h3 class="gloss-term">Codemod</h3>
+      <p>A mechanical code transform applied by a tool rather than reasoned out by the agent token by token — a sweeping rename or API migration performed exactly and identically across the whole codebase. A <a href="#computational-guide">computational guide</a>: asking an agent to "update all the call sites" invites a missed one; a codemod can't miss.</p>
+      <div class="gloss-see"><a href="20-harness/01-guides-feedforward.html">Guides — Feedforward</a></div>
+    </div>
+
+    <div class="gloss-item" id="compaction">
+      <h3 class="gloss-term">Compaction</h3>
+      <p>Summarising a long session's history <em>in place</em> so it keeps fitting in the window. It carries the old conversation's framing forward — which makes it the right move when you're <strong>mid-task on one coherent thread</strong> and that framing is signal, but the wrong one before an independent-judgement step, where a <a href="#reset">reset</a> is needed to drop the bias. Compaction preserves continuity; a reset gives a clean slate.</p>
+      <div class="gloss-see"><a href="00-foundations/02-context-engineering.html">Context Engineering</a></div>
+    </div>
+
+    <div class="gloss-item" id="computational-guide">
+      <h3 class="gloss-term">Computational guide</h3>
+      <p><a href="#feedforward">Feedforward</a> that shapes what the agent can <em>produce</em> through tooling rather than words it reads — a <a href="#language-server-lsp">language server</a>, a type system, a scaffolding script, a <a href="#codemod">codemod</a>. Its counterpart is the <em>inferential</em> guide (instruction files, conventions, blueprints) the agent reasons over. Computational guides barely touch the <a href="#attention-budget">attention budget</a>, so reach for one before a written rule whenever a tool can do the job.</p>
+      <div class="gloss-see"><a href="20-harness/01-guides-feedforward.html">Guides — Feedforward</a></div>
+    </div>
+
+    <div class="gloss-item" id="computational-sensor">
+      <h3 class="gloss-term">Computational sensor</h3>
+      <p>A <a href="#sensor">sensor</a> that checks a rule deterministically — a test, linter, type checker, formatter, fitness function. Fast, cheap, and never falsely confident: it can't be argued out of a real finding. Reach for one of these before an <a href="#inferential-sensor">inferential sensor</a> whenever structure can express the rule.</p>
+      <div class="gloss-see"><a href="00-foundations/03-harness-engineering.html">Harness Engineering</a></div>
+    </div>
+
+    <div class="gloss-item" id="context-rot">
+      <h3 class="gloss-term">Context rot</h3>
+      <p>The measured tendency for answer quality to drop as the input gets longer — models read the front of a long input well and skim the tail — so quality frays <em>well before</em> the window is full. The reason a big context window is not the same as usable context.</p>
+      <div class="gloss-see"><a href="00-foundations/02-context-engineering.html">Context Engineering</a></div>
+    </div>
+
+    <div class="gloss-item" id="context-window">
+      <h3 class="gloss-term">Context window</h3>
+      <p>Everything the model can actually see at the instant it acts — the prompt, instructions, files, and history loaded into this turn. Anything not in the window effectively doesn't exist to the agent.</p>
+      <div class="gloss-see"><a href="00-foundations/02-context-engineering.html">Context Engineering</a></div>
+    </div>
+
+    <div class="gloss-item" id="continuous-delivery--deployment-cd">
+      <h3 class="gloss-term">Continuous delivery / deployment (CD)</h3>
+      <p>The path that takes a change CI already verified and <em>releases</em> it to environments. <strong>Delivery</strong> keeps the verified artifact always <em>ready</em> to ship at the push of a button; <strong>deployment</strong> ships it <em>automatically</em>. Distinct from <a href="#continuous-integration">continuous integration</a>: CI gates the <em>merge</em>, CD gates the <em>release</em> — keep them on separate triggers so a deploy outage can't freeze the trunk and a release path can't bypass the gate. Promote the exact artifact CI blessed; never rebuild to ship.</p>
+      <div class="gloss-see"><a href="30-delivery/02-ci-and-cd.html">CI and CD</a></div>
+    </div>
+
+    <div class="gloss-item" id="continuous-integration">
+      <h3 class="gloss-term">Continuous integration</h3>
+      <p>The practice of integrating every change into the shared <a href="#trunk-based-development">trunk</a> <em>continuously</em> — many small verified merges a day — rather than saving work up for one big merge. In its original sense it names the <strong>habit</strong>, not the server: "we have a CI server" is not continuous integration unless the team actually merges continuously. The automated CI gate is what makes that habit safe.</p>
+      <div class="gloss-see"><a href="30-delivery/02-ci-and-cd.html">CI and CD</a></div>
+    </div>
+
+    <div class="gloss-item" id="convergence">
+      <h3 class="gloss-term">Convergence</h3>
+      <p>The discipline of making each follow-up pass leave the codebase <em>more coherent</em>, not just bolt more on — the counter-force to entropy at agent throughput. Its core move is the <strong>rule of three</strong>: the first time you write a pattern is fine, the second you note it, and before the <em>third</em> copy you extract the shared piece into one named place — early enough that the common shape is clear, late enough that you actually know what's shared.</p>
+      <div class="gloss-see"><a href="10-lifecycle/06-review-and-convergence.html">Review and Convergence</a></div>
+    </div>
+
+    <div class="gloss-item" id="course-correction">
+      <h3 class="gloss-term">Course-correction</h3>
+      <p>Watching the agent work and redirecting it at the <em>first</em> wrong turn rather than at the finished diff. Early redirects are cheap (a sentence); a wrong direction left to run compounds into a rebuild, because everything the agent builds after it inherits the mistake.</p>
+      <div class="gloss-see"><a href="10-lifecycle/04-code-with-the-agent.html">Code With the Agent</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-D">D</h2>
+
+    <div class="gloss-item" id="decision-record-adr">
+      <h3 class="gloss-term">Decision record (ADR)</h3>
+      <p>A short, durable note recording <em>why</em> a choice was made — the context, the options, the call — one file per decision (commonly an Architecture Decision Record). As feedforward it stops the agent unknowingly contradicting a settled decision or reopening a closed question.</p>
+      <div class="gloss-see"><a href="20-harness/01-guides-feedforward.html">Guides — Feedforward</a></div>
+    </div>
+
+    <div class="gloss-item" id="design-guide">
+      <h3 class="gloss-term">Design guide</h3>
+      <p>A checked-in <code>DESIGN.md</code> or file of design tokens (colours, spacing, type scale, component rules) the agent reads before building any UI. Turns a subjective "make it look right," which the agent can only guess at, into named values it can apply and a reviewer can grade against.</p>
+      <div class="gloss-see"><a href="20-harness/01-guides-feedforward.html">Guides — Feedforward</a></div>
+    </div>
+
+    <div class="gloss-item" id="draft-aware-gating">
+      <h3 class="gloss-term">Draft-aware gating</h3>
+      <p>Running only the fast checks (lint, types, unit tests) while a pull request is a <em>draft</em> still being iterated — often by an agent pushing repeatedly — and running the full heavy suite (integration, e2e, performance) only once the PR is marked <em>ready</em>, requiring it green to merge. Keeps the <a href="#continuous-integration">CI gate</a> both strict (nothing merges unverified) and fast (work-in-progress pushes don't pay for the heavy suite), so nobody routes around a slow gate.</p>
+      <div class="gloss-see"><a href="30-delivery/02-ci-and-cd.html">CI and CD</a></div>
+    </div>
+
+    <div class="gloss-item" id="drift-and-health-sensor">
+      <h3 class="gloss-term">Drift and health sensor</h3>
+      <p>A <a href="#sensor">sensor</a> that runs on a <em>schedule</em> (a clock) rather than on a change (a diff), to catch decay no single change causes: dead code, a newly-disclosed dependency vulnerability, an eroding coverage or <a href="#mutation-testing">mutation-score</a> <em>trend</em>, or architecture drift. A scheduled "janitor" run can both flag the drift and open the PR that fixes it. Distinct from <a href="#observability">observability</a>, which watches production at runtime rather than the repo on a clock.</p>
+      <div class="gloss-see"><a href="30-delivery/04-drift-and-health-sensors.html">Drift and Health Sensors</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-E">E</h2>
+
+    <div class="gloss-item" id="evidence-artifact">
+      <h3 class="gloss-term">Evidence artifact</h3>
+      <p>The captured proof attached to a verified change so a reviewer can <em>see</em> it rather than trust a claim — a screenshot of the real screen in the real state for UI, a saved log excerpt or state dump of the real persisted result for backend. "Verified" with nothing attached is a vibe, not proof.</p>
+      <div class="gloss-see"><a href="10-lifecycle/05-verify-proof-not-vibes.html">Verify — Proof, Not Vibes</a></div>
+    </div>
+
+    <div class="gloss-item" id="explore--plan--code">
+      <h3 class="gloss-term">Explore → plan → code</h3>
+      <p>The lifecycle step between spec and code: the agent first <em>reads</em> the relevant code (explore), then proposes <em>how</em> it will build the feature in prose (plan), and only writes code once that plan is approved. Catches a wrong approach while it's still a paragraph, not a diff.</p>
+      <div class="gloss-see"><a href="10-lifecycle/02-plan-before-code.html">Plan Before Code</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-F">F</h2>
+
+    <div class="gloss-item" id="feature-flag">
+      <h3 class="gloss-term">Feature flag</h3>
+      <p>A runtime switch that keeps incomplete or not-yet-announced code dark in production. It lets unfinished work merge to the <a href="#trunk-based-development">trunk</a> — staying integrated with everyone else's changes — instead of diverging on a long-lived branch, while the trunk stays releasable because the flag is off.</p>
+      <div class="gloss-see"><a href="30-delivery/01-trunk-based-development.html">Trunk-Based Development</a></div>
+    </div>
+
+    <div class="gloss-item" id="feedforward">
+      <h3 class="gloss-term">Feedforward</h3>
+      <p>Everything you put in front of the agent <em>before</em> it acts — instruction files, conventions, blueprints, design guides, constraints — to raise the odds of a right first attempt. The "before" half of the <a href="00-foundations/03-harness-engineering.html">harness</a>; its partner is feedback (sensors), which grades the work after.</p>
+      <div class="gloss-see"><a href="20-harness/01-guides-feedforward.html">Guides — Feedforward</a></div>
+    </div>
+
+    <div class="gloss-item" id="fitness-function">
+      <h3 class="gloss-term">Fitness function</h3>
+      <p>A <a href="#sensor">sensor</a> that asserts the system's <em>shape</em> rather than a single result — "this module may not import that one," "p95 latency stays under budget," "no database key crosses a context boundary." The way architecture rules become checks the agent is blocked from breaking. Push each one to the layer the rule actually lives in, or it's invisible where it matters.</p>
+      <div class="gloss-see"><a href="20-harness/03-sensors-feedback.html">Sensors — Feedback</a></div>
+    </div>
+
+    <div class="gloss-item" id="flop-zone">
+      <h3 class="gloss-term">Flop zone</h3>
+      <p>A part of the work where the agent <em>reliably</em> gets it wrong: subjective frontend/design, cross-cutting refactors, ambiguous business rules, security-sensitive code. Named on purpose so the team can decide each one's controls — what to automate, what to guard with a sensor, what stays human — rather than applying the same trust everywhere.</p>
+      <div class="gloss-see"><a href="50-adoption/03-responsible-team-and-ai-debt.html">The Responsible Team and AI Debt</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-G">G</h2>
+
+    <div class="gloss-item" id="goodharts-law">
+      <h3 class="gloss-term">Goodhart's law</h3>
+      <p>"When a measure becomes a target, it stops being a good measure." The reason <a href="#reward-hacking">reward hacking</a> happens: a test is a <em>proxy</em> for "the feature works," and once passing it becomes the goal, the agent optimises the proxy and the real thing drifts away. Also called <em>specification gaming</em>.</p>
+      <div class="gloss-see"><a href="40-anti-patterns/01-failure-modes.html">Failure Modes</a></div>
+    </div>
+
+    <div class="gloss-item" id="guide">
+      <h3 class="gloss-term">Guide</h3>
+      <p>A single piece of <a href="#feedforward">feedforward</a>: one instruction file, convention, blueprint, design guide, skill, or constraint. A guide changes the <em>odds</em> of a correct attempt — it never enforces, so every guide that matters is backed by a sensor.</p>
+      <div class="gloss-see"><a href="20-harness/01-guides-feedforward.html">Guides — Feedforward</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-H">H</h2>
+
+    <div class="gloss-item" id="harnessability">
+      <h3 class="gloss-term">Harnessability</h3>
+      <p>How readily a codebase accepts guides and sensors. Strong static types, clear module boundaries, established frameworks, and high test coverage all raise it — each turns into a cheaper, more reliable check. The payoff is double: the same investments that make a codebase easier for humans make it easier for agents.</p>
+      <div class="gloss-see"><a href="00-foundations/03-harness-engineering.html">Harness Engineering</a></div>
+    </div>
+
+    <div class="gloss-item" id="harness-template">
+      <h3 class="gloss-term">Harness template</h3>
+      <p>A reusable bundle of guides and sensors for a recurring service shape (a CRUD API, an event processor, a dashboard), so the next service of that shape starts <em>already harnessed</em> instead of being hand-built. The grown harness becomes the <a href="#blueprint">blueprint</a> for its whole topology — but it's a shared dependency, so budget the upkeep to keep instances from drifting from it.</p>
+      <div class="gloss-see"><a href="50-adoption/02-growing-the-harness.html">Growing the Harness</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-I">I</h2>
+
+    <div class="gloss-item" id="inferential-sensor">
+      <h3 class="gloss-term">Inferential sensor</h3>
+      <p>A <a href="#sensor">sensor</a> that judges <em>semantically</em> — an AI reviewer reading a diff for a misleading name, a lying comment, or drift from the spec. Slower, costs tokens, non-deterministic, and can be talked out of a real finding, so it's reserved for what a <a href="#computational-sensor">computational sensor</a> structurally can't reach.</p>
+      <div class="gloss-see"><a href="00-foundations/03-harness-engineering.html">Harness Engineering</a></div>
+    </div>
+
+    <div class="gloss-item" id="invariant">
+      <h3 class="gloss-term">Invariant</h3>
+      <p>A statement of what must <em>always</em> hold for a scenario, regardless of input or implementation — "after any transfer, total balances are unchanged," "a sorted list sorted again is identical." Because it's a property of the <em>problem</em>, a test built from it is bound to the business rule and can't silently encode the code's current bug. The lever of the <a href="#behaviour-harness">behaviour harness</a>.</p>
+      <div class="gloss-see"><a href="20-harness/05-behaviour-harness.html">Behaviour Harness</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-K">K</h2>
+
+    <div class="gloss-item" id="keep-quality-left">
+      <h3 class="gloss-term">Keep quality left</h3>
+      <p>The rule for <em>placing</em> <a href="#sensor">sensors</a> along the pipeline (pre-commit → pre-push → CI → staging): push each check to the <em>earliest</em> stage whose speed it can afford, and no further. Fast cheap checks on every commit so failures surface in seconds; slow expensive ones in CI so they don't tax iteration and sit where they can't be bypassed. Not "run everything as early as possible" — overloading a git hook just teaches the team to skip it.</p>
+      <div class="gloss-see"><a href="20-harness/04-keep-quality-left.html">Keep Quality Left</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-L">L</h2>
+
+    <div class="gloss-item" id="language-server-lsp">
+      <h3 class="gloss-term">Language server (LSP)</h3>
+      <p>The engine that gives an editor go-to-definition, find-references, and type-on-hover, exposed to the agent so it can <em>look up</em> a symbol's definition and callers exactly instead of grepping the text and guessing. A <a href="#computational-guide">computational guide</a>: real code intelligence at almost no <a href="#attention-budget">context</a> cost.</p>
+      <div class="gloss-see"><a href="20-harness/01-guides-feedforward.html">Guides — Feedforward</a></div>
+    </div>
+
+    <div class="gloss-item" id="legibility">
+      <h3 class="gloss-term">Legibility</h3>
+      <p>How readily a person or agent can navigate a repo and reason about the system <em>directly from its structure</em> — conventional layout, contracts in one named place, tests beside their code, boundaries written where they can be read. The cheapest feedforward there is: arranged once, it steers every future task for free. Distinct from enforcement — a boundary buried in a lint config is <em>enforced</em> but not legible.</p>
+      <div class="gloss-see"><a href="20-harness/02-repo-structure-and-legibility.html">Repo Structure and Legibility</a></div>
+    </div>
+
+    <div class="gloss-item" id="levels-of-autonomy">
+      <h3 class="gloss-term">Levels of autonomy</h3>
+      <p>How much of the lifecycle the agent is trusted to drive unsupervised — and the principle that it's <em>earned</em>, not granted. A zone widens the agent's scope only as its <a href="#sensor">controls</a> prove they catch the agent's mistakes; a <a href="#flop-zone">flop zone</a> keeps a human in the loop until it's harnessed, and some (money, security) may stay human on purpose.</p>
+      <div class="gloss-see"><a href="50-adoption/02-growing-the-harness.html">Growing the Harness</a></div>
+    </div>
+
+    <div class="gloss-item" id="llm-as-judge">
+      <h3 class="gloss-term">LLM-as-judge</h3>
+      <p>Using a separate language-model agent to grade a change against the spec — an attempt to <em>scale</em> the skeptical-evaluator idea. The <em>concept</em> of a separate evaluator is sound; wiring an automated judge into the gate is still <strong>experimental</strong> — measure its false-positive rate, cost, and run-to-run consistency, and keep a human signing off until it earns trust.</p>
+      <div class="gloss-see"><a href="10-lifecycle/05-verify-proof-not-vibes.html">Verify — Proof, Not Vibes</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-M">M</h2>
+
+    <div class="gloss-item" id="memory-store">
+      <h3 class="gloss-term">Memory store</h3>
+      <p>A semi-durable scratchpad an agent can write to and retrieve from across turns — longer-lived than the <a href="#context-window">context window</a> but not the canonical source of truth. An accelerator, not the record.</p>
+      <div class="gloss-see"><a href="00-foundations/02-context-engineering.html">Context Engineering</a></div>
+    </div>
+
+    <div class="gloss-item" id="minimum-viable-harness">
+      <h3 class="gloss-term">Minimum viable harness</h3>
+      <p>The smallest set of controls that still closes the loop on day one of a project: one <a href="#agent-instruction-file">agent instruction file</a>, a formatter and linter, a type check, a gate that <em>blocks</em> on red, and one real <a href="#behaviour-harness">behaviour</a> test. Weak but <em>whole</em> — one of each control type (feedforward, sensor, gate) wired end to end — so you have a loop to <a href="50-adoption/02-growing-the-harness.html">grow</a> instead of a grand plan you never finish.</p>
+      <div class="gloss-see"><a href="50-adoption/01-minimum-viable-harness.html">The Minimum Viable Harness</a></div>
+    </div>
+
+    <div class="gloss-item" id="mutation-testing">
+      <h3 class="gloss-term">Mutation testing</h3>
+      <p>Testing the tests: inject a small deliberate bug into the source (flip <code>&lt;</code> to <code>&lt;=</code>, delete a line) to make a "mutant," then rerun the suite. If a test fails, the mutant is <em>killed</em>; if the suite still passes, the mutant <em>survived</em> — concrete proof those tests wouldn't catch that bug. The empirical answer to the coverage illusion (<a href="#sensor">sensor</a>): coverage says a line ran, a survived mutant says nothing checked the result.</p>
+      <div class="gloss-see"><a href="20-harness/05-behaviour-harness.html">Behaviour Harness</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-N">N</h2>
+
+    <div class="gloss-item" id="normative-requirement">
+      <h3 class="gloss-term">Normative requirement</h3>
+      <p>A requirement stated as a binding obligation with a clear pass/fail line — "the export <strong>must</strong> include every account for the current tenant" — rather than a loose wish. Atomic enough to verify on its own, and written in business language.</p>
+      <div class="gloss-see"><a href="10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-O">O</h2>
+
+    <div class="gloss-item" id="observability">
+      <h3 class="gloss-term">Observability</h3>
+      <p>The runtime feedback loop: <a href="#structured-logging">structured logs</a>, metrics (aggregated numbers — error rates, latencies, counts), and traces (the timed path of one request across the system) that let you see what running code actually does in production. The <a href="#sensor">sensor</a> that extends <em>past the merge gate</em>, where CI's checks stop — without it, "it deployed" gets mistaken for "it works." Its findings feed back into the next <a href="#specification-spec">spec</a>.</p>
+      <div class="gloss-see"><a href="30-delivery/03-observability.html">Observability</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-P">P</h2>
+
+    <div class="gloss-item" id="plan">
+      <h3 class="gloss-term">Plan</h3>
+      <p>A short written statement of <em>how</em> a feature will be built — the files it will touch, the approach for each, the order of work, the tests that prove it, and the open questions hit along the way. The <a href="#specification-spec">spec</a> owns the <em>what</em>; the plan owns the <em>how</em>. You review and approve it <em>before</em> any code is written. Unlike the spec, the plan can be <strong>ephemeral</strong> — it can be discarded once the code is written and reviewed against it; the spec is the durable contract that stays.</p>
+      <div class="gloss-see"><a href="10-lifecycle/02-plan-before-code.html">Plan Before Code</a></div>
+    </div>
+
+    <div class="gloss-item" id="plan-mode">
+      <h3 class="gloss-term">Plan mode</h3>
+      <p>A read-only agent mode: it can investigate the codebase and draft a <a href="#plan">plan</a>, but cannot edit files. Keeps exploration from sprawling into half-built code and keeps the plan a proposal you approve rather than a change already made.</p>
+      <div class="gloss-see"><a href="10-lifecycle/02-plan-before-code.html">Plan Before Code</a></div>
+    </div>
+
+    <div class="gloss-item" id="property-based-testing">
+      <h3 class="gloss-term">Property-based testing</h3>
+      <p>A test that asserts an <a href="#invariant">invariant</a> — "output is never negative," "round-trip leaves it unchanged" — and lets a tool <em>generate</em> the inputs that try to break it, rather than hand-picking examples. Because the property comes from the spec's meaning (docstring, types, names), the test is independent of the function body and finds the edge case a hand-written example skips.</p>
+      <div class="gloss-see"><a href="20-harness/05-behaviour-harness.html">Behaviour Harness</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-Q">Q</h2>
+
+    <div class="gloss-item" id="quality-gate">
+      <h3 class="gloss-term">Quality gate</h3>
+      <p>The layered set of <a href="#sensor">sensors</a> a change must pass — static checks (lint, types, fitness functions) under unit → integration → performance → end-to-end tests. A "really good" gate is this <em>pyramid</em>, where each tier catches a class the cheaper one structurally can't, not one fat suite doing everything.</p>
+      <div class="gloss-see"><a href="20-harness/03-sensors-feedback.html">Sensors — Feedback</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-R">R</h2>
+
+    <div class="gloss-item" id="reset">
+      <h3 class="gloss-term">Reset</h3>
+      <p>Starting the agent on a fresh, empty context and carrying forward only a small handoff of what matters — a genuine clean slate. Distinct from <a href="#compaction">compaction</a>: a reset drops the old conversation's bias entirely, which is what keeps later steps (like writing tests) honest.</p>
+      <div class="gloss-see"><a href="00-foundations/02-context-engineering.html">Context Engineering</a></div>
+    </div>
+
+    <div class="gloss-item" id="reward-hacking">
+      <h3 class="gloss-term">Reward hacking</h3>
+      <p>An agent cheating its way to a passing check instead of doing the work — either weakening the check (editing a test down to "didn't throw") or gaming the code (hard-coding the test's expected output). Green CI, a silent bug. Not malice but <a href="#goodharts-law">Goodhart's law</a>; an <em>unconstrained</em> agent does it reliably. Prevented two-sided: <a href="#anti-cheat-constraint">anti-cheat constraints</a> (feedforward) plus <a href="#sensor-integrity">sensor integrity</a> (feedback).</p>
+      <div class="gloss-see"><a href="40-anti-patterns/01-failure-modes.html">Failure Modes</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-S">S</h2>
+
+    <div class="gloss-item" id="scenario-scn">
+      <h3 class="gloss-term">Scenario (SCN)</h3>
+      <p>A named unit of behaviour with a stable identifier (e.g. <code>SCN-LEDGER-014</code>) and an approved <a href="#invariant">invariant</a> describing what must hold for it. The test cites the <em>scenario</em>, not the function, so the contract is anchored to intent; trace it both ways (every scenario has a test, every test cites a real scenario) and a dropped contract becomes visible.</p>
+      <div class="gloss-see"><a href="20-harness/05-behaviour-harness.html">Behaviour Harness</a></div>
+    </div>
+
+    <div class="gloss-item" id="self-evaluation-failure">
+      <h3 class="gloss-term">Self-evaluation failure</h3>
+      <p>An agent's bias toward judging its own work as correct: it optimises for <em>task-complete</em>, so the same process that wrote the code reads it as finished <em>and</em> good. The reason the author never self-certifies — grading must go to a separate, skeptical evaluator with the spec in hand.</p>
+      <div class="gloss-see"><a href="10-lifecycle/05-verify-proof-not-vibes.html">Verify — Proof, Not Vibes</a></div>
+    </div>
+
+    <div class="gloss-item" id="sensor">
+      <h3 class="gloss-term">Sensor</h3>
+      <p>Anything that grades the agent's work <em>after</em> it acts — a test, type checker, linter, fitness function, or AI reviewer — so the agent or a human can self-correct. The feedback half of the <a href="00-foundations/03-harness-engineering.html">harness</a>; its partner is <a href="#feedforward">feedforward</a> (guides), which shapes the work before.</p>
+      <div class="gloss-see"><a href="20-harness/03-sensors-feedback.html">Sensors — Feedback</a></div>
+    </div>
+
+    <div class="gloss-item" id="sensor-integrity">
+      <h3 class="gloss-term">Sensor integrity</h3>
+      <p>The property that passing a <a href="#sensor">sensor</a> <em>requires the work to actually have been done</em>. A check the agent can satisfy cheaply — an integration test asserting only "didn't throw" — is a false sensor: it reports safety it can't back up. The fix is to assert the observable end-state (real persisted state, visible behaviour), never the mere absence of an error.</p>
+      <div class="gloss-see"><a href="20-harness/03-sensors-feedback.html">Sensors — Feedback</a></div>
+    </div>
+
+    <div class="gloss-item" id="skill">
+      <h3 class="gloss-term">Skill</h3>
+      <p>A reusable, packaged guide the agent can load on demand (a named instruction set with metadata). Powerful in small, curated sets; a large library is a <em>budget tax</em> — it costs tokens up front and agents route poorly over big pools.</p>
+      <div class="gloss-see"><a href="00-foundations/02-context-engineering.html">Context Engineering</a></div>
+    </div>
+
+    <div class="gloss-item" id="specification-spec">
+      <h3 class="gloss-term">Specification (spec)</h3>
+      <p>The short, concrete contract between what you meant and what the agent builds: the <em>what</em> (normative requirements and acceptance criteria, in business language), deferring the <em>how</em> to the plan. The agent builds against it; you check the result against it. Unlike a <a href="#plan">plan</a>, it is <strong>durable</strong> — it lives with the code, version-controlled, and is audited against the code over time so the two don't drift.</p>
+      <div class="gloss-see"><a href="10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a></div>
+    </div>
+
+    <div class="gloss-item" id="steering-loop">
+      <h3 class="gloss-term">Steering loop</h3>
+      <p>The engine that <em>grows</em> a harness: the agent acts, a <a href="#sensor">sensor</a> fires (or a human spots a miss), you look at the failure, you add a <a href="#guide">guide</a> or sensor, the agent acts again. You don't design the harness up front — you can't predict the failures — you encode each real failure as a durable control so it can't recur. A mature harness looks designed but was grown one failure at a time.</p>
+      <div class="gloss-see"><a href="50-adoption/02-growing-the-harness.html">Growing the Harness</a></div>
+    </div>
+
+    <div class="gloss-item" id="structured-logging">
+      <h3 class="gloss-term">Structured logging</h3>
+      <p>Emitting log events as machine-readable fields (<code>event=deal_write_failed deal_id=412 tenant=acme</code>) rather than free-text prose. The difference that makes runtime signal <em>queryable</em> — you can count, filter, and correlate it — so a human or an agent can diagnose a production problem from evidence instead of guessing from sentences. The log half of <a href="#observability">observability</a>.</p>
+      <div class="gloss-see"><a href="30-delivery/03-observability.html">Observability</a></div>
+    </div>
+
+    <div class="gloss-item" id="subagent">
+      <h3 class="gloss-term">Subagent</h3>
+      <p>A separate, scoped agent run used for a side task — typically investigation ("go figure out how X works") — so its work and the tokens it spends stay out of the main working thread. Keeps the main thread's <a href="#attention-budget">attention budget</a> on the task instead of the search.</p>
+      <div class="gloss-see"><a href="10-lifecycle/04-code-with-the-agent.html">Code With the Agent</a></div>
+    </div>
+
+    <div class="gloss-item" id="system-of-record">
+      <h3 class="gloss-term">System of record</h3>
+      <p>The durable, version-controlled home for what matters — code, specs, decisions, notes in the repository. Reviewable and legible to every future run, unlike a chat thread or a <a href="#memory-store">memory store</a>, so it's the canon the agent should reason from.</p>
+      <div class="gloss-see"><a href="00-foundations/02-context-engineering.html">Context Engineering</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-T">T</h2>
+
+    <div class="gloss-item" id="task-slicing">
+      <h3 class="gloss-term">Task slicing</h3>
+      <p>Cutting an approved <a href="#plan">plan</a> into the smallest honest units of work — each a <strong>slice</strong> of one deliverable, one test, and one commit — and building them bottom-up by layer (schema → commands → API → UI), verifying each before starting the next. Keeps every bug close to its cause and every verified slice a checkpoint you can roll back to.</p>
+      <div class="gloss-see"><a href="10-lifecycle/03-task-slicing.html">Task Slicing</a></div>
+    </div>
+
+    <div class="gloss-item" id="trunk-based-development">
+      <h3 class="gloss-term">Trunk-based development</h3>
+      <p>The git strategy of keeping one shared, always-releasable line of code — the <strong>trunk</strong> — and merging into it continuously in small, verified slices on <strong>short-lived branches</strong> (hours to a day, not weeks). Long-lived branches let work diverge and conflicts compound; merging often keeps every reconciliation and every review small. The native rhythm of a high-throughput AI-native team — isolation gets <em>more</em> dangerous at agent scale, not less.</p>
+      <div class="gloss-see"><a href="30-delivery/01-trunk-based-development.html">Trunk-Based Development</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-Z">Z</h2>
+
+    <div class="gloss-item" id="zombie-code">
+      <h3 class="gloss-term">Zombie code</h3>
+      <p>Plausible-looking code that does the wrong thing — a dead branch, an always-true condition, a swallowed error, a handler for a case that can't occur, a path nobody asked for. It compiles and reads as correct, so a skim waves it through; only a deliberate diff read catches it.</p>
+      <div class="gloss-see"><a href="10-lifecycle/06-review-and-convergence.html">Review and Convergence</a></div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

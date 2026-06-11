@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sensors — Feedback — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#harness">Harness</a>
+    <span class="sep">›</span>
+    <span class="here">Sensors — Feedback</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">20 · Harness — Chapter 03</div>
+    <h1>Sensors — Feedback</h1>
+    <p class="lede">
+      A sensor grades the agent's work <em>after</em> it acts — a test, a type check, a fitness function, an
+      AI reviewer. The craft is a layered gate, resting on one rule underneath all of it:
+      <strong>a check the agent can pass without doing the work is not a sensor</strong>.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      Three pages of guides behind us — feedforward, everything that shapes the agent before it acts. Guides
+      nudge the odds; they never actually <em>enforce</em> anything. So now we build the half that does:
+      sensors, the checks that grade the work after the fact.
+    </p>
+    <p>
+      But there's a catch that quietly hollows out most test suites you'll ever meet, and it's worth saying
+      before anything else — a check the agent can pass <em>without doing the work</em> is not a sensor. It's
+      decoration that everybody trusts.
+    </p>
+
+    <div class="fig">
+      <div class="harness-bar">
+        <div class="hb-half hb-guides">
+          <div class="hb-tag">Feedforward · before</div>
+          <div class="hb-name">Guides</div>
+          <div class="hb-sub">shape what the agent does</div>
+        </div>
+        <div class="hb-mid">
+          <span class="hb-arrow">→</span>
+          <span class="hb-agent">agent<br>acts</span>
+          <span class="hb-arrow">→</span>
+        </div>
+        <div class="hb-half hb-sensors on">
+          <div class="hb-tag">Feedback · after</div>
+          <div class="hb-name">Sensors</div>
+          <div class="hb-sub">grade what it produced</div>
+        </div>
+      </div>
+      <p class="fig-cap">We've flipped to the other half — sensors, the feedback side</p>
+    </div>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      The <a href="../00-foundations/03-harness-engineering.html">harness</a> has two halves. The
+      <a href="01-guides-feedforward.html">previous pages</a> covered the <em>guides</em>. This page is the
+      other half: <strong>sensors</strong> — everything that observes the output <em>after</em> the agent
+      acts, so the agent (or you) can see what went wrong and correct it. Here they are, cheapest first, and
+      the shape they take is a pyramid for a reason:
+    </p>
+
+    <div class="fig">
+      <div class="pyramid">
+        <div class="pyr-axis">▲ expensive · slow · runs rarely</div>
+        <div class="tier w5 hot"><span class="t-name">End-to-end</span><span class="t-tag">whole flow, like a user</span></div>
+        <div class="tier w4 warm"><span class="t-name">Performance &amp; load</span><span class="t-tag">holds under real volume</span></div>
+        <div class="tier w3 cool"><span class="t-name">Integration</span><span class="t-tag">pieces together · real state</span></div>
+        <div class="tier w2 cold"><span class="t-name">Unit tests</span><span class="t-tag">one piece, in isolation</span></div>
+        <div class="tier w1 cold"><span class="t-name">Format · Lint · Types · Fitness functions</span><span class="t-tag">static · deterministic</span></div>
+        <div class="pyr-axis">cheap · fast · runs constantly ▼</div>
+      </div>
+      <p class="fig-cap">The layered quality gate — each tier catches a class the cheaper one structurally can't. An <em>inferential AI reviewer</em> sits alongside, reading the diff for what structure can't judge.</p>
+    </div>
+
+    <p>Two ideas organise that pyramid.</p>
+    <p>
+      First, <strong>it's a layered gate, not one fat suite.</strong> Each tier catches a class of failure
+      the cheaper tier structurally <em>cannot</em>. A "really good" gate is that layered pyramid, never a
+      single giant test file doing everything.
+    </p>
+    <p>
+      Second, <strong>computational before inferential.</strong>
+      <a href="../00-foundations/03-harness-engineering.html">Foundations</a> drew the line: encode a rule as
+      a computational check whenever structure can express it, and reach for inference only where it
+      genuinely can't.
+    </p>
+
+    <div class="fig">
+      <table class="spec-table">
+        <thead>
+          <tr><th>&nbsp;</th><th>Computational sensor</th><th>Inferential (AI) sensor</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>Nature</th><td>Deterministic, structural — a type, a lint, a test, a fitness function.</td><td>Semantic, a judgement — a model reading the diff.</td></tr>
+          <tr><th>Speed</th><td>Fast.</td><td>Slower.</td></tr>
+          <tr><th>Confidence</th><td>Never falsely confident.</td><td>Can be argued out of a real finding.</td></tr>
+          <tr><th>Cost</th><td>Effectively free.</td><td>Costs tokens.</td></tr>
+          <tr><th>Reach for it</th><td>Whenever structure can express the rule.</td><td>Only where structure genuinely can't.</td></tr>
+        </tbody>
+      </table>
+      <p class="fig-cap">Computational before inferential — pay for judgement only where structure can't reach</p>
+    </div>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      Each tier earns its place by catching what the one below it can't <em>see</em>. A type checker can't
+      tell you the business logic is wrong — only that the types line up. A unit test proves one function
+      works but says nothing about whether two correct functions integrate. An integration test proves the
+      write lands in the database but can't tell you the screen renders it. Stack them, and each class of bug
+      meets a check designed to catch <em>it</em>. Drop a tier, and a whole class slips through with nothing
+      watching for it.
+    </p>
+    <p>
+      The shape is a pyramid for a reason. The cheap, fast, deterministic checks sit at the base and run
+      constantly; the slow, expensive ones sit at the top and run rarely. You want most of your catching done
+      by the broad cheap base, with the narrow expensive tip reserved for what only it can reach. (<em>Where</em>
+      each tier runs is its own practice: <a href="04-keep-quality-left.html">keep quality left</a>.)
+    </p>
+
+    <h2><span class="idx">03</span>Sensor integrity — the rule underneath all of it</h2>
+    <p>
+      Now the part that makes or breaks every sensor above. An agent optimises for <em>task-complete</em>,
+      not <em>task-correct</em> — and a sensor is a target. Handed a check, the agent finds the
+      <em>cheapest</em> way to make it green, and the cheapest way is very often not "do the work." So:
+    </p>
+
+    <p class="pull">A sensor the agent can satisfy <em>without doing the work</em> is not a sensor.</p>
+
+    <p>
+      The textbook case is the integration test that asserts only that the code <em>ran without throwing</em>.
+      The fix is a single discipline: <strong>assert the observable end-state.</strong> Not "the call
+      returned 200" but "the row now exists, with these fields, scoped to this tenant." A sensor must check
+      the <em>real outcome the work was supposed to produce</em>, so the only way to turn it green is to
+      actually do the work.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">Vacuous assertion</span>
+          <h4>Green whether or not the work happened</h4>
+          <ul>
+            <li>Asserts "didn't throw" or "returned 200" — never looks at the result.</li>
+            <li>True even if the record never landed; the test reports a safety it can't back up.</li>
+            <li>A weak assertion is worse than no sensor: a missing check is <em>honestly</em> missing, a vacuous one is <em>trusted</em>.</li>
+          </ul>
+          <p class="outcome-line">Even curated benchmark suites have let provably wrong fixes pass — <b>a passing test is not proof if the test is weak</b>.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">End-state assertion</span>
+          <h4>Green only if the work was done</h4>
+          <ul>
+            <li>Reads the real result back: the persisted row and its fields, the tenant it's scoped to, the value actually on the screen.</li>
+            <li>The agent <em>can't</em> pass it without producing the outcome.</li>
+            <li>Pushes each fitness function to the layer the rule lives in — a schema rule belongs in a schema check, not an import-linter.</li>
+          </ul>
+          <p class="outcome-line">The only path to green now runs <b>through actually doing the thing</b>.</p>
+        </div>
+      </div>
+      <p class="fig-cap">The one discipline that makes a sensor real — assert the end-state, never the absence of an error</p>
+    </div>
+
+    <p>
+      This is the feedback half of the anti-cheat story. The
+      <a href="01-guides-feedforward.html">feedforward half</a> is the rule written into the instruction file
+      — <em>you may not weaken a failing test; tests must assert real state.</em> The two only work together:
+      the constraint tells the agent not to cheat, and a state-asserting sensor means cheating wouldn't go
+      green anyway. (The failure they jointly prevent —
+      <a href="../40-anti-patterns/01-failure-modes.html">reward hacking</a> — gets its full treatment in
+      anti-patterns.)
+    </p>
+
+    <h2><span class="idx">04</span>The failure message is feedforward</h2>
+    <p>
+      A sensor decides pass/fail — but <em>what it says when it fails</em> is itself a
+      <a href="01-guides-feedforward.html">guide</a>, and it's one teams almost always leave on the table.
+      When a failing check reports <strong>what broke and what the fix looks like</strong>, the agent corrects
+      it in a single pass. When it just exits non-zero with <code>assertion failed</code> and nothing else,
+      the agent is left to guess — re-reading files, sometimes "fixing" the wrong thing to chase a green it
+      doesn't understand.
+    </p>
+
+    <div class="callout">
+      <div class="c-label">Close the feedback → feedforward circuit</div>
+      <p>
+        Make custom checks name the rule, the specific violation, and the shape of the correct code:
+        <strong>"API routes must not import the db layer — move the query into
+        <code>packages/sales/queries</code> and call it from here."</strong> A check that can fail the build
+        but can't explain itself is doing half its job — and the missing half is free.
+      </p>
+    </div>
+
+    <h2><span class="idx">05</span>How to apply it</h2>
+    <ul>
+      <li><strong>Layer the gate; name the tiers.</strong> Decide deliberately which classes you cover —
+        types, unit, integration against real state, fitness functions, performance, end-to-end — rather than
+        piling everything into one suite. A gap you didn't name is a class nothing is watching.</li>
+      <li><strong>Computational before inferential.</strong> If a rule can be expressed as a type, a lint, or
+        a test, encode it there — it's free, fast, and can't be talked out of the finding. Save inference for
+        the genuinely semantic calls.</li>
+      <li><strong>Assert the end-state, never the absence of an error.</strong> Read the real result back: the
+        persisted row and its fields, the tenant it's scoped to, the value actually on the screen. The test
+        should be one the agent <em>can't</em> pass without producing the outcome.</li>
+      <li><strong>Push each fitness function to the layer the rule actually lives in.</strong> An
+        import-linter reads imports — it cannot see a foreign key in your database schema. Write a fitness
+        function that reads the schema and asserts the boundary where it actually lives.</li>
+      <li><strong>Make the sensor able to fail the build.</strong> A check that runs but can't block a merge
+        is a <em>report</em>, not a gate. Report-first is a fine on-ramp — adopt advisory, watch false
+        positives, then ratchet to blocking — but until it can fail the build, it enforces nothing.</li>
+      <li><strong>Write the failure message as feedforward.</strong> A remediation-rich message gets
+        corrected in one pass; an opaque one makes the agent flail. The error text is part of the sensor's
+        design, not an afterthought.</li>
+      <li><strong>Use inference only where structure can't reach — and treat the automated judge as
+        experimental.</strong> A separate, skeptical AI reviewer is right for "this name misleads." But
+        wiring an automated <strong>LLM-as-judge</strong> into the gate as a standing sensor is still
+        to-be-validated: measure its false-positive rate, its cost, and whether it gives the same verdict
+        twice before you let it block a merge.</li>
+      <li><strong>Don't:</strong> trust a green suite without reading what it asserts; gate on a coverage
+        percentage as if it were a quality claim (a number tells you what <em>ran</em>, not what was
+        <em>verified</em> — <a href="05-behaviour-harness.html">mutation testing</a> is the real measure);
+        collapse the whole gate into one tier; or pay for inference where a type checker would do.</li>
+    </ul>
+
+    <h2><span class="idx">06</span>In practice</h2>
+    <p>
+      A teammate asks the agent to add a <em>deactivate-account</em> command: it must flip the account's
+      status to inactive <strong>and</strong> write one audit-log entry recording who did it. The slice ships
+      with an integration test. <em>Without</em> sensor integrity, the agent writes a test that calls
+      <code>deactivate()</code> and asserts it returned without throwing — green, while the audit-log write is
+      quietly forgotten. <em>With</em> it, the test reads the state back:
+    </p>
+
+    <div class="fig">
+      <pre><code>test("deactivate flips status AND records exactly one audit entry", async () =&gt; {
+  await deactivate({ accountId: "acc_42", actor: "user_7" })
+
+  // assert the OBSERVABLE END-STATE — not "it didn't throw"
+  const account = await db.accounts.find("acc_42")
+  expect(account.status).toBe("inactive")            // the status really flipped
+
+  const entries = await db.auditLog.where({ target: "acc_42" })
+  expect(entries).toHaveLength(1)                     // exactly one entry…
+  expect(entries[0].actor).toBe("user_7")             // …by the right actor
+  expect(entries[0].tenant).toBe(account.tenant)      // …scoped to the right tenant
+})</code></pre>
+      <p class="fig-cap">Green now means the command genuinely flipped the status <em>and</em> recorded the row — the agent can't satisfy it without doing the whole job</p>
+    </div>
+
+    <p>
+      The lesson the example carries: a sensor is only a sensor if <em>passing it requires the work to be
+      done</em>. Assert the observable end-state, not the absence of an error; layer the gate so each tier
+      catches the class the others can't; reach for the cheap deterministic check first and the inferential
+      one only where structure genuinely can't reach. A green check is a promise — sensor integrity is what
+      makes the promise true.
+    </p>
+
+    <h2><span class="idx">07</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>The vacuous assertion.</strong> A test that checks "returned 200" or "didn't throw" — green
+        whether or not the work happened. It reports a safety it can't back up, and a reviewer trusts it.
+        (<a href="../40-anti-patterns/01-failure-modes.html">Failure modes</a> ·
+        <a href="01-guides-feedforward.html">Guides — Feedforward</a>)</li>
+      <li><strong>The coverage-percent illusion.</strong> Treating a high coverage number as a quality claim,
+        when weak, implementation-confirming tests inflate it for free. Coverage says what executed, not what
+        was verified. (<a href="05-behaviour-harness.html">Behaviour Harness</a>)</li>
+      <li><strong>The one-tier gate.</strong> All unit tests, or all end-to-end — strong on its own class and
+        blind to every other, with the gaps between classes unwatched.</li>
+      <li><strong>The ungated check.</strong> A sensor that runs but can't fail the build, so a red result
+        changes nothing. (<a href="04-keep-quality-left.html">Keep Quality Left</a>)</li>
+      <li><strong>The mute sensor.</strong> A check that fails without saying why or how to fix it, so the
+        agent burns turns guessing at a correction the message could have handed it.
+        (<a href="01-guides-feedforward.html">Guides — Feedforward</a>)</li>
+      <li><strong>Inference where structure would do.</strong> Paying tokens and non-determinism for a
+        judgement a type checker or lint rule would have made for free and for certain.
+        (<a href="../00-foundations/03-harness-engineering.html">Harness Engineering</a>)</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — Keep Quality Left</div>
+      <p>
+        You've got a layered gate of honest sensors. The obvious next question — and the one teams reliably
+        fumble — is <em>where each check runs</em>. Try to run everything as early as possible and you'll
+        build a pre-commit hook so slow the whole team quietly learns to skip it.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="02-repo-structure-and-legibility.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Repo Structure and Legibility</div>
+    </a>
+    <a class="next" href="04-keep-quality-left.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Keep Quality Left</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="01-guides-feedforward.html">Guides — Feedforward</a>
+      <a href="../00-foundations/03-harness-engineering.html">Harness Engineering</a>
+      <a href="04-keep-quality-left.html">Keep Quality Left</a>
+      <a href="05-behaviour-harness.html">Behaviour Harness</a>
+      <a href="../10-lifecycle/05-verify-proof-not-vibes.html">Verify — Proof, Not Vibes</a>
+      <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

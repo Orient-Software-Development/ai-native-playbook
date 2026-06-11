@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CI and CD — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#delivery">Delivery</a>
+    <span class="sep">›</span>
+    <span class="here">CI and CD</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">30 · Delivery — Chapter 02</div>
+    <h1>CI and CD</h1>
+    <p class="lede">
+      Keep two jobs separate: <strong>CI</strong> verifies every change and is the authoritative gate that
+      decides what may <em>merge</em>; <strong>CD</strong> takes the already-verified result and
+      <em>releases</em> it. Conflate them and you get the worst of both — deploy trouble blocking good merges,
+      or unverified code shipping.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      Trunk-based development leans its entire weight on one assumption: that something guards the trunk and
+      won't let a broken change land. This page is that something. And the headline lesson is a seam most
+      teams smear together — "CI/CD" is really two jobs that should never share a pipeline. One decides what
+      may <em>merge</em>; the other ships what already passed. Blur them and you get the worst of both worlds:
+      good code frozen by a deploy hiccup, or unverified code sailing out the door with a reassuring green
+      badge.
+    </p>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      <a href="01-trunk-based-development.html">Trunk-based development</a> only works because something stands
+      at the trunk and refuses to let a broken change in. That something is the <strong>CI gate</strong>, and
+      this page is about what it is, what it is <em>not</em>, and how to keep it both trustworthy and quick.
+    </p>
+    <p>
+      Two distinct jobs hide under the single phrase "CI/CD," and the whole lesson is to keep them apart:
+    </p>
+    <ul>
+      <li><strong>CI — continuous integration.</strong> On every push and pull request, an automated pipeline
+        <em>verifies the change</em>: build it, lint it, type-check it, run the
+        <a href="../20-harness/03-sensors-feedback.html">layered test suite</a>. CI answers one question —
+        <em>is this change safe to merge?</em> — and its verdict is the authoritative entry condition for the
+        trunk.</li>
+      <li><strong>CD — continuous delivery/deployment.</strong> Once a verified change is on the trunk, CD
+        takes <em>that exact artifact</em> and moves it out to environments. <strong>Delivery</strong> means
+        the artifact is always <em>ready</em> to release at the push of a button; <strong>deployment</strong>
+        means it goes out <em>automatically</em>. Either way, CD's input is something CI already blessed.</li>
+    </ul>
+
+    <div class="fig">
+      <div class="seam">
+        <div class="seam-side seam-ci">
+          <div class="seam-k">Continuous Integration</div>
+          <div class="seam-name">CI gates the merge</div>
+          <p class="seam-q">Answers one question: <b>is this safe to merge?</b> Strict, required, un-bypassable.</p>
+          <p class="seam-steps">build · lint · type-check · test pyramid<br>trigger: every push / PR</p>
+        </div>
+        <div class="seam-div">
+          <span class="seam-line"></span>
+          <span class="seam-label">keep the seam</span>
+          <span class="seam-line"></span>
+        </div>
+        <div class="seam-side seam-cd">
+          <div class="seam-k">Continuous Delivery / Deployment</div>
+          <div class="seam-name">CD gates the release</div>
+          <p class="seam-q">Ships <b>what CI already blessed</b>. Free to fail without freezing the trunk.</p>
+          <p class="seam-steps">deploy → staging → production<br>trigger: a merged trunk</p>
+        </div>
+      </div>
+      <p class="fig-cap">Different triggers, different questions, different reasons to fail — kept apart on purpose</p>
+    </div>
+
+    <p>
+      The rule is a clean seam between them: <strong>CI gates the merge; CD gates the release.</strong> They
+      run on different triggers, answer different questions, and fail for different reasons — and you keep them
+      that way on purpose.
+    </p>
+
+    <p class="pull">CI gates the <em>merge</em>; CD gates the <em>release</em>. They run on different triggers and fail for different reasons — keep them apart.</p>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      The seam matters because conflating the two breaks in <em>both</em> directions, and each direction is a
+      familiar outage.
+    </p>
+    <p>
+      <strong>Bolt deployment onto the merge gate, and deploy problems block good code.</strong> If "deploy to
+      staging" is a <em>required</em> step of the same pipeline that decides whether a PR can merge, then the
+      day staging is down — a cloud hiccup, an expired credential, a full disk — <em>nothing merges</em>, even
+      though every change is perfectly correct and verified. You've coupled "is this code good?" to "is the
+      deploy target healthy?", and the second question has nothing to do with whether the code should land.
+    </p>
+    <p>
+      <strong>Bolt verification onto the release path — or skip it to unfreeze — and unverified code
+      ships.</strong> The usual sequel to the freeze above is someone making the deploy step non-blocking
+      under pressure, and quietly loosening the test gate along with it "to get things moving." Now the wall
+      has a hole: a change can reach production without CI's verdict behind it. The gate that the whole
+      <a href="01-trunk-based-development.html">trunk discipline</a> depends on is exactly as strong as its
+      strictest enforced check.
+    </p>
+    <p>
+      <strong>The gate is also what makes agent throughput safe.</strong> When agents are opening many small
+      PRs a day, no human can be the merge gate — there's too much, too fast, and "looks fine" is
+      <a href="../10-lifecycle/06-review-and-convergence.html">the least reliable signal on agent code</a>.
+      The <em>automated</em> gate is the thing that scales: it decides merge-readiness deterministically,
+      every time, no matter who or what wrote the change.
+    </p>
+    <p>
+      <strong>But a strict gate that's slow gets routed around.</strong> An agent iterating on a PR pushes
+      often — and if every push triggers the full integration-and-e2e suite, the CI queue clogs, feedback
+      takes ages, and people start merging around the slow gate. A gate everyone learns to dodge is
+      <a href="../20-harness/04-keep-quality-left.html">no gate at all</a>. So the gate has to be <em>both</em>
+      strict and fast, which is what draft-aware gating buys you.
+    </p>
+
+    <div class="fig">
+      <div class="outcomes">
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <rect class="oa" x="5" y="9" width="22" height="14" rx="3"/>
+            <path class="lc" d="M10 16 l3 3 l6 -7"/>
+          </svg></div>
+          <h4>While a PR is a draft</h4>
+          <p>Run only the fast checks — lint, types, unit tests — so an agent pushing repeatedly gets feedback in seconds. You stop paying for the heavy suite on every work-in-progress push.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <path class="ol" d="M16 3 L27 8 v8 c0 7 -5 11 -11 13 C9 27 5 23 5 16 V8 z" stroke-linejoin="round"/>
+            <path class="lc" d="M11 16 l4 4 l7 -8"/>
+          </svg></div>
+          <h4>When it's marked ready</h4>
+          <p>Run the full suite — integration, e2e, performance — and require it green before merge. The strict checks still gate the merge; you just moved the cost off the iteration loop.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Draft-aware gating: cheap on drafts, full on ready — strict <em>and</em> fast</p>
+    </div>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <ul>
+      <li><strong>Draw the seam: CI decides merge, CD decides release.</strong> Put build, lint, type-check,
+        and the test pyramid in the pipeline that gates the PR. Put deploy-to-environment in a <em>separate</em>
+        pipeline that triggers off a merged trunk. A deploy failure should page whoever owns the environment —
+        never block an unrelated, correct change from merging.</li>
+      <li><strong>Make CI the one authoritative, required, un-bypassable gate.</strong> Every must-not-merge
+        check lives here as a <em>required</em> status, not in a
+        <a href="../20-harness/04-keep-quality-left.html">skippable local hook</a>. If it isn't enforced in
+        CI, it isn't enforced.</li>
+      <li><strong>Gate on drafts cheaply, gate fully on ready.</strong> Use draft-aware gating so feedback is
+        near-instant while iterating, and the heavy suite runs the moment the PR is marked ready for
+        review.</li>
+      <li><strong>Promote the same artifact; never rebuild to ship.</strong> CD should deploy the exact build
+        CI verified. Rebuilding reintroduces the question CI already answered, and a different build is a
+        different, unverified thing.</li>
+      <li><strong>Scope the gate to the change.</strong> A docs-only PR shouldn't drag the whole e2e suite;
+        let the pipeline skip the executable gates when there's nothing for them to catch.</li>
+      <li><strong>Don't:</strong> make deploy a required step of the merge gate; loosen the test gate to work
+        around a deploy outage; run the full heavy suite on every draft push until the queue clogs; or rebuild
+        the artifact for production instead of promoting the verified one.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>
+      A team sets up "a CI/CD pipeline": one job, triggered on every PR, that runs <em>build → test →
+      deploy-to-staging</em>, and the PR can't merge until the whole job is green.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">One conflated job</span>
+          <h4>build → test → deploy, all gating the merge</h4>
+          <ul>
+            <li><b>Direction one:</b> staging's database goes down for maintenance; the deploy step fails, so the pipeline is red, so <em>no PR can merge</em> — including three correct slices that never touched staging.</li>
+            <li><b>Direction two:</b> to unfreeze, someone marks deploy non-blocking and — in the same harried edit — flips the test job to non-required.</li>
+            <li>That afternoon an agent's PR with a real failing integration test merges anyway.</li>
+          </ul>
+          <p class="outcome-line">The trunk froze on an outage that wasn't a code problem — then a bug shipped behind a green checkmark <b>because the gate that would have caught it was no longer required</b>.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">Split along the seam</span>
+          <h4>CI gates merge · CD ships after</h4>
+          <ul>
+            <li>CI — build, lint, type-check, test pyramid — runs on every PR and never touches an environment, so a staging outage can't freeze the trunk.</li>
+            <li>CD — deploy to staging, then production — runs <em>after</em> merge; if it fails it pages the environment owner and merges keep flowing.</li>
+            <li>Draft-aware gating keeps each draft push fast and runs the full suite the moment the PR is ready.</li>
+          </ul>
+          <p class="outcome-line">The gate is strict (nothing merges unverified), fast (drafts don't pay the heavy suite), and decoupled — <b>deploy trouble never blocks a good merge</b>.</p>
+        </div>
+      </div>
+      <p class="fig-cap">"CI/CD" is two jobs, not one — and the freeze and the shipped bug both come from blurring them</p>
+    </div>
+
+    <p>
+      The lesson the example carries: CI is the authoritative answer to <em>may this merge?</em> and must be
+      strict, required, and fast enough that nobody dodges it; CD is the path that ships what CI already
+      blessed and must be free to fail without freezing the trunk. Keep the seam and the trunk stays both
+      releasable and unblocked; blur it and you get frozen merges, shipped bugs, or both.
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>The merge gate that deploys.</strong> Deployment wired as a required step of the gate that
+        decides merge, so an environment outage freezes the trunk for changes that are perfectly correct.
+        (<a href="../40-anti-patterns/01-failure-modes.html">Failure modes</a>)</li>
+      <li><strong>The release path that skips CI.</strong> A deploy route — or a loosened gate under pressure —
+        that lets code reach production without CI's verdict behind it. The wall with a hole ships bugs with a
+        green badge.</li>
+      <li><strong>The slow universal gate.</strong> Running the full heavy suite on every draft push until the
+        queue clogs and the team starts merging around it — a
+        <a href="../20-harness/04-keep-quality-left.html">strict gate made worthless by being slow</a>.</li>
+      <li><strong>The rebuild-to-ship.</strong> Compiling a fresh artifact on the way to production instead of
+        promoting the one CI verified — shipping a different, unverified thing than the one that passed.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — Observability</div>
+      <p>
+        Your gate proves a change is safe to <em>ship</em>. It says nothing about whether the thing actually
+        <em>works</em> once real users and real data hit it. Next we extend the harness past the merge gate
+        into production — because "it deployed" and "it works" are very much not the same sentence.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="01-trunk-based-development.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Trunk-Based Development</div>
+    </a>
+    <a class="next" href="03-observability.html">
+      <div class="dir">Next →</div>
+      <div class="nm">Observability</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="../20-harness/04-keep-quality-left.html">Keep Quality Left</a>
+      <a href="../20-harness/03-sensors-feedback.html">Sensors — Feedback</a>
+      <a href="01-trunk-based-development.html">Trunk-Based Development</a>
+      <a href="03-observability.html">Observability</a>
+      <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

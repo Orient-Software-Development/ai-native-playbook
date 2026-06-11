@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scorecard Template &amp; Scoring Prompt — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#reference">Reference</a>
+    <span class="sep">›</span>
+    <span class="here">Scorecard Template &amp; Scoring Prompt</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">★ · Reference</div>
+    <h1>Scorecard Template &amp; Scoring Prompt</h1>
+    <p class="lede">
+      The two artifacts that drive the scoring chapter: the <strong>scoring prompt</strong> you hand a coding
+      agent, and the <strong>scorecard</strong> it fills in — five layers, each number backed by a command you
+      can re-run. Point it at your own repo and get a map of where the harness is blind.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      These templates are the fillable companions to
+      <a href="../50-adoption/05-scoring-an-existing-harness.html">Scoring an Existing Harness</a>. The rubric
+      grades <em>capabilities</em>, not specific tools, and is model-agnostic by design — run it with Claude or
+      Codex, or both and merge the evidence. The whole discipline rests on one rule:
+      <strong>every score cites a command, a <code>file:line</code>, or a GitHub setting</strong> — no unsourced
+      numbers.
+    </p>
+
+    <div class="callout">
+      <div class="c-label">Start here instead — the skill-driven starter</div>
+      <p>
+        The templates below are the manual fallback. For most teams the better starting point is the
+        skill-driven <a href="../../harness-adoption/README.md">Harness Adoption Starter</a> — point an agent at
+        its <a href="../../harness-adoption/skills/assess.md"><code>assess</code> skill</a> and it detects your
+        stack, scores the five layers, and <em>generates</em> a fitted scorecard rather than making you fill one
+        in by hand. It ships per-tool entry points (Claude Code, Cursor/Copilot/Codex, or a
+        <a href="../../harness-adoption/adapters/paste-prompt.md">paste prompt</a> for chat agents with no repo
+        access). Reach for the raw prompt and blank scorecard only when you can't run an agent against the repo.
+      </p>
+    </div>
+
+    <h2><span class="idx">01</span>How to use it</h2>
+    <ul>
+      <li><strong>Hand the prompt to an agent</strong> with read access to the repository (§04 below). It runs
+        discovery first, then measures each layer, then fills in the scorecard.</li>
+      <li><strong>It produces a completed scorecard</strong> — five scores 1–10, each with the evidence behind
+        it and a ranked list of what to build next. It's an assessment only: the agent modifies no source
+        outside the scorecard it writes.</li>
+      <li><strong>Keep every scorecard, dated.</strong> The first run is a baseline; the value compounds on the
+        second, when you diff it and see what moved, what regressed, and which recommendation was actioned.</li>
+    </ul>
+
+    <h2><span class="idx">02</span>The five-layer rubric — band anchors</h2>
+    <p>
+      Score each layer against these anchors. When a repo sits between two bands, the <em>evidence</em>
+      decides — cite it. Read every score against the harnessability ceiling: an untyped, boundary-less repo
+      <em>cannot</em> top-band Maintainability or Architecture no matter how disciplined the team.
+    </p>
+
+    <div class="fig">
+      <div class="scroll-x">
+        <table class="spec-table">
+          <thead>
+            <tr><th>Band</th><th>Feedforward</th><th>Maintainability</th><th>Architecture fitness</th><th>Behaviour</th><th>Inferential</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>1–2<span class="mono-note">absent</span></th>
+              <td>no instruction file; conventions live only in people's heads</td>
+              <td>no linter/formatter/type check, or none enforced</td>
+              <td>no boundary or fitness rule of any kind</td>
+              <td>no tests, or tests that don't run</td>
+              <td>no AI sensor, committed or lived</td>
+            </tr>
+            <tr>
+              <th>3–4<span class="mono-note">nascent</span></th>
+              <td>a thin README; scattered, partly-stale notes</td>
+              <td>tools exist but run only locally / advisory</td>
+              <td>a lint import rule or two; nothing at the schema/graph level</td>
+              <td>a sparse suite, no CI gate, no traceability</td>
+              <td>a generic org-side bot with zero repo context</td>
+            </tr>
+            <tr>
+              <th>5–6<span class="mono-note">partial</span></th>
+              <td>concrete instruction file; some conventions documented, some gaps/dead links</td>
+              <td>lint+format+types enforced at one stage (pre-commit <em>or</em> CI)</td>
+              <td>one real fitness function gating; lint boundaries</td>
+              <td>tests run in CI, weak coverage, thin traceability</td>
+              <td>org-side AI reviewer running, advisory, no in-repo config</td>
+            </tr>
+            <tr>
+              <th>7–8<span class="mono-note">solid</span></th>
+              <td>instruction file + spec/ADR corpus + legible layout; minor gaps</td>
+              <td>full computational sensors gating in CI; pre-commit→CI split</td>
+              <td>boundary + dependency-direction enforced hard in CI</td>
+              <td>broad suite + scenario traceability + E2E required; one blind spot</td>
+              <td>AI reviewer with repo context (instruction file committed), advisory</td>
+            </tr>
+            <tr>
+              <th>9–10<span class="mono-note">exemplary</span></th>
+              <td>corpus + maintained map/blueprints + no dead guides; pruned, not just grown</td>
+              <td>above + coverage thresholds + gating security/dead-code sensors</td>
+              <td>above + graph-level boundary enforcement + budgets (bundle/perf)</td>
+              <td>above + mutation testing + visual/behavioural evidence on green</td>
+              <td>in-repo, gating, <strong>spec-aware</strong> AI sensor that judges drift</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fig-cap">Five layers × five bands — the anchors that turn a gut feeling into a comparable number</p>
+    </div>
+
+    <div class="callout">
+      <div class="c-label">Scoring discipline — non-negotiable</div>
+      <p>
+        Every score cites a command, <code>file:line</code>, or GitHub setting. Every count is measured over
+        <strong>tracked source</strong> (<code>git grep</code>, not a store-walking <code>grep -r</code>) —
+        state the command. Discover the repo's <em>own</em> idioms; don't grep for another repo's conventions.
+        An advisory check (<code>continue-on-error</code>, un-required, unprotected branch) is <strong>not</strong>
+        a gate — score it as a report. Read every score against the harnessability ceiling.
+      </p>
+    </div>
+
+    <h2><span class="idx">03</span>What the scorecard captures</h2>
+    <p>
+      The filled-in report (one Markdown document) walks these sections — each layer score backed by the exact
+      commands and their output:
+    </p>
+    <ul>
+      <li><strong>§0 · Harnessability</strong> — static types, module boundaries, framework, test coverage, and
+        the stack. Scored <em>first</em> because it sets the ceiling; not averaged into the layers.</li>
+      <li><strong>Summary scorecard</strong> — the five scores, with (Prev) and Trend columns once a previous
+        scorecard exists, plus a 2–4 sentence headline.</li>
+      <li><strong>§1–§5 · the five layers</strong> — Feedforward, Maintainability, Architecture fitness,
+        Behaviour, Inferential. For each: what's present/strong, what's missing/weak, and the reproducible
+        evidence. The Maintainability integrity check (count over tracked source, never
+        <code>node_modules</code>) is run explicitly.</li>
+      <li><strong>§6 · Status of prior recommendations</strong> — on delta runs, what got done since last
+        time.</li>
+      <li><strong>§7 · Recommended actions</strong> — ranked by impact-to-effort, each naming the exact change,
+        an effort estimate, and why now.</li>
+      <li><strong>§8 · Open questions</strong> — ambiguities the scan surfaced but couldn't resolve.</li>
+      <li><strong>Method note</strong> — exactly what was run, any prior figure corrected, and the statement
+        that no source outside the scorecard was modified.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>The scoring prompt</h2>
+    <p>
+      Hand this to a coding agent with read access to a repository. Copy everything in the block below as the
+      agent's instruction — it produces a completed scorecard in the structure above.
+    </p>
+
+    <div class="fig">
+      <pre><code>You are auditing the **harness** of the repository you have access to — everything
+that steers and grades a coding agent *except* the model itself. Produce a completed
+scorecard. Score five layers 1–10. This is an assessment only: do not modify any
+source file outside the scorecard you are writing.
+
+Read "Harness Engineering" and "Scoring an Existing Harness" first if available —
+they define the five layers and the scoring discipline.
+
+## Phase 1 — Discover (before scoring anything)
+Establish what *this* repo is, and how it realises each harness capability. Do not
+assume another repo's idioms. Find:
+- Stack &amp; harnessability: language(s), static-typing state, framework, build system,
+  CI provider, test runner. Clear module boundaries? Does a suite exist and run?
+  Record in §0 — it sets the ceiling.
+- The repo's own conventions: instruction file(s) (CLAUDE.md, AGENTS.md,
+  .cursorrules, copilot-instructions.md), the spec/ADR/docs corpus, lint/format/type
+  config, CI workflows, test layout, branch-protection / rulesets (via gh if present).
+- How each capability is realised here. The rubric grades *capabilities*, not tools —
+  map each to this repo's actual mechanism (or confirm its absence).
+
+## Phase 2 — Measure (evidence first, score second)
+For each layer, gather reproducible evidence, then score against the band anchors.
+Measurement integrity (non-negotiable):
+1. Tracked source only. Every count over version-controlled source — git grep /
+   git ls-files, never a store-walking grep -r into node_modules/vendor/build output.
+   Write the exact command into the scorecard.
+2. No unsourced scores. Every score cites a command, file:line, or GitHub setting.
+3. Advisory ≠ gate. continue-on-error, not-required, or unprotected-branch checks are
+   reports, not gates. Verify what actually blocks a merge (protection AND rulesets).
+4. Committed vs lived. For inferential especially, distinguish what the tree enforces
+   from what merely runs in org settings. A gh pr list --json reviews pass over the
+   last ~20–30 PRs shows which AI reviewer is active. Flag org-only controls as fragile.
+5. Discover the real id schemes. Find the repo's actual scenario/test id pattern (it
+   may be SCN-&lt;AREA&gt;-&lt;n&gt;, a ticket ref, a describe() tag). State the pattern you used.
+
+## Phase 3 — Score and report
+Fill in: §0 harnessability + ceiling read; the summary scorecard (five scores, trends
+only if a prior scorecard exists); §1–§5 each with present/missing/evidence; §7 ranked
+actions naming the exact change, effort, and why now; §8 open questions; a method note.
+
+Calibration: read every score against the §0 ceiling; a layer scoring 1 means *absent* —
+say so. Prefer the blunt reproducible fact over the sophisticated guess. If unsure
+between two bands, cite the evidence and pick the lower.
+
+Output the completed scorecard as a single Markdown document. Nothing else.</code></pre>
+      <p class="fig-cap">Model-agnostic by design — run it with either model, or both and merge the evidence</p>
+    </div>
+
+    <p>
+      That's the whole kit. The chapter that explains the <em>why</em> behind it —
+      and how to read a finished scorecard — is
+      <a href="../50-adoption/05-scoring-an-existing-harness.html">Scoring an Existing Harness</a>; the
+      five-layer model it grades against comes from
+      <a href="../00-foundations/03-harness-engineering.html">Harness Engineering</a>.
+    </p>
+
+  </article>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="../50-adoption/05-scoring-an-existing-harness.html">Scoring an Existing Harness</a>
+      <a href="../00-foundations/03-harness-engineering.html">Harness Engineering</a>
+      <a href="../50-adoption/01-minimum-viable-harness.html">The Minimum Viable Harness</a>
+      <a href="../50-adoption/02-growing-the-harness.html">Growing the Harness</a>
+      <a href="../glossary.html">Glossary</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

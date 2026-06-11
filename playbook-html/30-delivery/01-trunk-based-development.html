@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trunk-Based Development — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#delivery">Delivery</a>
+    <span class="sep">›</span>
+    <span class="here">Trunk-Based Development</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">30 · Delivery — Chapter 01</div>
+    <h1>Trunk-Based Development</h1>
+    <p class="lede">
+      Keep one shared line of code — the <strong>trunk</strong> — and merge into it constantly, in small
+      verified slices behind a green gate. Long-lived branches are where work goes stale and conflicts
+      compound; at agent throughput they rot <em>faster</em> than ever.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      The harness is complete — you can now turn out correct slices all day long. Which hands you a brand-new
+      and rather nicer problem: at agent speed you're producing changes faster than ever, and the classic way
+      to juggle lots of in-flight work — give everyone their own cozy long-lived branch — quietly becomes a
+      slow-motion pile-up. This section is about shipping at that throughput <em>without</em> the integration
+      mess. And the first decision is the simplest and most counter-intuitive one: keep everybody on a single
+      shared line and merge into it constantly.
+    </p>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      The earlier chapters built the work down to a single verified
+      <a href="../10-lifecycle/03-task-slicing.html">slice</a>: one deliverable, one test, one commit. This
+      chapter is about what happens to that slice next — how it ships, and how it ships when many people and
+      many agents are producing slices at once. The first decision is the git strategy, and the answer is
+      <strong>trunk-based development</strong>.
+    </p>
+    <p>
+      The <strong>trunk</strong> is the one shared, always-releasable line of code everyone integrates into
+      (often <code>main</code>, sometimes called <code>staging</code> or an integration branch). Trunk-based
+      development is the discipline of keeping that line healthy by merging into it <em>continuously</em> and
+      in <em>small pieces</em>:
+    </p>
+    <ul>
+      <li><strong>Short-lived branches.</strong> A branch lives hours to a day or two, not weeks. You cut it
+        from the trunk, land one slice, merge it back, and delete it. It never has time to drift far from the
+        trunk it came from.</li>
+      <li><strong>Small slices, merged behind a green gate.</strong> Each merge is one verified slice that
+        passed the <a href="02-ci-and-cd.html">CI gate</a> — the automated checks that decide whether a change
+        may land. Nothing merges on a promise; it merges because the gate proved it.</li>
+      <li><strong>The trunk stays releasable.</strong> Because every merge is small and verified, the trunk is
+        always in a shippable state. Work that's too big to finish in one slice is hidden behind a
+        <strong>feature flag</strong> — a runtime switch that keeps the half-built code dark in production —
+        rather than parked on a branch off to the side.</li>
+    </ul>
+
+    <div class="fig">
+      <div class="duo">
+        <div class="duo-panel bad">
+          <span class="duo-tag">Long-lived branch</span>
+          <svg viewBox="0 0 200 150" role="img" aria-label="A branch diverging from the trunk for days, ending in one big conflicted merge">
+            <line class="ln" x1="12" y1="40" x2="188" y2="40"/>
+            <circle class="fl" cx="30" cy="40" r="4"/><circle class="fl" cx="75" cy="40" r="4"/><circle class="fl" cx="120" cy="40" r="4"/>
+            <path class="lc" d="M30 40 C 44 72, 44 92, 44 110 L 150 110"/>
+            <circle class="cl" cx="70" cy="110" r="4"/><circle class="cl" cx="100" cy="110" r="4"/><circle class="cl" cx="130" cy="110" r="4"/>
+            <path class="lc da" d="M150 110 C 174 94, 176 60, 168 46"/>
+            <g class="lc"><line x1="168" y1="22" x2="168" y2="36"/><line x1="160" y1="25" x2="176" y2="33"/><line x1="176" y1="25" x2="160" y2="33"/></g>
+          </svg>
+          <p class="duo-cap"><b>Days of divergence, one scary merge.</b> The branch never met the trunk's other changes — so they all collide at once, late, in a diff too big to read.</p>
+        </div>
+        <div class="duo-panel good">
+          <span class="duo-tag">Trunk-based</span>
+          <svg viewBox="0 0 200 150" role="img" aria-label="Short branches bubbling off the trunk and rejoining it constantly">
+            <line class="ln" x1="12" y1="75" x2="188" y2="75"/>
+            <circle class="fl" cx="26" cy="75" r="4"/>
+            <path class="lc" d="M40 75 C 52 52, 72 52, 84 75"/><circle class="ol" cx="62" cy="55" r="4"/>
+            <path class="lc" d="M84 75 C 96 98, 116 98, 128 75"/><circle class="ol" cx="106" cy="95" r="4"/>
+            <path class="lc" d="M128 75 C 140 52, 160 52, 172 75"/><circle class="ol" cx="150" cy="55" r="4"/>
+            <circle class="fl" cx="186" cy="75" r="4"/>
+          </svg>
+          <p class="duo-cap"><b>Hours, then home.</b> Each slice cuts from the trunk and merges back the same day — divergence never gets a chance to compound.</p>
+        </div>
+      </div>
+      <p class="fig-cap">The whole choice in one picture: how long does work live away from the trunk?</p>
+    </div>
+
+    <p>
+      The alternative — a long-lived <strong>feature branch</strong> that absorbs a whole feature over days or
+      weeks before one big merge — is the thing this practice exists to avoid. <strong>Continuous
+      integration</strong> in its original sense is exactly this: not "we have a CI server," but <em>the team
+      actually integrates its work continuously</em> instead of saving it up.
+    </p>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      Two costs grow non-linearly with how long a branch lives, and trunk-based development exists to keep
+      both small.
+    </p>
+    <p>
+      <strong>Merge conflicts compound.</strong> While your branch sits open, the trunk moves underneath it —
+      other people's merges change the very files you're editing. The longer you wait, the more the two
+      diverge, and a <strong>merge conflict</strong> (two changes to the same lines that git can't reconcile
+      automatically) stops being a one-line fix and becomes an archaeology project. Merge daily and each
+      reconciliation is trivial; merge monthly and the merge itself is a risky, untested change nobody
+      planned for. Small and frequent isn't just tidier — it's <em>cheaper per unit of code</em>, because
+      conflict cost scales with divergence, and divergence scales with time.
+    </p>
+    <p>
+      <strong>Unmerged work goes stale.</strong> Code that isn't on the trunk hasn't really been integrated —
+      it hasn't met the other changes it will have to live with. A branch that looks finished in isolation can
+      be subtly broken against the trunk it'll merge into, and you won't find out until the big merge, which
+      is the worst possible moment: late, large, and all at once.
+    </p>
+    <p>
+      <strong>Agents amplify both forces — in both directions.</strong> This is the AI-native turn. On the
+      upside, agent throughput means slices land faster and more often, which is <em>exactly</em> the cadence
+      trunk-based development is built for. On the downside, the same throughput makes a long-lived branch far
+      more dangerous: a branch where an agent has been generating volume for a week is a large pile of
+      <a href="../10-lifecycle/06-review-and-convergence.html">plausible-but-unreviewed code</a> diverging
+      from a trunk that other agents have been moving the whole time. The merge is enormous, the review is
+      hopeless, and the conflicts are everywhere.
+    </p>
+
+    <p class="pull">The faster your team produces code, the <em>more</em> it needs the trunk to be the constant meeting point — isolation doesn't get safer at scale, it gets exponentially worse.</p>
+
+    <p>
+      So the velocity of an AI-native team doesn't come from agents working alone on big branches. It comes
+      from many small, verified changes converging on one trunk continuously — the merge philosophy shifts
+      from "a few large PRs a sprint" to "many small PRs a day," and the trunk is what makes that throughput
+      safe instead of chaotic.
+    </p>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <ul>
+      <li><strong>Branch from the trunk, return to it fast.</strong> Cut a short-lived branch, land one slice,
+        merge it back the same day if you can, and delete the branch. If a branch has been open longer than a
+        couple of days, that's a signal the work wasn't
+        <a href="../10-lifecycle/03-task-slicing.html">sliced small enough</a>.</li>
+      <li><strong>One slice per branch, one branch per slice.</strong> The
+        <a href="../10-lifecycle/03-task-slicing.html">task slice</a> and the branch are the same unit. A
+        branch accumulating "while I'm here" extras is on its way to becoming long-lived.</li>
+      <li><strong>Never merge on a promise — merge behind the gate.</strong> The trunk stays releasable only
+        because every merge passed the <a href="02-ci-and-cd.html">authoritative CI gate</a>. A green gate is
+        the entry condition, full stop; no "I'll fix the test after merge."</li>
+      <li><strong>Hide unfinished work behind a flag, not on a branch.</strong> When a feature genuinely can't
+        land in one slice, merge the incomplete pieces to the trunk dark — behind a feature flag — so they
+        keep integrating with everyone else's work instead of diverging on a side branch.</li>
+      <li><strong>Pull from the trunk often.</strong> Rebase or merge the trunk into your short-lived branch
+        frequently so you meet conflicts in ones and twos, while they're trivial, instead of in a wall at the
+        end.</li>
+      <li><strong>Review at the slice, not at the feature.</strong> A small slice is a
+        <a href="../10-lifecycle/06-review-and-convergence.html">reviewable diff</a>; a week-old branch is a
+        wall nobody reads deliberately.</li>
+      <li><strong>Don't:</strong> keep a "develop everything here" branch alive for a whole feature; batch a
+        sprint of work into one heroic merge; let an agent run for days on an isolated branch and merge the
+        result unread; or merge a red or skipped gate "to unblock."</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>
+      A team picks up the <em>per-user deal priority</em> feature — the same four-layer feature sliced in the
+      lifecycle chapter — and an agent is doing most of the typing.
+    </p>
+    <p>
+      <strong>The long-lived-branch way.</strong> They cut one <code>feature/deal-priority</code> branch and
+      let the agent build the whole thing on it — schema, commands, query, and UI, over four days, all merged
+      at the end. Meanwhile two other agents land changes on the trunk: one refactors the deals-list query the
+      priority feature also touches, another renames a nearby column. None of that reaches the feature branch.
+      On day four the merge is opened: hundreds of lines of fluent agent code, a stack of conflicts in the
+      exact query both agents edited, and a column rename the branch never saw. The review is a skim because
+      the diff is too big to read deliberately — which is precisely where the
+      <a href="../10-lifecycle/06-review-and-convergence.html">privacy bug</a> hides.
+    </p>
+    <p>
+      <strong>The trunk-based way.</strong> The same four slices each get their own short-lived branch and
+      merge the day they're written, behind the green gate:
+    </p>
+
+    <div class="fig">
+      <div class="pipe">
+        <div class="step c1"><div class="dot"></div><div class="s-n">Mon AM</div><div class="s-t">schema</div><div class="s-d">gate green → merge</div></div>
+        <div class="step c2"><div class="dot"></div><div class="s-n">Mon PM</div><div class="s-t">commands</div><div class="s-d">gate green → merge</div></div>
+        <div class="step c3"><div class="dot"></div><div class="s-n">Tue AM</div><div class="s-t">query</div><div class="s-d">gate green → merge</div></div>
+        <div class="step c4"><div class="dot"></div><div class="s-n">Tue PM</div><div class="s-t">UI · flagged</div><div class="s-d">gate green → merge</div></div>
+      </div>
+      <p class="fig-cap">Four slices, four short-lived branches — the trunk stays releasable after every one</p>
+    </div>
+
+    <p>
+      When the other agent's query refactor lands Monday afternoon, the priority feature's query slice — opened
+      Tuesday morning — is cut from a trunk that <em>already has it</em>. There's no four-day divergence to
+      reconcile; the one place the two changes meet is resolved the same morning, in a diff small enough to
+      read. The UI slice merges behind a feature flag so the trunk stays shippable even though the feature
+      isn't announced yet. By Tuesday evening the whole feature is on the trunk, integrated, reviewed, and
+      releasable — and at no point was there a big scary merge, because there was never a big branch to merge.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">One big branch</span>
+          <h4>The whole feature, merged at the end</h4>
+          <ul>
+            <li>Four days of agent volume diverging from a trunk two other agents kept moving.</li>
+            <li>The merge collides with a query refactor and a column rename the branch never saw.</li>
+            <li>The diff is too big to read deliberately, so review becomes a skim.</li>
+          </ul>
+          <p class="outcome-line">The "merge" is now its own risky, untested change, landing late and all at once — <b>and the privacy bug rides in behind a diff nobody could read</b>.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">Four small slices</span>
+          <h4>Each slice merged the day it's written</h4>
+          <ul>
+            <li>Every slice cuts from a trunk that already has the others' work.</li>
+            <li>Conflicts arrive in ones and twos, resolved the same morning.</li>
+            <li>Each diff is small enough to review against real state, while it's fresh.</li>
+          </ul>
+          <p class="outcome-line">The feature is integrated, reviewed, and releasable by Tuesday evening — <b>and there was never a big branch to be afraid of</b>.</p>
+        </div>
+      </div>
+      <p class="fig-cap">The danger was never the amount of code — it was the amount kept out of the trunk at once</p>
+    </div>
+
+    <p>
+      The lesson the example carries: the danger was never the amount of code — it was the amount of code
+      <em>kept out of the trunk at once</em>. Agent throughput makes that pile grow faster, so the discipline
+      that keeps it small — short-lived branches, small slices, merge behind the gate — is what lets a fast
+      team stay a <em>safe</em> fast team.
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>The long-lived feature branch.</strong> A whole feature developed in isolation for days or
+        weeks, then merged in one heroic, conflict-ridden, unreviewable diff — the failure this entire
+        practice prevents. At agent throughput the pile grows faster and the merge is worse.
+        (<a href="../40-anti-patterns/01-failure-modes.html">Failure modes</a>)</li>
+      <li><strong>The agent left to run on a branch.</strong> Letting an agent generate volume for days on an
+        isolated branch, so the merge is enormous, the review is a skim, and the
+        <a href="../10-lifecycle/06-review-and-convergence.html">zombie code</a> ships behind plausibility.</li>
+      <li><strong>The merge-on-a-promise.</strong> Landing a change with a red or skipped
+        <a href="02-ci-and-cd.html">gate</a> "to unblock," so the always-releasable trunk quietly stops being
+        releasable and nobody knows when it broke.</li>
+      <li><strong>The branch that won't die.</strong> A "develop" or "integration" branch that everyone works
+        off of for a release, recreating the long-lived-branch problem one level up — divergence from the real
+        trunk, just with more people on it.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — CI and CD</div>
+      <p>
+        Continuous merging only works because something stands at the trunk and refuses to let a broken change
+        in. Next we meet that gatekeeper — and the surprisingly common mistake of wiring it up so that a single
+        staging outage can freeze every good merge in the building.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="../20-harness/05-behaviour-harness.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">Behaviour Harness</div>
+    </a>
+    <a class="next" href="02-ci-and-cd.html">
+      <div class="dir">Next →</div>
+      <div class="nm">CI and CD</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="../10-lifecycle/03-task-slicing.html">Task Slicing</a>
+      <a href="../10-lifecycle/06-review-and-convergence.html">Review and Convergence</a>
+      <a href="02-ci-and-cd.html">CI and CD</a>
+      <a href="../20-harness/04-keep-quality-left.html">Keep Quality Left</a>
+      <a href="../40-anti-patterns/01-failure-modes.html">Failure Modes</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

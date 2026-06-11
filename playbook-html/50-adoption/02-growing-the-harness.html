@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Growing the Harness — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="../index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="../index.html#adoption">Adoption</a>
+    <span class="sep">›</span>
+    <span class="here">Growing the Harness</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">50 · Adoption — Chapter 02</div>
+    <h1>Growing the Harness</h1>
+    <p class="lede">
+      A harness is <strong>grown, not designed</strong> — one real failure at a time. When the agent goes
+      wrong, don't re-prompt and hope; ask what control was missing, encode it once so it can't recur, and bank
+      the harnessability that makes the next control cheaper. And when a new model lands, prune the scaffolding
+      it no longer needs.
+    </p>
+  </header>
+
+  <article class="prose">
+
+    <p>
+      Last page got you a small-but-whole harness standing by Friday. This page is every week after. The
+      temptation now is to sit down and architect the Complete Harness in one grand session — resist it,
+      because you genuinely cannot predict how your agent will go wrong, so any blueprint is a guess. Instead
+      you run a loop: it fails once, you ask what control was missing, you encode the fix so that exact failure
+      can never happen again. A mature harness <em>looks</em> designed; it was actually grown, one failure at a
+      time. And — the motion teams always forget — occasionally pruned.
+    </p>
+
+    <h2><span class="idx">01</span>The principle</h2>
+    <p>
+      The <a href="01-minimum-viable-harness.html">last page</a> got you a small-but-whole harness in week
+      one. This page is what you do for every week after — how that minimum grows into the full harness the
+      rest of this playbook describes, without ever stopping to "design" it.
+    </p>
+    <p>
+      The engine is the <strong>steering loop</strong>, introduced back in
+      <a href="../00-foundations/03-harness-engineering.html">harness engineering</a>: the agent acts, a
+      sensor fires (or a human spots a miss), you look at the failure, you add a guide or a sensor, the agent
+      acts again. You don't sit down and predict every way the agent will go wrong — you <em>can't</em>. You
+      watch it go wrong once, then encode the fix as a durable control so that exact failure can't recur.
+    </p>
+
+    <div class="fig">
+      <div class="diagram wide">
+        <svg viewBox="0 0 440 252" role="img" aria-label="The steering loop: the agent acts, a miss surfaces, you ask what control was missing, you encode it once, and the loop repeats">
+          <rect class="oa" x="160" y="12" width="120" height="44" rx="8"/>
+          <text x="220" y="38" font-size="12" text-anchor="middle">Agent acts</text>
+          <rect class="oa" x="306" y="104" width="124" height="44" rx="8"/>
+          <text x="368" y="130" font-size="12" text-anchor="middle">A miss surfaces</text>
+          <rect class="oa" x="160" y="196" width="120" height="44" rx="8"/>
+          <text x="220" y="216" font-size="11.5" text-anchor="middle">What control</text>
+          <text x="220" y="230" font-size="11.5" text-anchor="middle">was missing?</text>
+          <rect class="oa" x="10" y="104" width="124" height="44" rx="8"/>
+          <text x="72" y="124" font-size="11.5" text-anchor="middle">Encode it once</text>
+          <text x="72" y="138" font-size="11.5" text-anchor="middle">— durable</text>
+          <path class="lc" d="M282 42 C 330 58, 360 78, 372 102"/><path class="lc" d="M364 92 l9 11 l-13 1"/>
+          <path class="lc" d="M368 150 C 356 176, 322 196, 284 208"/><path class="lc" d="M294 198 l-10 11 l14 2"/>
+          <path class="lc" d="M158 212 C 118 198, 86 176, 74 150"/><path class="lc" d="M82 161 l-8 -11 l-12 4"/>
+          <path class="lc" d="M72 102 C 84 76, 116 56, 158 44"/><path class="lc" d="M148 36 l10 8 l-2 13"/>
+          <text x="220" y="122" font-size="11" text-anchor="middle">grow it,</text>
+          <text x="220" y="139" font-size="11" text-anchor="middle">don't design it</text>
+        </svg>
+      </div>
+      <p class="fig-cap">The steering loop — every recurring failure is the spec for a control that was missing</p>
+    </div>
+
+    <p>
+      Growing has two motions, and the second is the one teams forget:
+    </p>
+
+    <div class="fig">
+      <div class="outcomes">
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <line class="ln" x1="16" y1="28" x2="16" y2="15"/>
+            <path class="ol" d="M16 16 C 7 13, 5 5, 14 6 C 15 11, 16 14, 16 16" stroke-linejoin="round"/>
+            <path class="cl" d="M16 19 C 25 16, 27 8, 18 9 C 17 14, 16 17, 16 19" stroke-linejoin="round"/>
+          </svg></div>
+          <h4>Grow</h4>
+          <p>Add a guide or sensor in response to a <em>real, observed</em> failure. Each control makes the next run more reliable.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <line class="ln" x1="6" y1="16" x2="20" y2="16"/>
+            <path class="cl" d="M20 11 L27 16 L20 21" stroke-linejoin="round"/>
+            <line class="lc" x1="9" y1="9" x2="15" y2="23"/>
+          </svg></div>
+          <h4>Prune</h4>
+          <p>Remove a control once the model has grown into the job it was scaffolding. A harness that only ever accumulates turns into the skill-library tax.</p>
+        </div>
+      </div>
+      <p class="fig-cap">You grow controls in response to failures; you prune them in response to better models</p>
+    </div>
+
+    <p>
+      Underneath both runs a slower investment: <strong>harnessability</strong> — the property that strong
+      types, clear module boundaries, established frameworks, and real test coverage make a codebase
+      <em>cheaper to control</em>. Every unit you bank makes every future guide and sensor easier to write. You
+      grow controls in response to failures; you grow harnessability on purpose, because it compounds under
+      everything else.
+    </p>
+
+    <h2><span class="idx">02</span>Why it works</h2>
+    <p>
+      <strong>"Try harder" doesn't change anything.</strong> The most common reaction to an agent failure is
+      to re-prompt — say it again, more firmly. But the next run starts from the same harness that produced the
+      failure, so it reproduces the failure. Re-prompting fixes <em>this</em> instance, by hand, at the cost of
+      your attention, and buys nothing for the next one. Encoding a control changes the <em>system</em>: the
+      rule now applies on every run, to every change, automatically.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">Try harder</span>
+          <h4>Re-prompt and hope</h4>
+          <ul>
+            <li>Say it again, more firmly. The next run starts from the same harness that produced the failure.</li>
+            <li>So it reproduces the failure — you fix this one instance by hand.</li>
+            <li>Nothing about the system changed; the next slip is identical.</li>
+          </ul>
+          <p class="outcome-line">You've spent attention and <b>bought nothing durable — the failure is one prompt away from recurring</b>.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">Encode a control</span>
+          <h4>Change the system, once</h4>
+          <ul>
+            <li>Ask <em>what control was missing?</em> — the answer is always a durable control, never a sharper prompt.</li>
+            <li>The rule now applies on every run, to every change, automatically.</li>
+            <li>That exact failure can't recur, anywhere, ever.</li>
+          </ul>
+          <p class="outcome-line">A fix you make once and that holds forever <b>is worth incomparably more than a fix you re-make every session</b>.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Re-prompting fixes the instance; encoding a control fixes the class</p>
+    </div>
+
+    <p>
+      <strong>You grow from failures because you can't predict them.</strong> A complete harness designed up
+      front would be guessing at which controls the codebase needs — and it would be wrong, because the
+      failures that actually happen depend on this codebase, this domain, this model. The repo <em>teaches</em>
+      you its weak spots by failing in them.
+    </p>
+    <p>
+      <strong>The two investments compound on top of each other.</strong> Each control makes the next run more
+      reliable; each unit of harnessability makes the next control cheaper to add. That's why a harness gets
+      <em>easier</em> to grow over time rather than harder.
+    </p>
+    <p>
+      <strong>And the harness has to track the model, not just the codebase.</strong> Every control encodes an
+      assumption: <em>the model can't be trusted to do this on its own.</em> Models improve, and those
+      assumptions go stale — a verbose step-by-step guide for a task the new model now handles natively isn't
+      neutral, it's dead weight crowding the context. Pruning isn't tidying; it's keeping the harness honest
+      about what the current model genuinely needs.
+    </p>
+
+    <p class="pull">You don't author a harness, you <em>steer</em> one — grown from failures, pruned by upgrades, compounding on harnessability underneath.</p>
+
+    <h2><span class="idx">03</span>How to apply it</h2>
+    <ul>
+      <li><strong>On a failure, ask "what control was missing?" — not "how do I re-prompt?"</strong> That
+        question is the whole loop. The answer is always a durable control.</li>
+      <li><strong>Match the fix to the failure.</strong> If the agent <em>didn't know</em> the expectation, it
+        needs a <a href="../20-harness/01-guides-feedforward.html">guide</a>. If it knew but did it wrong, it
+        needs a <a href="../20-harness/03-sensors-feedback.html">sensor</a>. Usually both — and you
+        <a href="../00-foundations/03-harness-engineering.html">reach for the cheap computational check
+        first</a>.</li>
+      <li><strong>Encode it once so it applies everywhere.</strong> Don't fix the inlined query in this one
+        diff and move on — write the rule that fails the build for <em>any</em> such diff, forever.
+        Hand-fixing each instance is doing a sensor's job by hand.</li>
+      <li><strong>Use the agent to build the harness.</strong> Encoding a control is itself one of the best
+        agent tasks there is — <em>draft the structural test</em> that pins a boundary, <em>turn an observed
+        pattern into a lint rule</em>, <em>write the how-to guide</em> from the code it just navigated. You
+        describe the control and <a href="../10-lifecycle/06-review-and-convergence.html">review the result</a>; the agent
+        writes it. The harness grows the harness.</li>
+      <li><strong>Bundle a recurring shape into a harness template.</strong> Once you've grown a solid harness
+        for one service of a given shape, bundle its guides and sensors into a reusable template the next
+        service starts from already harnessed. The one cost to budget: a template is a shared dependency, so
+        plan the upkeep or each copy quietly diverges.</li>
+      <li><strong>Bank harnessability as you go.</strong> When you touch an untyped corner, type it; when a
+        boundary is implicit, make it a checkable rule. These investments
+        <a href="../00-foundations/03-harness-engineering.html">pay off twice</a>.</li>
+      <li><strong>Prune when a new model lands.</strong> Remove one control at a time and watch what regresses:
+        if output holds without it, it was scaffolding the model has outgrown — drop it. If something breaks,
+        it was load-bearing — put it back.</li>
+      <li><strong>Widen autonomy as the harness earns it.</strong> Start the agent on a narrow, well-harnessed
+        slice where a miss is caught cheaply, and extend its scope only as the controls prove they catch
+        mistakes. Autonomy is something the harness <em>earns</em>, zone by zone.</li>
+      <li><strong>Don't:</strong> re-prompt the same failure twice without adding a control; hand-patch each
+        instance of a rule the agent keeps breaking; only ever add and never prune; or grant end-to-end
+        autonomy before the harness can catch the agent in that zone.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>In practice</h2>
+    <p>
+      A team is past week one. Their minimum viable harness is holding, and now they're letting the agent build
+      features against it.
+    </p>
+    <p>
+      <strong>The loop in one turn.</strong> The agent ships a feature, and a reviewer notices the API
+      response includes an internal field that should never leave the system — an email-verification token,
+      say. They flag it, the agent fixes that one response, done. A week later it happens again on a different
+      endpoint. The instinct is to add a firmer line to the prompt: <em>be careful not to leak internal
+      fields.</em> That's the trap — the third endpoint leaks too, because nothing in the system changed. The
+      steering-loop move is different: ask <em>what control was missing?</em> The answer is two controls. A
+      <strong>guide</strong> naming which fields are internal and never serialised, and a <strong>sensor</strong>
+      — a computational check that fails the build if a response shape includes a field on the internal list.
+      They have the agent write the check, review it, and merge it. The leak never recurs, on any endpoint,
+      ever.
+    </p>
+    <p>
+      <strong>The prune, months later.</strong> Early on, the same team had written a long, careful guide
+      walking the agent step by step through wiring a new database migration, because the model kept getting
+      the order wrong. A model upgrade lands. On a hunch, they remove that guide for one migration and watch:
+      the agent gets it right on its own, every time. The scaffolding was for a weakness the new model doesn't
+      have. They delete the guide, the context budget gets a little leaner, and the harness gets a little more
+      honest about what the current model actually needs.
+    </p>
+    <p>
+      The lesson the example carries: you don't author a harness, you <em>steer</em> one. Every recurring
+      failure is the spec for a missing control; encode it once and it's gone for good, everywhere. And every
+      control is a standing bet on a model weakness — so as the model grows, you prune the bets that no longer
+      pay.
+    </p>
+
+    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <ul>
+      <li><strong>Try harder.</strong> Re-prompting the same failure instead of encoding a control. The
+        harness is unchanged, so the failure recurs — you've spent attention and bought nothing durable.</li>
+      <li><strong>Hand-fixing each instance.</strong> Patching the same class of mistake in diff after diff
+        instead of writing the one rule that catches all of them. You're doing a sensor's job by hand.</li>
+      <li><strong>The write-only harness.</strong> Only ever adding controls, never pruning. Stale guides for
+        weaknesses the model outgrew pile up into the
+        <a href="../00-foundations/02-context-engineering.html">skill-library tax</a>, masking which controls
+        are actually <a href="../40-anti-patterns/01-failure-modes.html">load-bearing</a>.</li>
+      <li><strong>Big-bang autonomy.</strong> Granting the agent end-to-end scope before the harness around
+        that zone has earned it. Autonomy is earned by controls that demonstrably catch mistakes, not granted
+        on optimism.</li>
+      <li><strong>Designing it all up front.</strong> Trying to predict and build the complete harness in one
+        sitting — the same mistake as the <a href="01-minimum-viable-harness.html">big-bang minimum
+        harness</a>, a step later. You can't foresee the failures; let the repo show you.</li>
+      <li><strong>The drifting template.</strong> Bundling a harness template and then never reconciling the
+        instances with it — so each copy diverges and the "template" becomes three subtly different harnesses
+        nobody can maintain. Budget its upkeep or don't make one.</li>
+    </ul>
+
+    <div class="callout">
+      <div class="c-label">Next up — The Responsible Team and AI Debt</div>
+      <p>
+        Growing the harness makes the agent more <em>capable</em>. It does nothing to make it
+        <em>responsible</em> — it has no career on the line and no recoil at a 300-line function. Next we cover
+        the two jobs only the team can do: deciding what stays human, and treating the debt the agent generates
+        like the high-interest loan it is.
+      </p>
+    </div>
+
+  </article>
+
+  <nav class="chap-nav">
+    <a class="prev" href="01-minimum-viable-harness.html">
+      <div class="dir">← Previous</div>
+      <div class="nm">The Minimum Viable Harness</div>
+    </a>
+    <a class="next" href="03-responsible-team-and-ai-debt.html">
+      <div class="dir">Next →</div>
+      <div class="nm">The Responsible Team and AI Debt</div>
+    </a>
+  </nav>
+
+  <div class="related">
+    <div class="r-label">Related</div>
+    <div class="r-pills">
+      <a href="../00-foundations/03-harness-engineering.html">Harness Engineering</a>
+      <a href="01-minimum-viable-harness.html">The Minimum Viable Harness</a>
+      <a href="04-legacy-and-brownfield.html">Legacy and Brownfield</a>
+      <a href="../20-harness/01-guides-feedforward.html">Guides — Feedforward</a>
+      <a href="../20-harness/03-sensors-feedback.html">Sensors — Feedback</a>
+      <a href="../20-harness/02-repo-structure-and-legibility.html">Repo Structure and Legibility</a>
+      <a href="../30-delivery/04-drift-and-health-sensors.html">Drift and Health Sensors</a>
+      <a href="03-responsible-team-and-ai-debt.html">The Responsible Team and AI Debt</a>
+    </div>
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="../index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
