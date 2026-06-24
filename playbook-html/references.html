@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>References — The AI-Native Harness Playbook</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="chap">
+
+  <nav class="crumb">
+    <a href="index.html">Playbook</a>
+    <span class="sep">›</span>
+    <a href="index.html#reference">Reference</a>
+    <span class="sep">›</span>
+    <span class="here">References</span>
+  </nav>
+
+  <header class="chap-head">
+    <div class="eyebrow">★ · Reference</div>
+    <h1>References</h1>
+    <p class="lede">
+      The research and industry writing behind this playbook. The practice chapters teach
+      <strong>method, not citations</strong> — so they name no sources in-page. This is where the
+      evidence lives: the canonical vendor guides, the framework articles the playbook is built on, and
+      the papers and research notes that back specific claims about context, skills, and testing.
+    </p>
+  </header>
+
+  <nav class="ref-nav" aria-label="Jump to group">
+    <a href="#g-harness">Harness</a>
+    <a href="#g-vendor">Guides</a>
+    <a href="#g-context">Context</a>
+    <a href="#g-skills">Skills</a>
+    <a href="#g-testing">Testing</a>
+  </nav>
+
+  <div class="glossary">
+
+    <h2 class="gloss-letter" id="g-harness">Foundational — harness engineering</h2>
+    <p class="ref-intro">The articles that define the discipline and shape the playbook's spine.</p>
+
+    <div class="gloss-item">
+      <h3 class="gloss-term">Anthropic — <em>Harness design for long-running application development</em></h3>
+      <p>The planner / generator / evaluator separation, context resets vs. compaction, and the self-evaluation failure mode (why an agent grading its own work tends to pass it). The reference for the harness as a steering loop around a long-running agent.</p>
+      <div class="gloss-see ext"><a href="https://www.anthropic.com/engineering/harness-design-long-running-apps" target="_blank" rel="noopener">anthropic.com/engineering</a></div>
+    </div>
+
+    <div class="gloss-item">
+      <h3 class="gloss-term">OpenAI — <em>Harness engineering: leveraging Codex in an agent-first world</em></h3>
+      <p>"Humans steer, agents execute." The repository as the system of record, legibility as a first-class property, graduated autonomy levels (earn trust before widening scope), and throughput benchmarks for what an agent-first workflow changes about how many small PRs a day ship.</p>
+      <div class="gloss-see ext"><a href="https://openai.com/index/harness-engineering/" target="_blank" rel="noopener">openai.com/index</a></div>
+    </div>
+
+    <div class="gloss-item">
+      <h3 class="gloss-term">Birgitta Böckeler (Martin Fowler) — <em>Harness engineering for coding agent users</em></h3>
+      <p>The framework source. Where the term "harness engineering" is set out for the engineer using a coding agent — guides in front, sensors behind — generalized in this playbook away from any one tool or repo.</p>
+      <div class="gloss-see ext"><a href="https://martinfowler.com/articles/harness-engineering.html" target="_blank" rel="noopener">martinfowler.com/articles</a></div>
+    </div>
+
+    <div class="gloss-item">
+      <h3 class="gloss-term">Birgitta Böckeler (Martin Fowler) — <em>Sensors for coding agents</em></h3>
+      <p>The companion piece on the "behind" half of the harness: the feedback signals — tests, linters, type checks, build and runtime errors — that grade an agent's work after it acts, and how to wire them so the agent reads its own grade and self-corrects.</p>
+      <div class="gloss-see ext"><a href="https://martinfowler.com/articles/sensors-for-coding-agents.html" target="_blank" rel="noopener">martinfowler.com/articles</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="g-vendor">Vendor best-practice guides</h2>
+    <p class="ref-intro">Two canonical, product-specific guides folded into the method tool-agnostically: take the practice, drop the product name.</p>
+
+    <div class="gloss-item">
+      <h3 class="gloss-term">Anthropic — <em>Claude Code best practices</em></h3>
+      <div class="gloss-see ext"><a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener">code.claude.com/docs</a></div>
+    </div>
+
+    <div class="gloss-item">
+      <h3 class="gloss-term">OpenAI — <em>Codex best practices</em></h3>
+      <div class="gloss-see ext"><a href="https://developers.openai.com/codex/learn/best-practices" target="_blank" rel="noopener">developers.openai.com/codex</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="g-context">Context engineering</h2>
+    <p class="ref-intro">Why the context window is a budget, not a backpack — the research behind the context-engineering chapter.</p>
+
+    <div class="gloss-item">
+      <h3 class="gloss-term">Anthropic — <em>Effective context engineering for AI agents</em></h3>
+      <p>Attention budget, the "right altitude" for instructions, and compaction vs. context-reset strategy.</p>
+      <div class="gloss-see ext"><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener">anthropic.com/engineering</a></div>
+    </div>
+
+    <div class="gloss-item">
+      <h3 class="gloss-term">Chroma Research — <em>Context Rot</em></h3>
+      <p>How model performance degrades as the input window grows — the empirical case for keeping context tight rather than dumping everything in.</p>
+      <div class="gloss-see ext"><a href="https://www.trychroma.com/research/context-rot" target="_blank" rel="noopener">trychroma.com/research</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="g-skills">Skills</h2>
+    <p class="ref-intro">The evidence behind treating reusable agent skills as a first-class guide.</p>
+
+    <div class="gloss-item">
+      <h3 class="gloss-term">Anthropic — <em>Equipping agents for the real world with Agent Skills</em></h3>
+      <div class="gloss-see ext"><a href="https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills" target="_blank" rel="noopener">anthropic.com/engineering</a></div>
+    </div>
+
+    <div class="gloss-item">
+      <h3 class="gloss-term"><em>How Well Do Agentic Skills Work in the Wild?</em></h3>
+      <div class="gloss-see ext"><a href="https://arxiv.org/pdf/2604.04323v1" target="_blank" rel="noopener">arxiv.org/abs/2604.04323</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="g-testing">Verification &amp; testing</h2>
+    <p class="ref-intro">The research behind "proof, not vibes" — property-based testing, mutation testing, and why weak tests are a liability.</p>
+
+    <div class="gloss-item">
+      <h3 class="gloss-term">Anthropic Red — <em>Property-Based Testing with Claude</em></h3>
+      <p>Generating spec-derived assertions and invariants instead of hand-picked examples.</p>
+      <div class="gloss-see ext"><a href="https://red.anthropic.com/2026/property-based-testing/" target="_blank" rel="noopener">red.anthropic.com</a></div>
+    </div>
+
+    <div class="gloss-item">
+      <h3 class="gloss-term"><em>Agentic Property-Based Testing</em></h3>
+      <div class="gloss-see ext"><a href="https://arxiv.org/pdf/2510.09907" target="_blank" rel="noopener">arxiv.org/abs/2510.09907</a></div>
+    </div>
+
+    <div class="gloss-item">
+      <h3 class="gloss-term"><em>UTBoost</em> — weak tests pass bad patches on SWE-bench</h3>
+      <p>Evidence that under-powered test suites let incorrect agent patches through — the case for grading the tests themselves (mutation testing) rather than trusting a green run.</p>
+      <div class="gloss-see ext"><a href="https://arxiv.org/pdf/2506.09289" target="_blank" rel="noopener">arxiv.org/abs/2506.09289</a></div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span class="k">Humans steer, agents execute — the harness is the whole game.</span>
+    <span><a href="index.html">← All chapters</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
