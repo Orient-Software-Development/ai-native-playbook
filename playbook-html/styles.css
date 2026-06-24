@@ -2,18 +2,20 @@
 /* Do not inline styles in individual pages; add shared rules here instead. */
 
 :root {
-  --ivory:  #FAF9F5;
+  /* cool, neutral base + indigo accent — a deliberate move off the warm
+     cream / terracotta / beige palette. Names kept; only values changed. */
+  --ivory:  #F7F8FA;   /* page background — cool off-white, not cream */
   --paper:  #FFFFFF;
-  --slate:  #141413;
-  --clay:   #D97757;
-  --clay-d: #B85C3E;
-  --oat:    #E3DACC;
-  --olive:  #788C5D;
-  --g100:   #F0EEE6;
-  --g200:   #E6E3DA;
-  --g300:   #D1CFC5;
-  --g500:   #87867F;
-  --g700:   #3D3D3A;
+  --slate:  #16181D;   /* ink — cooler near-black */
+  --clay:   #4F67E4;   /* accent (brand + links + emphasis) — indigo */
+  --clay-d: #3A4FC0;   /* accent, darker — for body-text links */
+  --oat:    #D4DBEA;   /* soft accent tint — underlines, thumb hover */
+  --olive:  #3F9B6E;   /* "good / pass" — a cleaner green */
+  --g100:   #F1F3F6;
+  --g200:   #E4E7EC;
+  --g300:   #D3D8E0;
+  --g500:   #7A828F;
+  --g700:   #3A3F4A;
   --serif: ui-serif, Georgia, "Times New Roman", Times, serif;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --mono: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace;
@@ -517,7 +519,7 @@ footer a { color: var(--clay); text-decoration-color: var(--oat); text-underline
   border-radius: 999px;
   margin-bottom: 14px;
 }
-.lane.bad .lane-tag { background: #F8E5DD; color: var(--clay-d); }
+.lane.bad .lane-tag { background: #E1E7FB; color: var(--clay-d); }
 .lane.good .lane-tag { background: #E7EDDD; color: #4F5F3A; }
 .lane h4 {
   font-family: var(--serif);
@@ -638,7 +640,7 @@ footer a { color: var(--clay); text-decoration-color: var(--oat); text-underline
   margin: 36px 0;
   border-radius: 14px;
   border: 1.5px solid var(--clay);
-  background: linear-gradient(135deg, #FBEFE9, var(--ivory));
+  background: linear-gradient(135deg, #EEF1FD, var(--ivory));
   padding: 22px 24px;
 }
 .callout .c-label {
@@ -855,7 +857,7 @@ footer a { color: var(--clay); text-decoration-color: var(--oat); text-underline
   border-radius: 999px;
   margin-bottom: 10px;
 }
-.case.partial .case-tag { background: #F8E5DD; color: var(--clay-d); }
+.case.partial .case-tag { background: #E1E7FB; color: var(--clay-d); }
 .case.whole .case-tag { background: #E7EDDD; color: #4F5F3A; }
 .case h4 { font-family: var(--serif); font-weight: 500; font-size: 15px; margin: 0 0 8px; color: var(--slate); }
 .case p { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--g700); }
@@ -868,7 +870,7 @@ footer a { color: var(--clay); text-decoration-color: var(--oat); text-underline
 .pipe .step.on { background: var(--g100); }
 .pipe .step.on .s-n { color: var(--clay-d); }
 .pipe .step.on .s-t { color: var(--clay-d); font-weight: 600; }
-.pipe .step.on .dot { box-shadow: 0 0 0 4px #F8E5DD; }
+.pipe .step.on .dot { box-shadow: 0 0 0 4px #E1E7FB; }
 
 /* ── layered stack — fourth layer accent (e.g. schema → logic → API → UI) ── */
 .layer.l4::before { background: var(--slate); }
@@ -894,7 +896,7 @@ footer a { color: var(--clay); text-decoration-color: var(--oat); text-underline
   border: 1.5px solid transparent;
   transition: box-shadow 150ms;
 }
-.harness-bar .hb-guides { background: linear-gradient(135deg, #FBEFE9, var(--ivory)); }
+.harness-bar .hb-guides { background: linear-gradient(135deg, #EEF1FD, var(--ivory)); }
 .harness-bar .hb-sensors { background: linear-gradient(135deg, #EEF2E6, var(--ivory)); text-align: right; }
 .harness-bar .hb-tag {
   font-family: var(--mono);
@@ -922,7 +924,7 @@ footer a { color: var(--clay); text-decoration-color: var(--oat); text-underline
   text-align: center;
   white-space: nowrap;
 }
-.harness-bar .hb-guides.on { border-color: var(--clay); box-shadow: 0 0 0 3px #F8E5DD; }
+.harness-bar .hb-guides.on { border-color: var(--clay); box-shadow: 0 0 0 3px #E1E7FB; }
 .harness-bar .hb-sensors.on { border-color: var(--olive); box-shadow: 0 0 0 3px #E7EDDD; }
 @media (max-width: 600px) {
   .harness-bar { flex-direction: column; gap: 8px; }
@@ -967,8 +969,8 @@ footer a { color: var(--clay); text-decoration-color: var(--oat); text-underline
 .pyramid .tier.w3 { width: 68%; }
 .pyramid .tier.w4 { width: 53%; }
 .pyramid .tier.w5 { width: 42%; }
-.pyramid .tier.hot  { background: #F8E5DD; border-color: #E8C4B5; }
-.pyramid .tier.warm { background: #FBEFE9; }
+.pyramid .tier.hot  { background: #E1E7FB; border-color: #C3D0F6; }
+.pyramid .tier.warm { background: #EEF1FD; }
 .pyramid .tier.cool { background: var(--g100); }
 .pyramid .tier.cold { background: #EEF2E6; border-color: #D3DEC2; }
 
@@ -995,7 +997,7 @@ footer a { color: var(--clay); text-decoration-color: var(--oat); text-underline
   border-radius: 999px;
   align-self: flex-start;
 }
-.duo .duo-panel.bad .duo-tag { background: #F8E5DD; color: var(--clay-d); }
+.duo .duo-panel.bad .duo-tag { background: #E1E7FB; color: var(--clay-d); }
 .duo .duo-panel.good .duo-tag { background: #E7EDDD; color: #4F5F3A; }
 .duo .duo-panel svg { width: 100%; height: auto; max-width: 260px; margin: 0 auto; overflow: visible; }
 .duo .duo-cap { font-size: 13px; line-height: 1.5; color: var(--g700); margin: 0; }
@@ -1020,7 +1022,7 @@ footer a { color: var(--clay); text-decoration-color: var(--oat); text-underline
 }
 .seam .seam-side { padding: 18px 20px; border-radius: 10px; }
 .seam .seam-ci { background: linear-gradient(135deg, #EEF2E6, var(--ivory)); }
-.seam .seam-cd { background: linear-gradient(135deg, #FBEFE9, var(--ivory)); }
+.seam .seam-cd { background: linear-gradient(135deg, #EEF1FD, var(--ivory)); }
 .seam .seam-k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; }
 .seam .seam-ci .seam-k { color: #4F5F3A; }
 .seam .seam-cd .seam-k { color: var(--clay-d); }
@@ -1055,7 +1057,7 @@ footer a { color: var(--clay); text-decoration-color: var(--oat); text-underline
   overflow: hidden;
 }
 .rogue::before { content: ""; position: absolute; top: 0; left: 0; bottom: 0; width: 4px; background: var(--clay); }
-.rogue.headline { border-color: var(--clay); background: linear-gradient(135deg, #FBEFE9, var(--paper)); }
+.rogue.headline { border-color: var(--clay); background: linear-gradient(135deg, #EEF1FD, var(--paper)); }
 .rogue .rg-n { font-family: var(--mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; color: var(--clay); text-transform: uppercase; }
 .rogue h4 { font-family: var(--serif); font-weight: 500; font-size: 17px; margin: 0; color: var(--slate); letter-spacing: -0.008em; }
 .rogue p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--g700); }
@@ -1140,6 +1142,32 @@ footer a { color: var(--clay); text-decoration-color: var(--oat); text-underline
 .gloss-see a::before { content: "\2192 "; color: var(--clay); }
 .gloss-see a:hover { color: var(--clay); }
 
+/* References page — quick-jump pills (word labels, not single letters) */
+.ref-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 0; }
+.ref-nav a {
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 6px 13px;
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid var(--g300);
+  border-radius: 7px;
+  color: var(--g700);
+  text-decoration: none;
+  transition: border-color 120ms, color 120ms;
+}
+.ref-nav a:hover { border-color: var(--clay); color: var(--clay-d); }
+
+/* References page — group intros under each section header */
+.ref-intro {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--g700);
+  max-width: 720px;
+  margin: 12px 0 4px;
+}
+.gloss-see.ext a::after { content: " \2197"; color: var(--g300); }
+
 /* A–Z quick-jump bar */
 .gloss-az { display: flex; flex-wrap: wrap; gap: 6px; margin: 26px 0 0; }
 .gloss-az a {
@@ -1211,7 +1239,7 @@ footer a { color: var(--clay); text-decoration-color: var(--oat); text-underline
 }
 @keyframes flashFail {
   0%,100% { transform: translateX(0); fill: var(--paper); }
-  20%  { transform: translateX(-3px); fill: #FBEFE9; stroke-width: 3; }
+  20%  { transform: translateX(-3px); fill: #EEF1FD; stroke-width: 3; }
   60%  { transform: translateX(3px); }
   80%  { transform: translateX(-2px); }
 }
