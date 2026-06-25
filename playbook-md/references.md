@@ -98,6 +98,37 @@ The evidence behind treating reusable agent skills as a first-class guide.
 
 ---
 
+## Spec-driven development
+
+Writing the specification before the code, and treating it as a first-class artifact the agent works
+from — the spectrum from spec-first to spec-as-source, and where it overlaps the harness.
+
+### Leigh Griffin & Ray Carroll (InfoQ) — *Spec Driven Development: When Architecture Becomes Executable*
+
+A five-layer model — specification, generation, artifact, validation, runtime — in which the
+executable spec, not the code, is the source of truth. Makes the case for "architectural determinism"
+with continuous drift detection between spec and implementation.
+
+→ https://www.infoq.com/articles/spec-driven-development/
+
+### Birgitta Böckeler (Martin Fowler) — *Understanding Spec-Driven Development: Kiro, spec-kit, and Tessl*
+
+The taxonomy: three levels of SDD — spec-first, spec-anchored, and spec-as-source — surveyed across
+three tools. A skeptical read on whether elaborate spec workflows improve development or just amplify
+review burden and hallucination.
+
+→ https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html
+
+### Hari Krishnan — *The Intent Harness*
+
+A disciplined process for turning rough intuition into executable agent instructions through
+structured clarification and human–AI dialogue. Argues that execution failures should send you back to
+the elicitation, specification, and review process — not just the agent.
+
+→ https://intent-driven.dev/blog/2026/02/23/intent-harness/
+
+---
+
 ## Verification & testing
 
 The research behind "proof, not vibes" — property-based testing, mutation testing, and why weak tests
