@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harness Engineering &amp; Spec-Driven Development — 24 slides</title>
+<style>
+  :root{
+    --ivory:#F7F8FA; --paper:#FFFFFF; --slate:#16181D;
+    --clay:#4F67E4; --clay-d:#3A4FC0; --oat:#D4DBEA;
+    --olive:#3F9B6E; --red:#D1495B;
+    --g100:#F1F3F6; --g200:#E4E7EC; --g300:#D3D8E0; --g500:#7A828F; --g700:#3A3F4A;
+    --serif:ui-serif,Georgia,"Times New Roman",Times,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Monaco,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:#0c0d11;font-family:var(--sans);display:grid;place-items:center;min-height:100vh;overflow:hidden;}
+
+  .progress{position:fixed;top:0;left:0;height:3px;width:100%;background:rgba(255,255,255,.08);z-index:50;}
+  .progress-bar{height:100%;width:0;background:var(--clay);transition:width .25s ease;}
+
+  .deck{position:relative;width:min(100vw,177.78vh);aspect-ratio:16/9;box-shadow:0 30px 80px rgba(0,0,0,.5);}
+  .slide{
+    position:absolute;inset:0;
+    background:radial-gradient(120% 90% at 82% -12%, #FFFFFF 0%, var(--ivory) 62%);
+    color:var(--slate);container-type:size;overflow:hidden;display:none;
+  }
+  .slide.active{display:block;}
+  .pad{position:absolute;inset:0;padding:4cqw 4.6cqw 3.4cqw;display:flex;flex-direction:column;}
+
+  .chrome{display:flex;justify-content:space-between;align-items:center;flex:0 0 auto;}
+  .eyebrow{font-family:var(--mono);font-size:1.15cqw;letter-spacing:.17em;text-transform:uppercase;color:var(--g500);display:flex;align-items:center;gap:.9cqw;}
+  .eyebrow::before{content:"";width:2.4cqw;height:.14cqw;background:var(--clay);}
+  .num{font-family:var(--mono);font-size:1.1cqw;color:var(--g500);border:.12cqw solid var(--g300);border-radius:999px;padding:.35cqw 1cqw;letter-spacing:.05em;}
+
+  h1{font-family:var(--serif);font-weight:500;font-size:3.3cqw;line-height:1.08;letter-spacing:-.015em;margin:1.9cqw 0 0;max-width:30ch;flex:0 0 auto;}
+  h1 em{font-style:italic;color:var(--clay);}
+  h1.big{font-size:4.6cqw;max-width:22ch;}
+  .lede{font-size:1.58cqw;line-height:1.5;color:var(--g700);margin:1.1cqw 0 0;max-width:76ch;flex:0 0 auto;}
+  .lede b{color:var(--slate);font-weight:650;}
+  .lede .hi{color:var(--clay-d);font-weight:650;}
+
+  .fill{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:1.6cqw;margin-top:1.4cqw;}
+
+  /* footer takeaway / cite */
+  .foot{flex:0 0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:3cqw;}
+  .take{border-left:.3cqw solid var(--clay);padding:.3cqw 0 .3cqw 1.3cqw;max-width:84ch;}
+  .take p{font-size:1.42cqw;line-height:1.42;color:var(--g700);}
+  .take b{color:var(--slate);font-weight:650;}
+  .cite{font-family:var(--mono);font-size:1.02cqw;color:var(--g500);white-space:nowrap;padding-bottom:.3cqw;}
+  .cite i{font-style:italic;color:var(--g700);}
+
+  /* code cards */
+  .cards2{display:grid;grid-template-columns:1fr 1fr;gap:2.2cqw;align-items:start;}
+  .code{background:#fff;border:.14cqw solid var(--g300);border-radius:1cqw;overflow:hidden;box-shadow:0 1cqw 2.4cqw rgba(22,24,29,.05);}
+  .code .bar{display:flex;align-items:center;justify-content:space-between;padding:.8cqw 1.2cqw;border-bottom:.12cqw solid var(--g200);background:var(--g100);}
+  .code .dots{display:flex;gap:.55cqw;}
+  .code .dots i{width:.9cqw;height:.9cqw;border-radius:50%;background:var(--g300);display:block;}
+  .badge{font-family:var(--mono);font-size:1.05cqw;font-weight:700;padding:.25cqw .9cqw;border-radius:999px;letter-spacing:.02em;}
+  .badge.ok{color:var(--olive);background:rgba(63,155,110,.12);}
+  .badge.bad{color:var(--red);background:rgba(209,73,91,.12);}
+  .code pre{margin:0;padding:1.2cqw 1.4cqw;font-family:var(--mono);font-size:1.16cqw;line-height:1.6;color:var(--slate);white-space:pre;overflow:auto;}
+  .code pre .k{color:var(--clay-d);}
+  .code pre .c{color:var(--g500);}
+  .caprow{display:flex;justify-content:center;gap:2.4cqw;font-family:var(--mono);font-size:1.28cqw;color:var(--g700);}
+  .caprow b.ok{color:var(--olive);} .caprow b.bad{color:var(--red);}
+
+  /* generic card grid (taxonomy, checklist) */
+  .grid7{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2cqw;}
+  .grid7 .c{background:#fff;border:.13cqw solid var(--g300);border-radius:.9cqw;padding:1.1cqw 1.2cqw;}
+  .grid7 .c.span{grid-column:span 1;}
+  .grid7 .c h4{font-size:1.32cqw;font-weight:700;color:var(--slate);margin-bottom:.35cqw;}
+  .grid7 .c p{font-size:1.06cqw;color:var(--g500);line-height:1.4;font-family:var(--mono);}
+  .grid7 .c .n{font-family:var(--mono);font-size:.95cqw;color:var(--clay);display:block;margin-bottom:.35cqw;}
+
+  /* 2x2 quadrant */
+  .quad{display:grid;grid-template-columns:14cqw 1fr 1fr;grid-template-rows:auto 1fr 1fr;gap:.9cqw;font-size:1.2cqw;}
+  .quad .hd{font-family:var(--mono);font-size:1.05cqw;letter-spacing:.06em;text-transform:uppercase;color:var(--g500);text-align:center;align-self:end;padding-bottom:.3cqw;line-height:1.5;}
+  .quad .rl{font-family:var(--mono);font-size:1.05cqw;letter-spacing:.05em;text-transform:uppercase;color:var(--g500);display:flex;align-items:center;}
+  .quad .cell{background:#fff;border:.13cqw solid var(--g300);border-radius:.9cqw;padding:1cqw 1.2cqw;}
+  .quad .cell.comp{border-top:.35cqw solid var(--olive);}
+  .quad .cell.inf{border-top:.35cqw solid var(--clay);}
+  .quad .cell b{font-size:1.16cqw;display:block;margin-bottom:.3cqw;}
+  .quad .cell span{font-family:var(--mono);font-size:1cqw;color:var(--g500);line-height:1.4;}
+
+  /* flow chips */
+  .flow{display:flex;align-items:center;justify-content:center;gap:1.1cqw;flex-wrap:wrap;}
+  .chip{background:#fff;border:.16cqw solid var(--g300);border-radius:.9cqw;padding:1cqw 1.3cqw;text-align:center;min-width:9cqw;}
+  .chip .t{font-size:1.36cqw;font-weight:700;color:var(--slate);}
+  .chip .s{font-family:var(--mono);font-size:1cqw;color:var(--g500);margin-top:.25cqw;}
+  .chip.spec{border-color:var(--clay);} .chip.spec .s{color:var(--clay-d);}
+  .chip.model{border-color:var(--slate);}
+  .chip.good{border-color:var(--olive);} .chip.good .t{color:var(--olive);}
+  .chip.bad{border-color:var(--red);} .chip.bad .t{color:var(--red);}
+  .chip.ghost{border-style:dashed;background:transparent;opacity:.6;}
+  .arrow{font-size:2cqw;color:var(--g500);line-height:1;}
+  .retbar{margin-top:.4cqw;display:flex;align-items:center;gap:1cqw;justify-content:center;font-family:var(--mono);font-size:1.14cqw;color:var(--clay-d);}
+  .retbar svg{height:1.4cqw;}
+
+  /* big equation */
+  .eq{display:flex;align-items:center;justify-content:center;gap:1.6cqw;font-family:var(--serif);font-size:5cqw;letter-spacing:-.02em;}
+  .eq .op{color:var(--g500);}
+  .eq .box{font-family:var(--sans);font-weight:700;font-size:3.4cqw;padding:1.2cqw 2cqw;border-radius:1.2cqw;border:.2cqw solid;}
+  .eq .box.model{border-color:var(--slate);color:var(--slate);}
+  .eq .box.harn{border-color:var(--clay);color:var(--clay-d);background:rgba(79,103,228,.05);}
+  .eqnote{display:flex;justify-content:center;gap:6cqw;font-family:var(--mono);font-size:1.16cqw;color:var(--g500);}
+  .eqnote span b{color:var(--slate);}
+
+  /* quote */
+  .quote{font-family:var(--serif);font-size:3.1cqw;line-height:1.28;color:var(--slate);max-width:26ch;}
+  .quote .mark{color:var(--clay);}
+  .attr{font-family:var(--mono);font-size:1.3cqw;color:var(--g500);margin-top:1.4cqw;}
+
+  /* checklist */
+  .checklist{display:flex;flex-direction:column;gap:1.05cqw;}
+  .checklist li{list-style:none;display:flex;align-items:flex-start;gap:1.2cqw;font-size:1.6cqw;color:var(--g700);}
+  .checklist .box{flex:0 0 auto;width:2cqw;height:2cqw;border-radius:.4cqw;border:.2cqw solid var(--clay);color:var(--clay);font-family:var(--mono);font-size:1.1cqw;display:grid;place-items:center;margin-top:.2cqw;}
+  .checklist b{color:var(--slate);}
+
+  /* drift cards */
+  .dcard{background:#fff;border:.13cqw solid var(--g300);border-radius:1cqw;padding:1.5cqw 1.7cqw;}
+  .dcard.inf{border-top:.4cqw solid var(--clay);}
+  .dcard.comp{border-top:.4cqw solid var(--olive);}
+  .dhd{font-size:1.7cqw;font-weight:700;color:var(--slate);display:flex;align-items:center;justify-content:space-between;gap:1cqw;margin-bottom:.9cqw;}
+  .tag{font-family:var(--mono);font-size:.92cqw;font-weight:700;padding:.3cqw .8cqw;border-radius:999px;letter-spacing:.03em;text-transform:uppercase;}
+  .tag.inf{color:var(--clay-d);background:rgba(79,103,228,.12);}
+  .tag.comp{color:var(--olive);background:rgba(63,155,110,.12);}
+  .dcard .what{font-size:1.26cqw;line-height:1.45;color:var(--g700);margin-bottom:.9cqw;}
+  .dcard .sens{font-size:1.26cqw;line-height:1.45;color:var(--slate);}
+  .dcard .sens b{color:var(--clay-d);}
+
+  /* resources */
+  .res{columns:2;column-gap:3cqw;font-size:1.14cqw;line-height:1.7;color:var(--g700);}
+  .res .r{break-inside:avoid;margin-bottom:.7cqw;}
+  .res .who{font-weight:700;color:var(--slate);}
+  .res a,.res .lnk{color:var(--clay-d);font-family:var(--mono);font-size:1.02cqw;}
+
+  /* wall (builder/auditor) */
+  .wall{display:flex;align-items:stretch;justify-content:center;gap:0;height:100%;}
+  .wall .side{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:.6cqw;padding:1.5cqw;text-align:center;}
+  .wall .brick{width:1.1cqw;background:repeating-linear-gradient(0deg,var(--g300) 0 1.6cqw,var(--g200) 1.6cqw 1.8cqw);border-radius:.3cqw;}
+  .wall .side .t{font-size:1.7cqw;font-weight:700;}
+  .wall .side .s{font-family:var(--mono);font-size:1.1cqw;color:var(--g500);}
+
+  svg .d-flow{fill:none;stroke:var(--g500);stroke-width:2.4;stroke-linecap:round;}
+  svg .d-head{fill:var(--g500);}
+  svg .node{fill:var(--paper);stroke-width:2;}
+  svg .term{font-family:var(--sans);font-weight:700;fill:var(--slate);}
+  svg .sub{font-family:var(--mono);fill:var(--clay-d);}
+  svg .lbl{font-family:var(--mono);fill:var(--g500);}
+
+  /* title slide */
+  .title-wrap{display:flex;flex-direction:column;justify-content:center;height:100%;}
+  .title-wrap .kick{font-family:var(--mono);font-size:1.2cqw;letter-spacing:.2em;text-transform:uppercase;color:var(--clay);margin-bottom:1.6cqw;}
+  .title-wrap h1{font-size:5.2cqw;margin:0;max-width:24ch;}
+  .title-wrap .sub{font-size:1.9cqw;color:var(--g700);margin-top:1.8cqw;max-width:52ch;}
+  .acts{display:flex;gap:.7cqw;flex-wrap:wrap;margin-top:3cqw;}
+  .acts span{font-family:var(--mono);font-size:1cqw;color:var(--g500);border:.12cqw solid var(--g300);border-radius:999px;padding:.4cqw 1cqw;}
+
+  /* nav */
+  .nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:50;display:flex;align-items:center;gap:14px;color:#cfd3dc;font-family:var(--mono);font-size:13px;}
+  .nav button{background:rgba(255,255,255,.08);color:#e7e9ee;border:1px solid rgba(255,255,255,.14);border-radius:8px;width:34px;height:30px;cursor:pointer;font-size:15px;}
+  .nav button:hover{background:rgba(255,255,255,.16);}
+  .hint{position:fixed;bottom:18px;right:18px;z-index:50;color:#6a6f7b;font-family:var(--mono);font-size:11px;}
+
+  @media print{
+    body{background:#fff;display:block;overflow:visible;}
+    .deck{width:100%;box-shadow:none;}
+    .slide{display:block!important;page-break-after:always;position:relative;}
+    .nav,.hint,.progress{display:none;}
+    @page{size:landscape;}
+  }
+</style>
+</head>
+<body>
+<div class="progress"><div class="progress-bar"></div></div>
+<div class="deck">
+
+  <!-- ══ 1 · TITLE ══ -->
+  <section class="slide">
+    <div class="pad"><div class="title-wrap">
+      <div class="kick">A 30-minute talk · for teams already using AI coding tools</div>
+      <h1>Harness Engineering &amp; <em>Spec-Driven Development</em></h1>
+      <p class="sub">How to get reliable work out of an unreliable model.<br>Everything around the model is the part you actually control.</p>
+      <div class="acts">
+        <span>1 · Why output is random</span><span>2 · Agent = Model + Harness</span>
+        <span>3 · Sensors</span><span>4 · Spec-Driven Development</span>
+        <span>5 · TDD</span><span>6 · Ideas as tickets</span>
+        <span>7 · Guard drift</span><span>8 · Land it</span>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- ══ 2 · TWO OUTPUTS ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 0 · The problem</span><span class="num">02 / 24</span></div>
+      <h1>One prompt. Two programs. One is <em>silently wrong.</em></h1>
+      <p class="lede">Prompt, run twice, identical both times: <b>“Write a Python function <code>median(nums)</code>.”</b></p>
+      <div class="fill">
+        <div class="cards2">
+          <div class="code">
+            <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="badge ok">✓ correct</span></div>
+<pre><span class="k">def</span> median(nums):
+    s = sorted(nums)
+    n = len(s)
+    mid = n // 2
+    <span class="k">return</span> s[mid] <span class="k">if</span> n % 2 \
+        <span class="k">else</span> (s[mid-1] + s[mid]) / 2</pre>
+          </div>
+          <div class="code">
+            <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="badge bad">✗ silently wrong</span></div>
+<pre><span class="k">def</span> median(nums):
+    nums.sort()      <span class="c"># mutates caller</span>
+    <span class="k">return</span> nums[len(nums) // 2]
+
+
+    <span class="c"># never averages the two middles</span></pre>
+          </div>
+        </div>
+        <div class="caprow">
+          <span><code>median([3,1,2])</code> → both give <b class="ok">2</b> ✓ &nbsp;(the quick test passes)</span>
+          <span><code>median([1,2,3,4])</code> → <b class="ok">2.5</b> vs <b class="bad">3</b> ✗</span>
+        </div>
+      </div>
+      <div class="foot"><div class="take"><p><b>Same prompt. No typo, no bad luck.</b> The tool is allowed to hand you either — and the broken one looks cleaner.</p></div></div>
+    </div>
+  </section>
+
+  <!-- ══ 3 · STATISTICAL MODEL ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 1 · Why the output is random</span><span class="num">03 / 24</span></div>
+      <h1>An LLM <em>samples</em> the next token — it doesn't retrieve an answer.</h1>
+      <div class="fill">
+        <svg viewBox="0 0 1160 300" preserveAspectRatio="xMidYMid meet">
+          <text class="lbl" x="20" y="34" font-size="20">context: “…the median is the ___”</text>
+          <!-- bars -->
+          <g font-family="ui-monospace,Menlo,monospace">
+            <g transform="translate(20,70)">
+              <text x="0" y="16" font-size="18" fill="#16181D">middle</text>
+              <rect x="150" y="0" width="430" height="24" rx="4" fill="#4F67E4"/>
+              <text x="596" y="17" font-size="16" fill="#7A828F">0.42</text>
+            </g>
+            <g transform="translate(20,112)">
+              <text x="0" y="16" font-size="18" fill="#16181D">average</text>
+              <rect x="150" y="0" width="318" height="24" rx="4" fill="#4F67E4" opacity=".8"/>
+              <text x="484" y="17" font-size="16" fill="#7A828F">0.31</text>
+            </g>
+            <g transform="translate(20,154)">
+              <text x="0" y="16" font-size="18" fill="#16181D">midpoint</text>
+              <rect x="150" y="0" width="165" height="24" rx="4" fill="#4F67E4" opacity=".6"/>
+              <text x="331" y="17" font-size="16" fill="#7A828F">0.16</text>
+            </g>
+            <g transform="translate(20,196)">
+              <text x="0" y="16" font-size="18" fill="#16181D">center</text>
+              <rect x="150" y="0" width="72" height="24" rx="4" fill="#4F67E4" opacity=".45"/>
+              <text x="238" y="17" font-size="16" fill="#7A828F">0.07</text>
+            </g>
+            <g transform="translate(20,238)">
+              <text x="0" y="16" font-size="18" fill="#7A828F">…</text>
+              <rect x="150" y="0" width="40" height="24" rx="4" fill="#4F67E4" opacity=".3"/>
+              <text x="206" y="17" font-size="16" fill="#7A828F">0.04</text>
+            </g>
+          </g>
+          <!-- sample arrow -->
+          <path class="d-flow" d="M700 150 H820"/><path class="d-head" d="M820 150 l-12 -7 v14 z"/>
+          <rect x="836" y="118" width="300" height="66" rx="12" class="node" stroke="#16181D"/>
+          <text class="term" x="986" y="150" text-anchor="middle" font-size="20">roll the dice</text>
+          <text class="sub" x="986" y="172" text-anchor="middle" font-size="14">pick one → the output varies</text>
+        </svg>
+      </div>
+      <div class="foot"><div class="take"><p>A program returns the same output for the same input. An LLM returns a <b>distribution</b> — sampling (temperature, top-p) picks one. Non-determinism isn't a defect bolted on; it's the mechanism.</p></div></div>
+    </div>
+  </section>
+
+  <!-- ══ 4 · TEMP 0 ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 1 · Why the output is random</span><span class="num">04 / 24</span></div>
+      <h1>“But I set temperature to <em style="font-style:normal;font-family:var(--mono);font-size:.82em;letter-spacing:-.02em">0</em>.” Still not deterministic.</h1>
+      <div class="fill">
+        <svg viewBox="0 0 1160 300" preserveAspectRatio="xMidYMid meet">
+          <rect x="10" y="118" width="240" height="70" rx="12" class="node" stroke="#4F67E4"/>
+          <text class="term" x="130" y="146" text-anchor="middle" font-size="18">“Tell me about</text>
+          <text class="term" x="130" y="168" text-anchor="middle" font-size="18">Richard Feynman”</text>
+          <text class="lbl" x="130" y="206" text-anchor="middle" font-size="14">temp 0 · ×1000 runs</text>
+
+          <path class="d-flow" d="M254 153 H336"/><path class="d-head" d="M336 153 l-12 -7 v14 z"/>
+
+          <rect x="344" y="120" width="360" height="66" rx="12" class="node" stroke="#16181D"/>
+          <text class="term" x="524" y="146" text-anchor="middle" font-size="16">identical for 102 tokens</text>
+          <text class="sub" x="524" y="170" text-anchor="middle" font-size="14" fill="#7A828F">“…born on May 11, 1918, in ___”</text>
+
+          <!-- split -->
+          <path class="d-flow" d="M708 145 C 760 110, 800 96, 860 96"/>
+          <path class="d-head" d="M860 96 l-13 -6 v13 z"/>
+          <path class="d-flow" d="M708 162 C 760 196, 800 210, 860 210"/>
+          <path class="d-head" d="M860 210 l-13 -6 v13 z"/>
+
+          <rect x="868" y="66" width="284" height="60" rx="12" class="node" stroke="#3F9B6E"/>
+          <text class="term" x="892" y="94" font-size="17" text-anchor="start">“Queens, New York”</text>
+          <text class="sub" x="892" y="114" fill="#3F9B6E">992 of 1000</text>
+
+          <rect x="868" y="182" width="284" height="60" rx="12" class="node" stroke="#D1495B"/>
+          <text class="term" x="892" y="210" font-size="17" text-anchor="start">“New York City”</text>
+          <text class="sub" x="892" y="230" fill="#D1495B">8 of 1000</text>
+
+          <text class="lbl" x="1010" y="150" text-anchor="middle" font-size="15">→ 80 distinct outputs</text>
+        </svg>
+      </div>
+      <div class="foot">
+        <div class="take"><p>The randomness leaks from <b>batch size</b> (server traffic), and GPU kernels aren't batch-invariant — so it's partly outside your control <b>even in principle.</b> You can't make the model reliable by configuring the model.</p></div>
+        <div class="cite">Thinking Machines Lab — <i>Defeating Nondeterminism in LLM Inference</i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 5 · REFRAME ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 1 · Why the output is random</span><span class="num">05 / 24</span></div>
+      <h1>So don't reduce the randomness — <em>constrain the output space.</em></h1>
+      <div class="fill">
+        <svg viewBox="0 0 1160 290" preserveAspectRatio="xMidYMid meet">
+          <text class="lbl" x="150" y="24" text-anchor="middle" font-size="15">all plausible outputs</text>
+          <g fill="#7A828F">
+            <circle cx="40" cy="70" r="4"/><circle cx="90" cy="45" r="4"/><circle cx="150" cy="90" r="4"/>
+            <circle cx="70" cy="140" r="4"/><circle cx="200" cy="60" r="4"/><circle cx="120" cy="200" r="4"/>
+            <circle cx="55" cy="220" r="4"/><circle cx="210" cy="150" r="4"/><circle cx="170" cy="210" r="4"/>
+            <circle cx="30" cy="170" r="4"/><circle cx="240" cy="110" r="4"/><circle cx="95" cy="255" r="4"/>
+            <circle cx="185" cy="255" r="4"/><circle cx="140" cy="30" r="4"/><circle cx="250" cy="200" r="4"/>
+          </g>
+          <!-- funnel -->
+          <path d="M320 40 L620 120 L620 170 L320 250 Z" fill="rgba(79,103,228,.08)" stroke="#4F67E4" stroke-width="2"/>
+          <text class="sub" x="470" y="140" text-anchor="middle" font-size="17" fill="#3A4FC0">guides + sensors</text>
+          <text class="sub" x="470" y="164" text-anchor="middle" font-size="17" fill="#3A4FC0">(the harness)</text>
+          <path class="d-flow" d="M636 145 H720"/><path class="d-head" d="M720 145 l-12 -7 v14 z"/>
+          <!-- acceptable band -->
+          <rect x="740" y="110" width="380" height="70" rx="10" fill="rgba(63,155,110,.08)" stroke="#3F9B6E" stroke-width="2"/>
+          <g fill="#3F9B6E"><circle cx="800" cy="145" r="4"/><circle cx="860" cy="135" r="4"/><circle cx="920" cy="155" r="4"/><circle cx="980" cy="140" r="4"/><circle cx="1040" cy="150" r="4"/></g>
+          <text class="lbl" x="930" y="200" text-anchor="middle" font-size="15">acceptable, verified range</text>
+        </svg>
+      </div>
+      <div class="foot"><div class="take"><p>The question isn't “how do I make it deterministic?” It's <b>“how do I scope the output so the variance lands in an acceptable range?”</b> That discipline has a name — <span class="hi">harness engineering.</span></p></div></div>
+    </div>
+  </section>
+
+  <!-- ══ 6 · EQUATION ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 2 · Agent = Model + Harness</span><span class="num">06 / 24</span></div>
+      <h1>The whole game, in one equation.</h1>
+      <div class="fill">
+        <div class="eq"><span>Agent</span><span class="op">=</span><span class="box model">Model</span><span class="op">+</span><span class="box harn">Harness</span></div>
+        <div class="eqnote">
+          <span><b>Model</b> — you can only <b>pick</b> it, from a list everyone shares.</span>
+          <span><b>Harness</b> — everything else. You fully <b>own</b> it. A rival can't copy it for free.</span>
+        </div>
+      </div>
+      <div class="foot">
+        <div class="take"><p>“A decent model with a great harness <b>beats</b> a great model with a bad harness.” The leverage is the part you build — not the release you wait for.</p></div>
+        <div class="cite">Addy Osmani — <i>Agent Harness Engineering</i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 7 · TAXONOMY ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 2 · Agent = Model + Harness</span><span class="num">07 / 24</span></div>
+      <h1>“Harness” isn't fuzzy — it's <em>seven</em> concrete things.</h1>
+      <div class="fill">
+        <div class="grid7">
+          <div class="c"><span class="n">01</span><h4>Context &amp; knowledge</h4><p>system prompts · AGENTS.md · skills · memory</p></div>
+          <div class="c"><span class="n">02</span><h4>Execution env</h4><p>filesystem · git · sandbox · bash</p></div>
+          <div class="c"><span class="n">03</span><h4>Tool integration</h4><p>MCP servers · tool descriptions · registries</p></div>
+          <div class="c"><span class="n">04</span><h4>Control flow</h4><p>orchestration · subagents · hooks</p></div>
+          <div class="c"><span class="n">05</span><h4>Observability</h4><p>logging · tracing · cost / latency</p></div>
+          <div class="c"><span class="n">06</span><h4>Long-horizon work</h4><p>planning · verification loops · compaction</p></div>
+          <div class="c"><span class="n">07</span><h4>Safety &amp; enforcement</h4><p>permission gates · approvals · blocks</p></div>
+          <div class="c" style="background:rgba(79,103,228,.06);border-color:var(--clay)"><h4 style="color:var(--clay-d)">All yours</h4><p>not one of these is the model — every layer is a lever you build, and own</p></div>
+        </div>
+      </div>
+      <div class="foot"><div class="cite">Addy Osmani — <i>Agent Harness Engineering</i></div></div>
+    </div>
+  </section>
+
+  <!-- ══ 8 · AGENTS.md ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 2 · Example 1 — Context</span><span class="num">08 / 24</span></div>
+      <h1>The cheapest, highest-leverage harness: a <em>guide file.</em></h1>
+      <div class="fill">
+        <div class="code" style="max-width:none">
+          <div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="badge" style="color:var(--g500)">AGENTS.md</span></div>
+<pre><span class="c">## Architecture (non-negotiable)</span>
+- API routes (src/api/**) MUST NOT contain business logic.
+  They call functions in src/product/**. A lint rule enforces this.
+<span class="c">## Testing</span>
+- Run `npm run check` before you claim done.
+- <span class="k">NEVER</span> weaken or delete an existing test to make a build pass. Fix the code.
+<span class="c">## Conventions</span>
+- Money is Decimal, never number. Dates are UTC ISO-8601.</pre>
+        </div>
+      </div>
+      <div class="foot">
+        <div class="take"><p>Each line exists because something once went wrong — the “NEVER delete a test” line, because an agent once did exactly that. <b>“Every line in a good AGENTS.md should trace back to a specific thing that went wrong.”</b> Grow it; don't design it.</p></div>
+        <div class="cite">Addy Osmani</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 9 · MCP ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 2 · Example 2 — Tools (MCP)</span><span class="num">09 / 24</span></div>
+      <h1>MCP lets the agent read <em>reality</em> instead of guessing.</h1>
+      <div class="fill">
+        <div class="cards2">
+          <div class="code"><div class="bar"><span class="badge bad">✗ without MCP</span></div>
+<pre>“Add the field to the deals table.”
+
+→ agent <span class="c">invents</span> a column
+  name and type from context
+→ subtly wrong</pre></div>
+          <div class="code"><div class="bar"><span class="badge ok">✓ with an MCP server</span></div>
+<pre>describe_table("deals")   <span class="c"># real schema</span>
+get_issue("PROJ-412")     <span class="c"># real criteria</span>
+
+→ writes against <span class="k">reality</span></pre></div>
+        </div>
+      </div>
+      <div class="foot">
+        <div class="take"><p>One open protocol, hundreds of prebuilt servers (Jira, Linear, GitHub, Postgres, Sentry). <b>The agent stops hallucinating your schema because it can read it</b> — and stops guessing the requirement because it can fetch the ticket.</p></div>
+        <div class="cite">Model Context Protocol</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 10 · PLANNER/GEN/EVAL ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 2 · Example 3 — Control flow &amp; safety</span><span class="num">10 / 24</span></div>
+      <h1>Wire <em>structure</em> around the model: plan, generate, evaluate.</h1>
+      <div class="fill">
+        <div class="flow">
+          <div class="chip"><div class="t">PLAN</div><div class="s">decompose</div></div>
+          <span class="arrow">→</span>
+          <div class="chip"><div class="t">GENERATE</div><div class="s">write code</div></div>
+          <span class="arrow">→</span>
+          <div class="chip good"><div class="t">EVALUATE</div><div class="s">separate · independent</div></div>
+        </div>
+        <div class="retbar">
+          <svg viewBox="0 0 400 24"><path d="M394 12 H12" fill="none" stroke="#3A4FC0" stroke-width="2" stroke-dasharray="6 6"/><path d="M12 12 l10 -6 v12 z" fill="#3A4FC0"/></svg>
+          <span>on fail → re-plan</span>
+        </div>
+      </div>
+      <div class="foot">
+        <div class="take"><p>Keep the evaluator <b>separate</b>: an agent grading its own work tends to pass it (Anthropic's self-evaluation failure). This is the seed of “review by a cheaper model” — slide 21. <b>Humans steer, agents execute.</b></p></div>
+        <div class="cite">Anthropic · OpenAI</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 11 · GUIDES vs SENSORS ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 2 · Agent = Model + Harness</span><span class="num">11 / 24</span></div>
+      <h1>It all collapses to two jobs: <em>guides</em> &amp; <em>sensors.</em></h1>
+      <div class="fill">
+        <svg viewBox="0 0 1160 220" preserveAspectRatio="xMidYMid meet">
+          <line x1="40" y1="120" x2="1120" y2="120" stroke="#D3D8E0" stroke-width="2"/>
+          <rect x="60" y="82" width="300" height="76" rx="12" class="node" stroke="#3F9B6E"/>
+          <text class="term" x="210" y="112" text-anchor="middle" font-size="20">GUIDE</text>
+          <text class="sub" x="210" y="136" text-anchor="middle" font-size="14" fill="#3F9B6E">before · feed-forward</text>
+
+          <rect x="430" y="72" width="300" height="96" rx="12" fill="#F1F3F6" stroke="#16181D" stroke-width="2"/>
+          <text class="term" x="580" y="126" text-anchor="middle" font-size="20">AGENT ACTS</text>
+
+          <rect x="800" y="82" width="300" height="76" rx="12" class="node" stroke="#4F67E4"/>
+          <text class="term" x="950" y="112" text-anchor="middle" font-size="20">SENSOR</text>
+          <text class="sub" x="950" y="136" text-anchor="middle" font-size="14">after · feedback</text>
+
+          <path class="d-flow" d="M366 120 H424"/><path class="d-head" d="M424 120 l-12 -7 v14 z"/>
+          <path class="d-flow" d="M736 120 H794"/><path class="d-head" d="M794 120 l-12 -7 v14 z"/>
+        </svg>
+      </div>
+      <div class="foot"><div class="take"><p><b>Guide without a sensor</b> = a wish nobody enforces. <b>Sensor without a guide</b> = the agent re-makes the same mistake every run; it never converges. You need <b>both.</b></p></div>
+      <div class="cite">Birgitta Böckeler / Thoughtworks</div></div>
+    </div>
+  </section>
+
+  <!-- ══ 12 · SENSORS SELF-CORRECT ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 3 · Sensors — feedback</span><span class="num">12 / 24</span></div>
+      <h1>A sensor exists so the agent can <em>self-correct.</em></h1>
+      <div class="fill">
+        <div class="quote"><span class="mark">“</span>A sensor is meant to give the agent feedback so that it can self-correct.<span class="mark">”</span>
+          <div class="attr">— Birgitta Böckeler, Thoughtworks</div>
+        </div>
+        <p class="lede">So write the failure <b>for the agent</b>: an error that says what to do next beats a red ✗. <span class="hi">Success is silent; failures are verbose.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 13 · 2x2 ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 3 · Sensors — feedback</span><span class="num">13 / 24</span></div>
+      <h1>Sort every check on <em>two axes.</em></h1>
+      <div class="fill">
+        <div class="quad">
+          <div class="hd"></div><div class="hd">Computational<br><span style="text-transform:none;color:var(--olive)">deterministic · free</span></div><div class="hd">Inferential<br><span style="text-transform:none;color:var(--clay)">semantic · costs tokens</span></div>
+          <div class="rl">Feed-forward<br>(while coding)</div>
+          <div class="cell comp"><b>type checker · linter</b><span>catches it the instant it's written</span></div>
+          <div class="cell inf"><b>skill / example match</b><span>“is this the pattern we want?”</span></div>
+          <div class="rl">Feedback<br>(pipeline)</div>
+          <div class="cell comp"><b>tests · CI · fitness rules</b><span>“clients must not import services”</span></div>
+          <div class="cell inf"><b>LLM diff review</b><span>modularity · security judgement</span></div>
+        </div>
+      </div>
+      <div class="foot"><div class="take"><p><b>The rule:</b> encode a check as computational <b>before</b> you reach for an inferential one. Don't pay an AI to catch what a type checker catches for free — and an AI reviewer can be talked out of a real finding; a failing test can't.</p></div></div>
+    </div>
+  </section>
+
+  <!-- ══ 14 · LADDER ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 3 · Sensors — feedback</span><span class="num">14 / 24</span></div>
+      <h1>Layer them <em>cheapest first.</em></h1>
+      <div class="fill">
+        <svg viewBox="0 0 1160 300" preserveAspectRatio="xMidYMid meet">
+          <!-- rungs, cheap at bottom -->
+          <g font-family="system-ui" font-size="17" fill="#16181D">
+            <rect x="120" y="250" width="360" height="38" rx="8" fill="rgba(63,155,110,.14)" stroke="#3F9B6E"/><text x="140" y="274">type checker</text>
+            <rect x="120" y="204" width="440" height="38" rx="8" fill="rgba(63,155,110,.11)" stroke="#3F9B6E"/><text x="140" y="228">lint (with AI-friendly messages)</text>
+            <rect x="120" y="158" width="520" height="38" rx="8" fill="rgba(63,155,110,.08)" stroke="#3F9B6E"/><text x="140" y="182">unit / behaviour tests</text>
+            <rect x="120" y="112" width="600" height="38" rx="8" fill="rgba(79,103,228,.07)" stroke="#4F67E4"/><text x="140" y="136">architecture fitness rules</text>
+            <rect x="120" y="66" width="680" height="38" rx="8" fill="rgba(79,103,228,.10)" stroke="#4F67E4"/><text x="140" y="90">mutation testing — are the tests even real?</text>
+            <rect x="120" y="20" width="760" height="38" rx="8" fill="rgba(79,103,228,.14)" stroke="#4F67E4"/><text x="140" y="44">inferential review of the diff</text>
+          </g>
+          <!-- axis -->
+          <text class="lbl" x="1150" y="40" font-size="15" text-anchor="end">costly ↑</text>
+          <text class="lbl" x="1150" y="278" font-size="15" text-anchor="end">most failures die down here ↓</text>
+        </svg>
+      </div>
+      <div class="foot"><div class="take"><p>High coverage with weak asserts still passes bad patches — <b>mutation testing is the sensor on your sensors.</b></p></div>
+      <div class="cite">Böckeler · UTBoost</div></div>
+    </div>
+  </section>
+
+  <!-- ══ 15 · PROMPT WRONG ARTIFACT ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 4 · Spec-Driven Development</span><span class="num">15 / 24</span></div>
+      <h1>The prompt is the wrong artifact. The <em>spec</em> is the code.</h1>
+      <div class="fill">
+        <div class="flow">
+          <div class="chip ghost"><div class="t" style="text-decoration:line-through">prompt</div><div class="s">thrown away</div></div>
+          <span class="arrow">→</span>
+          <div class="chip spec"><div class="t">SPEC</div><div class="s">committed next to the code</div></div>
+          <span class="arrow">→</span>
+          <div class="chip"><div class="t">code</div><div class="s">last-mile expression</div></div>
+        </div>
+      </div>
+      <div class="foot">
+        <div class="take"><p>When the agent writes the code, the <b>spec</b> — not the prompt, not the code — is where human intent lives. And a vague spec doesn't slow the agent down; it makes it <b>confidently wrong</b> (it fills every gap with the most probable completion).</p></div>
+        <div class="cite">Sean Grove — <i>“The New Code”</i> · GitHub Spec Kit</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 16 · THE LOOP ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 4 · Spec-Driven Development</span><span class="num">16 / 24</span></div>
+      <h1>The loop — and the <em>loop-back</em> is the whole point.</h1>
+      <div class="fill">
+        <svg viewBox="0 0 1200 320" preserveAspectRatio="xMidYMid meet">
+          <!-- forward arrows -->
+          <path class="d-flow" d="M212 115 H243"/><path class="d-head" d="M243 115 l-11 -6 v12 z"/>
+          <path class="d-flow" d="M422 115 H453"/><path class="d-head" d="M453 115 l-11 -6 v12 z"/>
+          <path class="d-flow" d="M632 115 H663"/><path class="d-head" d="M663 115 l-11 -6 v12 z"/>
+          <path class="d-flow" d="M842 115 H873"/><path class="d-head" d="M873 115 l-11 -6 v12 z"/>
+          <!-- chips -->
+          <rect class="node" x="37" y="70" width="175" height="90" rx="14" stroke="#D3D8E0"/>
+          <text class="term" x="124" y="112" text-anchor="middle" font-size="21">Idea</text>
+          <text class="sub" x="124" y="136" text-anchor="middle" font-size="13" fill="#7A828F">ticket</text>
+
+          <rect class="node" x="247" y="70" width="175" height="90" rx="14" stroke="#4F67E4"/>
+          <text class="term" x="334" y="112" text-anchor="middle" font-size="21">Spec</text>
+          <text class="sub" x="334" y="136" text-anchor="middle" font-size="13">what + AC</text>
+
+          <rect class="node" x="457" y="70" width="175" height="90" rx="14" stroke="#D3D8E0"/>
+          <text class="term" x="544" y="112" text-anchor="middle" font-size="21">Plan</text>
+          <text class="sub" x="544" y="136" text-anchor="middle" font-size="13" fill="#7A828F">how</text>
+
+          <rect class="node" x="667" y="70" width="175" height="90" rx="14" stroke="#D3D8E0"/>
+          <text class="term" x="754" y="112" text-anchor="middle" font-size="21">Code</text>
+          <text class="sub" x="754" y="136" text-anchor="middle" font-size="13" fill="#7A828F">agent</text>
+
+          <rect class="node" x="877" y="70" width="195" height="90" rx="14" stroke="#3F9B6E"/>
+          <text class="term" x="974" y="112" text-anchor="middle" font-size="21" fill="#3F9B6E">Review</text>
+          <text class="sub" x="974" y="136" text-anchor="middle" font-size="13" fill="#3F9B6E">cheaper model</text>
+
+          <!-- concrete return arc: Review → Spec -->
+          <path d="M974 160 C 974 292, 335 292, 335 166" fill="none" stroke="#4F67E4" stroke-width="2.5" stroke-dasharray="7 6"/>
+          <path d="M335 158 l-7 14 h14 z" fill="#4F67E4"/>
+          <rect x="452" y="243" width="404" height="34" rx="17" fill="#F7F8FA"/>
+          <text x="654" y="265" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="16" fill="#3A4FC0" font-weight="700">on fail → fix the Spec (or the Harness)</text>
+        </svg>
+        <p class="lede" style="text-align:center;margin:0"><span style="color:var(--red)">✗ Never hand-patch the Code.</span></p>
+      </div>
+      <div class="foot"><div class="take"><p>Hand-patching the output patches a symptom — the next generation regresses. Execution failures send you back to the spec, not into the diff.</p></div>
+      <div class="cite">GitHub Spec Kit · Hari Krishnan — <i>The Intent Harness</i></div></div>
+    </div>
+  </section>
+
+  <!-- ══ 17 · DON'T TOUCH CODE ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 4 · Spec-Driven Development</span><span class="num">17 / 24</span></div>
+      <h1>Why “don't touch the code” is <em>non-negotiable.</em></h1>
+      <div class="fill">
+        <div class="flow">
+          <div class="chip spec"><div class="t">SPEC</div><div class="s">source of truth</div></div>
+          <span class="arrow">→</span>
+          <div class="chip"><div class="t">code</div><div class="s">build artifact</div></div>
+        </div>
+        <div class="retbar" style="color:var(--red)">
+          <svg viewBox="0 0 360 40"><path d="M354 20 H20" fill="none" stroke="#D1495B" stroke-width="2" stroke-dasharray="6 6"/><path d="M20 20 l10 -6 v12 z" fill="#D1495B"/><line x1="175" y1="6" x2="195" y2="34" stroke="#D1495B" stroke-width="3"/><line x1="195" y1="6" x2="175" y2="34" stroke="#D1495B" stroke-width="3"/></svg>
+          <span>no hand-edits back</span>
+        </div>
+      </div>
+      <div class="foot"><div class="take"><p>Keep hand-fixing generated code and the spec silently becomes <b>fiction</b> — you lose the ability to regenerate, and you're back to maintaining code by hand. That's the leverage you just gave away. (This is what separates a process from <i>vibe coding.</i>)</p></div></div>
+    </div>
+  </section>
+
+  <!-- ══ 18 · FACTORY ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 4 · Spec-Driven Development</span><span class="num">18 / 24</span></div>
+      <h1>Why <em>“factory”</em>? The line, not the worker, guarantees quality.</h1>
+      <p class="lede">A factory makes consistent goods from <b>variable</b> workers by engineering the <b>line</b> around them. The agent is the worker; the spec, tests and gates are the line. You become the <b>line manager.</b></p>
+      <div class="fill" style="margin-top:.4cqw">
+        <svg viewBox="0 0 1200 430" preserveAspectRatio="xMidYMid meet">
+          <rect x="60" y="330" width="1080" height="14" rx="7" fill="#D3D8E0"/>
+          <g fill="#fff" stroke="#7A828F" stroke-width="1.4">
+            <circle cx="120" cy="352" r="7"/><circle cx="260" cy="352" r="7"/><circle cx="400" cy="352" r="7"/><circle cx="540" cy="352" r="7"/><circle cx="680" cy="352" r="7"/><circle cx="820" cy="352" r="7"/><circle cx="960" cy="352" r="7"/><circle cx="1090" cy="352" r="7"/>
+          </g>
+          <rect class="ghost" x="392" y="180" width="240" height="112" rx="14" fill="#F1F3F6" stroke="#E4E7EC"/>
+          <rect class="ghost" x="376" y="190" width="240" height="112" rx="14" fill="#F1F3F6" stroke="#E4E7EC"/>
+          <rect class="ghost" x="742" y="180" width="230" height="112" rx="14" fill="#F1F3F6" stroke="#E4E7EC"/>
+          <rect class="ghost" x="726" y="190" width="230" height="112" rx="14" fill="#F1F3F6" stroke="#E4E7EC"/>
+          <text class="lbl" x="515" y="172" text-anchor="middle" font-size="14">▲ one manager, many lines in parallel</text>
+
+          <path class="d-flow" d="M312 262 H356"/><path class="d-head" d="M356 262 l-11 -6 v12 z"/>
+          <path class="d-flow" d="M660 262 H704"/><path class="d-head" d="M704 262 l-11 -6 v12 z"/>
+          <path class="d-flow" d="M1000 262 H1044"/><path class="d-head" d="M1044 262 l-11 -6 v12 z"/>
+
+          <rect class="node" x="60" y="202" width="252" height="112" rx="14" stroke="#4F67E4"/>
+          <text class="term" x="150" y="250" font-size="20">BLUEPRINT</text><text class="sub" x="150" y="274" font-size="14">the spec</text>
+          <rect class="node" x="360" y="202" width="240" height="112" rx="14" stroke="#16181D"/>
+          <text class="term" x="480" y="250" text-anchor="middle" font-size="20">WORKERS</text><text class="sub" x="480" y="274" text-anchor="middle" font-size="14">the model</text>
+          <rect class="node" x="708" y="202" width="240" height="112" rx="14" stroke="#4F67E4"/>
+          <text class="term" x="828" y="248" text-anchor="middle" font-size="20">QC STATIONS</text><text class="sub" x="828" y="272" text-anchor="middle" font-size="13">guides · tests · gates</text>
+          <rect class="node" x="1048" y="202" width="120" height="112" rx="14" stroke="#3F9B6E"/>
+          <text class="term" x="1108" y="252" text-anchor="middle" font-size="17">SHIPPED</text><text class="sub" x="1108" y="274" text-anchor="middle" font-size="13" fill="#3F9B6E">verified</text>
+
+          <path d="M828 316 C 828 410, 186 410, 186 316" fill="none" stroke="#4F67E4" stroke-width="2" stroke-dasharray="6 6"/>
+          <path d="M186 316 l-6 12 h12 z" fill="#4F67E4"/>
+          <text class="sub" x="507" y="426" text-anchor="middle" font-size="14">reject → fix the blueprint, not the part</text>
+        </svg>
+      </div>
+      <div class="foot">
+        <div class="take"><p><b>Ford's breakthrough wasn't faster workers</b> — a standardized line with inspection yields reliable output from ordinary, variable workers. We can't make the model reliable, <b>so we make the line reliable.</b></p></div>
+        <div class="cite">Addy Osmani — <i>The Factory Model</i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 19 · RED-GREEN ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 5 · TDD is a must</span><span class="num">19 / 24</span></div>
+      <h1>Acceptance criteria → failing tests → make them <em>green.</em></h1>
+      <div class="fill">
+        <div class="flow">
+          <div class="chip spec"><div class="t">AC-001</div><div class="s">from the spec</div></div><span class="arrow">→</span>
+          <div class="chip bad"><div class="t">test</div><div class="s">RED first</div></div><span class="arrow">→</span>
+          <div class="chip"><div class="t">agent codes</div><div class="s">to satisfy it</div></div><span class="arrow">→</span>
+          <div class="chip good"><div class="t">test</div><div class="s">GREEN</div></div>
+        </div>
+      </div>
+      <div class="foot">
+        <div class="take"><p><b>Red-first is the only honest signal.</b> Tests written after the code just certify “whatever happened to happen.” Write them before, and the agent optimises toward correct <b>behaviour</b> — not toward passing. TDD stops being best-practice and becomes a <b>safety system.</b></p></div>
+        <div class="cite">Addy Osmani — <i>The Factory Model</i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 20 · GENIE ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 5 · TDD is a must</span><span class="num">20 / 24</span></div>
+      <h1>The genie <em>cheats.</em> Plan for it.</h1>
+      <div class="fill">
+        <div class="quote" style="font-size:2.5cqw;max-width:40ch"><span class="mark">“</span>The genie doesn't want to do TDD. It wants to write the code and then write tests that pass.<span class="mark">”</span>
+          <div class="attr">— Kent Beck, on the “unpredictable genie”</div>
+        </div>
+        <div class="wall" style="height:auto;margin-top:.6cqw">
+          <div class="side"><div class="t">BUILDER</div><div class="s">writes the code</div></div>
+          <div class="brick"></div>
+          <div class="side"><div class="t">AUDITOR</div><div class="s">separate · isolated · can't collude</div></div>
+        </div>
+      </div>
+      <div class="foot"><div class="take"><p><b>Separate the roles</b> — game theory, not politeness. And guard the tests as harness: make weakening an acceptance test a failing gate.</p></div>
+      <div class="cite">Kent Beck — <i>The Pragmatic Engineer</i></div></div>
+    </div>
+  </section>
+
+  <!-- ══ 21 · CHEAPER REVIEWER ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 5 · TDD is a must</span><span class="num">21 / 24</span></div>
+      <h1>Review by a <em>different, cheaper</em> model.</h1>
+      <div class="fill">
+        <svg viewBox="0 0 1200 285" preserveAspectRatio="xMidYMid meet">
+          <path class="d-flow" d="M382 105 H470"/><path class="d-head" d="M470 105 l-11 -6 v12 z"/>
+          <path class="d-flow" d="M722 105 H810"/><path class="d-head" d="M810 105 l-11 -6 v12 z"/>
+
+          <rect class="node" x="140" y="60" width="240" height="90" rx="14" stroke="#16181D"/>
+          <text class="term" x="260" y="102" text-anchor="middle" font-size="21">BUILDER</text>
+          <text class="sub" x="260" y="126" text-anchor="middle" font-size="13" fill="#7A828F">expensive</text>
+
+          <rect class="node" x="480" y="60" width="240" height="90" rx="14" stroke="#D3D8E0"/>
+          <text class="term" x="600" y="102" text-anchor="middle" font-size="21">the diff</text>
+          <text class="sub" x="600" y="126" text-anchor="middle" font-size="13" fill="#7A828F">vs. the spec</text>
+
+          <rect class="node" x="820" y="60" width="240" height="90" rx="14" stroke="#3F9B6E"/>
+          <text class="term" x="940" y="102" text-anchor="middle" font-size="21" fill="#3F9B6E">REVIEWER</text>
+          <text class="sub" x="940" y="126" text-anchor="middle" font-size="13" fill="#3F9B6E">cheap · independent</text>
+
+          <!-- concrete return arc: Reviewer → Builder (re-run against the fixed spec) -->
+          <path d="M940 150 C 940 258, 260 258, 260 156" fill="none" stroke="#4F67E4" stroke-width="2.5" stroke-dasharray="7 6"/>
+          <path d="M260 148 l-7 14 h14 z" fill="#4F67E4"/>
+          <rect x="392" y="212" width="416" height="34" rx="17" fill="#F7F8FA"/>
+          <text x="600" y="234" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="16" fill="#3A4FC0" font-weight="700">fail → fix the Spec / Harness, then re-run</text>
+        </svg>
+      </div>
+      <div class="foot"><div class="take"><p>Cheaper is fine — the job is narrow (“does this diff satisfy the contract?”) and an independent model won't rationalise the builder's mistakes. It's an <b>inferential</b> sensor, so it runs <b>after</b> the computational ladder is green.</p></div></div>
+    </div>
+  </section>
+
+  <!-- ══ 22 · MCP + JIRA ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 6 · Ideas as tickets</span><span class="num">22 / 24</span></div>
+      <h1>The idea already lives in <em>Jira / Linear.</em> Wire it in.</h1>
+      <div class="fill">
+        <svg viewBox="0 0 1240 290" preserveAspectRatio="xMidYMid meet">
+          <!-- Ticket → Agent : the MCP wire (clay), MCP labelled ON the connection -->
+          <path d="M233 105 H430" fill="none" stroke="#4F67E4" stroke-width="2.6" stroke-linecap="round"/>
+          <path d="M432 105 l-12 -6 v12 z" fill="#4F67E4"/>
+          <rect x="278" y="88" width="112" height="30" rx="15" fill="#F7F8FA"/>
+          <text x="334" y="108" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="15" fill="#3A4FC0" font-weight="700">via MCP</text>
+
+          <!-- Agent → Spec -->
+          <path class="d-flow" d="M625 105 H723"/><path class="d-head" d="M723 105 l-11 -6 v12 z"/>
+          <!-- Spec → PR -->
+          <path class="d-flow" d="M915 105 H1003"/><path class="d-head" d="M1003 105 l-11 -6 v12 z"/>
+
+          <!-- actor chips -->
+          <rect class="node" x="40" y="60" width="185" height="90" rx="14" stroke="#D3D8E0"/>
+          <text class="term" x="132" y="102" text-anchor="middle" font-size="21">Ticket</text>
+          <text class="sub" x="132" y="126" text-anchor="middle" font-size="13" fill="#7A828F">the idea</text>
+
+          <rect class="node" x="440" y="60" width="185" height="90" rx="14" stroke="#D3D8E0"/>
+          <text class="term" x="532" y="102" text-anchor="middle" font-size="21">Agent</text>
+          <text class="sub" x="532" y="126" text-anchor="middle" font-size="13" fill="#7A828F">drafts the spec</text>
+
+          <rect class="node" x="730" y="60" width="185" height="90" rx="14" stroke="#4F67E4"/>
+          <text class="term" x="822" y="102" text-anchor="middle" font-size="21">Spec</text>
+          <text class="sub" x="822" y="126" text-anchor="middle" font-size="13">the contract</text>
+
+          <rect class="node" x="1005" y="60" width="185" height="90" rx="14" stroke="#3F9B6E"/>
+          <text class="term" x="1097" y="102" text-anchor="middle" font-size="21" fill="#3F9B6E">PR</text>
+          <text class="sub" x="1097" y="126" text-anchor="middle" font-size="13" fill="#3F9B6E">linked back</text>
+
+          <!-- return arc: PR → Ticket, also over the MCP wire -->
+          <path d="M1097 150 C 1097 262, 132 262, 132 156" fill="none" stroke="#4F67E4" stroke-width="2.5" stroke-dasharray="7 6"/>
+          <path d="M132 148 l-7 14 h14 z" fill="#4F67E4"/>
+          <rect x="450" y="216" width="340" height="34" rx="17" fill="#F7F8FA"/>
+          <text x="620" y="238" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="16" fill="#3A4FC0" font-weight="700">status synced back to the ticket</text>
+        </svg>
+      </div>
+      <div class="foot"><div class="take"><p>The ticket is the idea; the committed spec is the contract; MCP is the wire between them. <b>Setup note:</b> authorize the Atlassian / Linear connector once — it's a one-time step, not a live demo.</p></div>
+      <div class="cite">Model Context Protocol</div></div>
+    </div>
+  </section>
+
+  <!-- ══ 23 · DRIFT ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 7 · Guard against drift</span><span class="num">23 / 25</span></div>
+      <h1>After you ship, two things quietly <em>drift.</em></h1>
+      <p class="lede">Sensors so far grade a single change. But some rot <b>no single change causes</b> — it accumulates. Two kinds, each needing a feedback sensor that runs <b>on a clock</b>, not just per-PR.</p>
+      <div class="fill">
+        <div class="cards2">
+          <div class="dcard inf">
+            <div class="dhd">Spec drift <span class="tag inf">inferential</span></div>
+            <p class="what">Code evolves; the committed spec doesn't move with it. The contract quietly becomes fiction — and a spec nobody re-checks stops being a contract.</p>
+            <p class="sens"><b>Sensor →</b> a scheduled audit re-reads each spec against the code it governs. Any gap is a defect in one of the two: the code regressed, or the spec went stale.</p>
+          </div>
+          <div class="dcard comp">
+            <div class="dhd">Architecture drift <span class="tag comp">computational</span></div>
+            <p class="what">The system's shape erodes one PR at a time: a forbidden import creeps in, a layer is bypassed, coupling grows.</p>
+            <p class="sens"><b>Sensor →</b> fitness functions assert the shape — “clients must not import services”, dependency direction, p95 &lt; 200ms — and a drift gate makes divergence <b>block the merge.</b></p>
+          </div>
+        </div>
+      </div>
+      <div class="foot">
+        <div class="take"><p>Same computational-first rule as Act 3: the cheap deterministic check guards the <b>shape</b>; the pricier inferential audit guards the <b>intent</b>.</p></div>
+        <div class="cite">Böckeler · Neal Ford — <i>Building Evolutionary Architectures</i> · InfoQ SDD</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 24 · CLOSE ══ -->
+  <section class="slide">
+    <div class="pad">
+      <div class="chrome"><span class="eyebrow">Act 8 · Land it</span><span class="num">24 / 25</span></div>
+      <h1 class="big">You can't control the model. You can engineer <em>everything around it.</em></h1>
+      <p class="lede">Chasing the next model release is the lever everyone shares. Engineering your harness — and driving it with a spec and tests — is the lever only <b>you</b> own.</p>
+      <div class="fill" style="justify-content:flex-end">
+        <div class="res">
+          <div class="r"><span class="who">Addy Osmani</span> — Agent Harness Engineering · The Factory Model</div>
+          <div class="r"><span class="who">Birgitta Böckeler / Thoughtworks</span> — Harness engineering · Sensors for coding agents</div>
+          <div class="r"><span class="who">Sean Grove / GitHub</span> — “The New Code” · Spec Kit</div>
+          <div class="r"><span class="who">Kent Beck</span> — TDD, AI agents &amp; coding (Pragmatic Engineer)</div>
+          <div class="r"><span class="who">Thinking Machines Lab</span> — Defeating Nondeterminism in LLM Inference</div>
+          <div class="r"><span class="who">Anthropic · OpenAI</span> — Harness design · “humans steer, agents execute”</div>
+          <div class="r"><span class="who">Our internal playbook</span> — the AI-Native Harness Playbook (assess · adopt · audit)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 25 · END / Q&A ══ -->
+  <section class="slide">
+    <div class="pad"><div class="title-wrap">
+      <div class="kick">Fin</div>
+      <h1>Thank you. <em>Questions?</em></h1>
+      <p class="sub">You can't control the model — so engineer everything around it, and drive it with a spec and tests.<br>What would you wire up first?</p>
+    </div></div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prev" aria-label="Previous">‹</button>
+  <span id="counter">1 / 24</span>
+  <button id="next" aria-label="Next">›</button>
+</div>
+<div class="hint">← → / space · F fullscreen</div>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const bar=document.querySelector('.progress-bar');
+  const counter=document.getElementById('counter');
+  let i=0;
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,k)=>s.classList.toggle('active',k===i));
+    bar.style.width=(i/(slides.length-1)*100)+'%';
+    counter.textContent=(i+1)+' / '+slides.length;
+    history.replaceState(null,'','#'+(i+1));
+  }
+  document.addEventListener('keydown',e=>{
+    if(['ArrowRight','ArrowDown',' ','PageDown'].includes(e.key)){e.preventDefault();show(i+1);}
+    else if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key)){e.preventDefault();show(i-1);}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(slides.length-1);}
+    else if(e.key==='f'||e.key==='F'){ if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}else{document.exitFullscreen();} }
+  });
+  document.getElementById('next').onclick=()=>show(i+1);
+  document.getElementById('prev').onclick=()=>show(i-1);
+  slides.forEach((s,k)=>{const b=s.querySelector('.num'); if(b) b.textContent=(k+1)+' / '+slides.length;});
+  const start=(parseInt(location.hash.slice(1))||1)-1;
+  show(isNaN(start)?0:start);
+</script>
+</body>
+</html>
