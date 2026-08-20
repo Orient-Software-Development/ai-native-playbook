@@ -200,6 +200,59 @@
         that decides for you is not.</li>
     </ul>
 
+
+    <h2><span class="idx">02</span>Techniques that stretch the budget</h2>
+    <p>
+      Beyond the habits, a few named techniques do most of the heavy lifting.
+    </p>
+
+    <div class="fig">
+      <div class="outcomes">
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <rect class="oa" x="5" y="4" width="22" height="7" rx="1.5"/>
+            <line class="lc" x1="8" y1="17" x2="24" y2="17"/>
+            <line class="ln" x1="8" y1="22" x2="20" y2="22"/>
+            <line class="ln da" x1="8" y1="27" x2="15" y2="27"/>
+          </svg></div>
+          <h4>Progressive disclosure</h4>
+          <p>Structure information so the agent loads it in stages: lightweight identifiers first — file paths, skill names and one-line descriptions, an index — full content only when judged relevant, appendix detail only when actually needed. A well-organized manual works the same way: table of contents, then the chapter, then the appendix. This is why a skill's metadata and an instruction file's index matter more than their bodies: the agent decides <em>whether</em> to read from the cheap layer, and only then pays for the expensive one.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <rect class="st" x="4" y="10" width="12" height="12" rx="2"/>
+            <line class="lc" x1="28" y1="16" x2="19" y2="16"/>
+            <polyline class="lc" points="22,12 18,16 22,20" stroke-linejoin="round"/>
+            <circle class="cl" cx="28" cy="16" r="2.5"/>
+          </svg></div>
+          <h4>Just-in-time retrieval over up-front dumping</h4>
+          <p>Keep <em>references</em> in context — paths, queries, links — and fetch the content at the moment of need, rather than pre-loading everything that might turn out relevant. The same move applies to large outputs: interrogate a big test report with small query tools — head, tail, a summary command — instead of loading the whole artifact into the window to answer one question about it.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <path class="oa" d="M8 3 h11 l6 6 v20 H8 z" stroke-linejoin="round"/>
+            <line class="ln" x1="12" y1="15" x2="21" y2="15"/>
+            <line class="ln" x1="12" y1="20" x2="21" y2="20"/>
+            <line class="lc" x1="12" y1="25" x2="17" y2="25"/>
+          </svg></div>
+          <h4>Structured note-taking as agentic memory</h4>
+          <p>The agent writes durable notes outside the window — a progress file, a decision log — and pulls them back in after a reset. This is what makes the reset-over-compaction guidance workable on long tasks: the reset stops being amnesia because the note, not the chat history, carries the state. It's the memory-store layer from above doing real work — still a convenience, not the canon, but the bridge that lets working memory be cleared ruthlessly.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <line class="ln" x1="3" y1="25" x2="29" y2="25"/>
+            <path class="lc da" d="M11 25 C11 10 21 10 21 25"/>
+            <circle class="cl" cx="16" cy="10" r="3"/>
+            <circle class="fl" cx="11" cy="25" r="2.2"/>
+            <circle class="fl" cx="21" cy="25" r="2.2"/>
+          </svg></div>
+          <h4>Delegate the investigation, keep the summary</h4>
+          <p>A subagent's value isn't parallelism — it's context isolation. It burns <em>its own</em> window on the search trail and returns only the condensed answer: a thousand-token summary instead of the hundred-thousand-token exhaust it took to find it. The main thread stays focused on the task; the noise stays in the subagent.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Four techniques that buy room inside the same budget</p>
+    </div>
+
     <p>
       Context is the channel everything else reaches the agent through. The next page is the system
       that fills it deliberately — guides before the agent acts, sensors after — the

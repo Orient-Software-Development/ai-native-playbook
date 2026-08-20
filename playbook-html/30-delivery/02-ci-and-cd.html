@@ -148,6 +148,22 @@
       <p class="fig-cap">Draft-aware gating: cheap on drafts, full on ready — strict <em>and</em> fast</p>
     </div>
 
+    <div class="callout">
+      <div class="c-label">One honest caveat — the strict gate is a spectrum, not a law</div>
+      <p>
+        Some mature agent-first teams run deliberately minimal blocking checks at merge — short-lived PRs,
+        agent-to-agent review, a tolerance for post-merge correction, a flaky test triggering a follow-up run
+        instead of freezing the queue. That isn't a contradiction of this page; it's a maturity trade. Those
+        teams haven't removed verification — they've moved it <em>behind</em> the merge, onto the continuous
+        cleanup machinery this playbook builds later:
+        <a href="04-drift-and-health-sensors.html">janitor agents and drift sensors</a> that catch what the
+        gate stopped checking, and <a href="03-observability.html">observability</a> sharp enough to surface
+        a mistake in minutes rather than months. Loose gates are only safe on top of that machinery. A team
+        without it has nowhere to move the checking <em>to</em> — so until the post-merge sensors exist and
+        have a track record, keep the gate strict.
+      </p>
+    </div>
+
     <h2><span class="idx">03</span>How to apply it</h2>
     <ul>
       <li><strong>Draw the seam: CI decides merge, CD decides release.</strong> Put build, lint, type-check,

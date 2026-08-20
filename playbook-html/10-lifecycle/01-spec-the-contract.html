@@ -106,7 +106,149 @@
 
     <p class="pull">A vague spec doesn't make the agent hesitate — it makes it <em>invent</em>.</p>
 
-    <h2><span class="idx">02</span>Why it works</h2>
+
+    <h2><span class="idx">02</span>Spec-first, spec-anchored, spec-as-source</h2>
+    <p>
+      Spec-driven development is a spectrum, and it's worth naming where this playbook sits on it.
+      The established taxonomy has three levels: <strong>spec-first</strong>, where the spec is
+      written before the code and discarded once the feature ships; <strong>spec-anchored</strong>,
+      where the spec is kept after the task and used to evolve and maintain the feature; and
+      <strong>spec-as-source</strong>, where the spec <em>is</em> the main source file — humans edit
+      only the spec, and the code is regenerated from it, never touched by hand. The durable,
+      version-controlled, regularly audited spec this chapter describes is
+      <strong>spec-anchored</strong>: the contract outlives the change, but the code is still the
+      code.
+    </p>
+
+    <div class="fig">
+      <div class="layers">
+        <div class="layer l1">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <path class="oa" d="M4 5 h9 l5 5 v13 H4 z" stroke-linejoin="round"/>
+            <path class="st da" d="M14 12 h8 l5 5 v11 H14 z" stroke-linejoin="round"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Spec-first</h4>
+            <p>The spec is written before the code and discarded once the feature ships.</p>
+          </div>
+          <div class="l-dur">spec discarded</div>
+        </div>
+        <div class="layer l3">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <rect class="oa" x="3" y="8" width="11" height="16" rx="1.5"/>
+            <rect class="st" x="18" y="8" width="11" height="16" rx="1.5"/>
+            <line class="lc" x1="14" y1="16" x2="18" y2="16"/>
+            <circle class="cl" cx="16" cy="16" r="2.6"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Spec-anchored — where this playbook sits</h4>
+            <p>The spec is kept after the task and used to evolve and maintain the feature. The contract outlives the change; the code is still the code.</p>
+          </div>
+          <div class="l-dur">spec kept</div>
+        </div>
+        <div class="layer l4">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <rect class="oa" x="3" y="8" width="11" height="16" rx="1.5"/>
+            <rect class="st da" x="18" y="8" width="11" height="16" rx="1.5"/>
+            <line class="lc" x1="14.5" y1="16" x2="17" y2="16"/>
+            <polyline class="lc" points="15,13.5 17.5,16 15,18.5" stroke-linejoin="round"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Spec-as-source</h4>
+            <p>The spec <em>is</em> the main source file — humans edit only the spec, and the code is regenerated from it, never touched by hand.</p>
+          </div>
+          <div class="l-dur">code regenerated</div>
+        </div>
+      </div>
+      <p class="fig-cap">Three levels of spec-driven development — this playbook is spec-anchored</p>
+    </div>
+
+    <p>
+      Be skeptical of the third level. Spec-as-source is a close rerun of 2000s Model-Driven
+      Development, which failed for reasons that haven't gone away: the abstraction level was awkward
+      — too high to express what mattered, too low to be worth maintaining instead of the code — and
+      the ceremony cost more than it returned. LLM generation removes MDD's parser constraints, but
+      replaces them with non-determinism, which risks inheriting the downsides of both worlds: the
+      inflexibility of code you're not allowed to touch <em>and</em> generation you can't repeat.
+      Today, even identical specs don't yield identical code — so "regenerate from the spec" is not
+      the reproducible build it sounds like. Anchor the spec; keep editing the code.
+    </p>
+
+    <h2><span class="idx">03</span>Interview first — elicit the intent</h2>
+    <p>
+      There's a better opening move than either you drafting from a blank page or the agent guessing
+      from a one-line request: have the agent <strong>interview you</strong> first. Before a word of
+      spec exists, ask it to challenge your assumptions, make the constraints explicit, pin down the
+      success criteria, and — just as important — decide what should <em>not</em> be built. Keep
+      answering until the ambiguities are resolved, then have it write the spec from the interview.
+      The questions an agent asks are cheap; the guesses it makes are not.
+    </p>
+    <p>
+      Then start execution in a <strong>fresh session</strong>. The interview transcript is full of
+      half-formed ideas, rejected options, and reasoning that led <em>to</em> the contract — exactly
+      the residue that biases an implementation away from the contract itself. The spec is the
+      distillation; carry it forward and leave the conversation behind. (This is the
+      reset-over-compaction discipline from
+      <a href="../00-foundations/02-context-engineering.html">context engineering</a>, applied at the
+      lifecycle's first seam.)
+    </p>
+
+    <p>
+      The quality of this step is visible all the way downstream. Weak intent work produces shallow
+      specs, fuzzy task boundaries, and a coding phase spent constantly correcting the agent. Strong
+      intent work surfaces the ambiguities early — while each one costs a sentence — and buys longer,
+      focused agent runs later. If the build phase feels like a fight, the fault is usually here, not
+      there.
+    </p>
+
+    <div class="fig">
+      <div class="compare">
+        <div class="lane bad">
+          <span class="lane-tag">Weak intent work</span>
+          <h4>Draft from a blank page, or let the agent guess</h4>
+          <ul>
+            <li>A one-line request becomes a spec nobody interrogated.</li>
+            <li>Shallow specs produce fuzzy task boundaries downstream.</li>
+            <li>The coding phase is spent constantly correcting the agent.</li>
+          </ul>
+          <p class="outcome-line">If the build phase feels like a fight, <b>the fault is usually here</b>, not there.</p>
+        </div>
+        <div class="lane good">
+          <span class="lane-tag">Strong intent work</span>
+          <h4>Have the agent interview you first</h4>
+          <ul>
+            <li>It challenges assumptions, makes constraints explicit, pins the success criteria — and decides what should <em>not</em> be built.</li>
+            <li>Ambiguities surface early, while each one still costs a sentence.</li>
+            <li>The spec is written from the interview; execution then starts in a fresh session.</li>
+          </ul>
+          <p class="outcome-line">Buys <b>longer, focused agent runs</b> later — the questions are cheap, the guesses are not.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Ambiguity costs a sentence here, or a correction loop later</p>
+    </div>
+
+    <h2><span class="idx">04</span>Scale the ceremony to the change</h2>
+    <p>
+      The spec workflow must scale down as well as up. A one-line bug fix does not need four user
+      stories and sixteen acceptance criteria; it needs a sentence stating the expected behaviour and
+      one check that reproduces the defect. Elaborate spec machinery applied to a small change
+      produces review burden, not safety: the intent-owner now has to wade through a pile of
+      generated markdown that says less than the diff would — and a reviewer who skims a padded
+      contract is protected by none of it.
+    </p>
+
+    <div class="callout">
+      <div class="c-label">The proportionality test</div>
+      <p>
+        A feature with real ambiguity earns the full contract — normative requirements, acceptance
+        criteria, a prototype. A change whose intent fits in a sentence gets a sentence, and the
+        review effort goes where it's actually useful: the diff. The discipline of <em>stating the
+        expected behaviour before building</em> never goes away; the paperwork around it should grow
+        and shrink with the problem.
+      </p>
+    </div>
+
+    <h2><span class="idx">05</span>Why it works</h2>
     <p>
       An agent only acts on what's in front of it. Where a human fills a gap in the requirements with
       a question or a sensible guess from experience, an agent fills it with the <em>most probable</em>
@@ -128,7 +270,7 @@
       links out to related specs beats one sprawling document that tries to say everything.
     </p>
 
-    <h2><span class="idx">03</span>How to apply it</h2>
+    <h2><span class="idx">06</span>How to apply it</h2>
     <ul>
       <li><strong>State requirements as obligations.</strong> Use <em>must</em> / <em>must not</em>
         for binding rules. One rule per line, each one checkable. "Closed deals are hidden by default"
@@ -162,7 +304,7 @@
         a feature a non-engineer owns.</li>
     </ul>
 
-    <h2><span class="idx">04</span>In practice</h2>
+    <h2><span class="idx">07</span>In practice</h2>
     <p>
       A sales lead asks for what sounds like a one-liner: <em>"let people mark a deal as a priority
       and see priorities first."</em>
@@ -242,13 +384,17 @@ Out of scope: notifications, priority on any other screen, team-wide priorities.
       is now unambiguous and agreed; the <em>how</em> is left for the plan.
     </p>
 
-    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <h2><span class="idx">08</span>Anti-patterns</h2>
     <ul>
       <li><strong>The vague spec.</strong> A loose narrative the agent fills with confident guesses —
         the failure this whole page exists to prevent.
         (<a href="../40-anti-patterns/01-failure-modes.html">Failure modes</a>)</li>
       <li><strong>The novel spec.</strong> So long the agent builds the front and silently skips the
         tail as its attention thins out.</li>
+      <li><strong>The ceremony mismatch.</strong> Full spec machinery aimed at a one-line fix — four
+        user stories, sixteen acceptance criteria, a pile of generated markdown nobody reads as
+        carefully as they'd have read the diff. Where the novel spec is too long for its feature, this
+        is too much <em>process</em> for its change. Scale the ceremony to the problem.</li>
       <li><strong>The how-not-what spec.</strong> A pile of implementation detail with no clear
         obligations, so neither the stakeholder nor a sensor can tell whether it was satisfied.</li>
       <li><strong>The unreadable spec.</strong> Written in jargon the intent-owner can't follow, so

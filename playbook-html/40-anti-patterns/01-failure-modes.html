@@ -210,6 +210,27 @@
       <em>looked</em> complete, and nothing strong enough was watching to tell complete from correct.
     </p>
     <p>
+      A debugging discipline follows: when the agent ships a bug, don't stop at "the agent got it wrong."
+      Trace the chain upstream — the bug in the code came from a gap in the spec; the gap survived review;
+      review was overloaded by high-volume, low-quality spec and plan generation; the volume traces back to a
+      weak elicitation workflow. The productive question isn't "why did the agent fail" but <em>"what in our
+      elicitation, specification, review, or verification process allowed this ambiguity to survive?"</em>
+      Fix the layer where the ambiguity entered — starting with the interview-first practice in
+      <a href="../10-lifecycle/01-spec-the-contract.html">the spec chapter</a> — not just the instance, or
+      the same class of bug walks back in through the same door.
+    </p>
+
+    <div class="fig">
+      <div class="pipe">
+        <div class="step c1"><div class="dot"></div><div class="s-n">where it entered</div><div class="s-t">Weak elicitation</div><div class="s-d">the intent was never interrogated</div></div>
+        <div class="step c2"><div class="dot"></div><div class="s-n">volume</div><div class="s-t">Low-quality specs and plans</div><div class="s-d">generated faster than anyone can read them</div></div>
+        <div class="step c3"><div class="dot"></div><div class="s-n">overload</div><div class="s-t">Review skims</div><div class="s-d">the gap in the spec survives</div></div>
+        <div class="step c4"><div class="dot"></div><div class="s-n">where it surfaced</div><div class="s-t">The bug ships</div><div class="s-d">and the agent gets the blame</div></div>
+      </div>
+      <p class="fig-cap">Trace the chain upstream — fix the layer where the ambiguity entered, not the instance</p>
+    </div>
+
+    <p>
       So the defence is always the same shape, whatever the disguise:
     </p>
 

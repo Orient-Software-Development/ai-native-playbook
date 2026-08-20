@@ -204,7 +204,81 @@
         autonomy before the harness can catch the agent in that zone.</li>
     </ul>
 
-    <h2><span class="idx">04</span>In practice</h2>
+
+    <h2><span class="idx">04</span>The autonomy ladder</h2>
+    <p>
+      "Widen autonomy as the harness earns it" deserves more precision than a slogan, so give the widening
+      named rungs. Per zone — the flop-zone map the
+      <a href="03-responsible-team-and-ai-debt.html">responsible team</a> draws — autonomy climbs four:
+    </p>
+
+    <div class="fig">
+      <div class="layers">
+        <div class="layer l1">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <path class="st da" d="M6 4 h11 l6 6 v18 H6 z" stroke-linejoin="round"/>
+            <path class="lc" d="M10 17 l4 4 l7 -9" stroke-linejoin="round"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Propose-only</h4>
+            <p>The agent drafts; a human applies. The default for a new zone, and the standing setting for a known flop zone.</p>
+          </div>
+          <div class="l-dur">new or flop zone</div>
+        </div>
+        <div class="layer l2">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <circle class="st" cx="7" cy="7" r="3"/>
+            <circle class="st" cx="7" cy="25" r="3"/>
+            <line class="ln" x1="7" y1="10" x2="7" y2="22"/>
+            <path class="lc" d="M10 7 C19 7 18 16 25 16"/>
+            <circle class="cl" cx="27" cy="16" r="3"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Merge-with-review</h4>
+            <p>The agent commits on a branch; a human reviews every diff before merge.</p>
+          </div>
+          <div class="l-dur">every diff reviewed</div>
+        </div>
+        <div class="layer l3">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <path class="ol" d="M16 3 L27 8 v8 c0 7 -5 11 -11 13 C9 27 5 23 5 16 V8 z" stroke-linejoin="round"/>
+            <path class="lc" d="M11 16 l4 4 l7 -8" stroke-linejoin="round"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Merge-on-green</h4>
+            <p>The gate is the reviewer; a human spot-checks after the fact. This rung has a precondition: the zone's sensors need a track record — the behaviours that matter are gated by honest tests, and the gate has <em>actually caught</em> agent mistakes before, not "would probably catch."</p>
+          </div>
+          <div class="l-dur">the gate reviews</div>
+        </div>
+        <div class="layer l4">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <line class="ln" x1="3" y1="13" x2="29" y2="13"/>
+            <path class="lc da" d="M25 13 C25 26 11 26 11 16"/>
+            <polyline class="lc" points="8,19 11,15 14,19" stroke-linejoin="round"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Self-merge with post-merge correction</h4>
+            <p>For zones with mature <a href="../30-delivery/04-drift-and-health-sensors.html">drift sensors</a> and cleanup machinery: mistakes are caught behind the merge instead of in front of it.</p>
+          </div>
+          <div class="l-dur">caught behind merge</div>
+        </div>
+      </div>
+      <p class="fig-cap">Four rungs, climbed per zone — so "how much do we trust the agent here?" has an answer</p>
+    </div>
+
+    <div class="callout">
+      <div class="c-label">Two rules keep the ladder honest</div>
+      <p>
+        <strong>Promotion is per-zone and evidence-based</strong>: a zone climbs when its sensors have
+        demonstrably caught the failure class that worries you — not when the team feels confident, which is
+        just optimism with a rung attached. And <strong>demotion is automatic</strong>: an escaped defect in
+        a zone drops it a rung, and it stays dropped until the sensor that should have caught the defect
+        exists. The payoff is that "how much do we trust the agent here?" always has an answer that is a rung
+        and a reason, never a mood.
+      </p>
+    </div>
+
+    <h2><span class="idx">05</span>In practice</h2>
     <p>
       A team is past week one. Their minimum viable harness is holding, and now they're letting the agent build
       features against it.
@@ -236,7 +310,7 @@
       pay.
     </p>
 
-    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <h2><span class="idx">06</span>Anti-patterns</h2>
     <ul>
       <li><strong>Try harder.</strong> Re-prompting the same failure instead of encoding a control. The
         harness is unchanged, so the failure recurs — you've spent attention and bought nothing durable.</li>
@@ -249,6 +323,10 @@
       <li><strong>Big-bang autonomy.</strong> Granting the agent end-to-end scope before the harness around
         that zone has earned it. Autonomy is earned by controls that demonstrably catch mistakes, not granted
         on optimism.</li>
+      <li><strong>Promotion by mood.</strong> Running the autonomy ladder on feelings: widening a zone's
+        autonomy on optimism, narrowing it only after an incident, with no evidence rule in either direction.
+        A rung granted by a feeling gets revoked by a feeling — the ladder only means something when sensors,
+        not sentiment, move a zone up or down.</li>
       <li><strong>Designing it all up front.</strong> Trying to predict and build the complete harness in one
         sitting — the same mistake as the <a href="01-minimum-viable-harness.html">big-bang minimum
         harness</a>, a step later. You can't foresee the failures; let the repo show you.</li>

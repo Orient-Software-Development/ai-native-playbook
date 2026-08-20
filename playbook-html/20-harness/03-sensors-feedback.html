@@ -172,6 +172,16 @@
     </div>
 
     <p>
+      This isn't a small-scale quirk. When researchers strengthened the tests of a heavily human-reviewed
+      agent benchmark, about <strong>one task in twenty</strong> turned out to have insufficient tests — and
+      <strong>16%</strong> of the patches that had been graded <em>passing</em> actually failed once the
+      tests could tell a correct fix from a plausible one. On the less-reviewed variant of the same
+      benchmark, <strong>28%</strong>. Review by 93 engineers had not caught it. The lesson isn't that those
+      reviewers were careless — it's that human review of tests does not substitute for grading the tests
+      mechanically. A passing test is not proof if the test is weak.
+    </p>
+
+    <p>
       This is the feedback half of the anti-cheat story. The
       <a href="01-guides-feedforward.html">feedforward half</a> is the rule written into the instruction file
       — <em>you may not weaken a failing test; tests must assert real state.</em> The two only work together:
@@ -201,7 +211,58 @@
       </p>
     </div>
 
-    <h2><span class="idx">05</span>How to apply it</h2>
+
+    <h2><span class="idx">05</span>Sensor ergonomics</h2>
+    <p>
+      The failure message is the first move in a broader discipline: designing the sensor's whole
+      <em>interface</em> for the agent that consumes it. Four mechanics carry most of the value.
+    </p>
+
+    <div class="fig">
+      <div class="outcomes">
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <line class="ln" x1="2" y1="16" x2="11" y2="16"/>
+            <line class="ln" x1="21" y1="16" x2="30" y2="16"/>
+            <path class="oa" d="M11 7 h10 v18 H11 z" stroke-linejoin="round"/>
+            <line class="lc" x1="14" y1="13" x2="18" y2="13"/>
+            <line class="lc" x1="14" y1="18" x2="18" y2="18"/>
+          </svg></div>
+          <h4>Give the rule an escape hatch that costs a justification</h4>
+          <p>A custom failure message should carry the self-correction guidance <em>and</em> name the legitimate way out: <strong>suppress-with-reason</strong> — an inline suppression that requires a stated justification. Without it, an agent facing a rule it genuinely can't satisfy games the rule silently; with it, the agent makes a documented judgment call that sits in the diff for a reviewer to read and veto. The escape hatch doesn't weaken the sensor — it routes the exceptions into the open.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <path class="st" d="M5 23 A11 11 0 0 1 27 23"/>
+            <line class="lc" x1="16" y1="23" x2="10" y2="15"/>
+            <circle class="cl" cx="16" cy="23" r="2.6"/>
+          </svg></div>
+          <h4>Grant threshold latitude — but say "refactor first"</h4>
+          <p>For graded rules — a complexity ceiling, a lint threshold — binary suppress-or-comply is too coarse: sometimes the refactor genuinely isn't feasible, and the honest move is raising the threshold <em>with a reason</em>. The observed pattern, though, is that agents reach for the threshold raise first and produce perfectly good refactors when pushed one step further. So write the order of preference into the guide: refactor first, raise only with a stated reason.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <path class="oa" d="M5 3 h11 l6 6 v12 H5 z" stroke-linejoin="round"/>
+            <circle class="st" cx="20" cy="21" r="6"/>
+            <line class="lc" x1="24.5" y1="25.5" x2="29" y2="30"/>
+          </svg></div>
+          <h4>Wrap big reports in a query tool</h4>
+          <p>A large sensor output — a mutation report, a coverage report — dumped raw into context spends the attention budget on the 95% the agent doesn't need. Wrap it in a small CLI the agent can interrogate — summary, per-file, hotspots — so it pulls only the slice it's actually working on. The report becomes something the agent <em>queries</em>, not something it wades through.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <line class="ln" x1="5" y1="4" x2="5" y2="27"/>
+            <line class="ln" x1="5" y1="27" x2="29" y2="27"/>
+            <polyline class="lc" points="8,9 14,16 20,14 27,22" stroke-linejoin="round"/>
+          </svg></div>
+          <h4>Track sensor effectiveness over time</h4>
+          <p>Log what each sensor catches, run over run. Failures trending down means the guides are working — feedforward absorbing what feedback used to catch. A sensor that <em>never</em> fires is one of two things: mastered, and a prune candidate, or broken — so test that it still <em>can</em> fire. That makes the silent-sensor question operational (the scheduled version of that check lives with the <a href="../30-delivery/04-drift-and-health-sensors.html">drift and health sensors</a>). And a rule that fails constantly is a signpost, not just a nuisance: it marks exactly where a better guide is needed.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Sensor ergonomics — the sensor's interface is written for the agent that has to consume it</p>
+    </div>
+
+    <h2><span class="idx">06</span>How to apply it</h2>
     <ul>
       <li><strong>Layer the gate; name the tiers.</strong> Decide deliberately which classes you cover —
         types, unit, integration against real state, fitness functions, performance, end-to-end — rather than
@@ -232,7 +293,7 @@
         collapse the whole gate into one tier; or pay for inference where a type checker would do.</li>
     </ul>
 
-    <h2><span class="idx">06</span>In practice</h2>
+    <h2><span class="idx">07</span>In practice</h2>
     <p>
       A teammate asks the agent to add a <em>deactivate-account</em> command: it must flip the account's
       status to inactive <strong>and</strong> write one audit-log entry recording who did it. The slice ships
@@ -265,7 +326,7 @@
       makes the promise true.
     </p>
 
-    <h2><span class="idx">07</span>Anti-patterns</h2>
+    <h2><span class="idx">08</span>Anti-patterns</h2>
     <ul>
       <li><strong>The vacuous assertion.</strong> A test that checks "returned 200" or "didn't throw" — green
         whether or not the work happened. It reports a safety it can't back up, and a reviewer trusts it.

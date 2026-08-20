@@ -146,7 +146,70 @@
       neither.
     </p>
 
-    <h2><span class="idx">03</span>How to apply it</h2>
+
+    <h2><span class="idx">03</span>Calibrating the evaluator</h2>
+    <p>
+      A separated evaluator is necessary — it is not automatically good. Untuned evaluator agents fail in
+      two documented ways: they identify a real issue and then talk themselves into deciding it isn't a big
+      deal and approve anyway; and they test superficially — happy path, headline criteria — instead of
+      probing the edge cases where the change actually breaks. Splitting the roles removed the author's
+      bias; it did not grant the grader judgment. That has to be built, the same way you'd train a new
+      reviewer.
+    </p>
+    <p>
+      Four practices do the building.
+    </p>
+
+    <div class="fig">
+      <div class="outcomes">
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <line class="ln" x1="9" y1="8" x2="27" y2="8"/>
+            <line class="ln" x1="9" y1="16" x2="27" y2="16"/>
+            <line class="ln" x1="9" y1="24" x2="27" y2="24"/>
+            <circle class="cl" cx="5" cy="8" r="2.6"/>
+            <circle class="cl" cx="5" cy="16" r="2.6"/>
+            <circle class="cl" cx="5" cy="24" r="2.6"/>
+          </svg></div>
+          <h4>Anchor the verdicts with worked examples</h4>
+          <p>Give the evaluator a few graded cases — including the detailed reasoning that led to each verdict, not just the score. Anchors reduce drift from run to run.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <path class="lc" d="M27 16 A11 11 0 1 1 16 5"/>
+            <polyline class="lc" points="12,2 16,5 12,9" stroke-linejoin="round"/>
+          </svg></div>
+          <h4>Tune it in a loop</h4>
+          <p>Read the evaluator's logs and find the cases where its judgment diverged from yours — issues it excused, passes you'd have failed. Update its instructions, run again. Expect several rounds before it grades the way you would; the first draft never does.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <line class="ln" x1="4" y1="8" x2="24" y2="8"/>
+            <line class="ln" x1="4" y1="15" x2="15" y2="15"/>
+            <circle class="st" cx="19" cy="19" r="7"/>
+            <line class="lc" x1="24" y1="24" x2="29" y2="29"/>
+          </svg></div>
+          <h4>Stress-test the criteria wording</h4>
+          <p>Phrasing steers beyond its literal intent. One observed case: telling a design evaluator "the best designs are museum quality" pushed every output toward the same converged aesthetic. Watch what your wording <em>rewards</em>, not just what it says.</p>
+        </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <path class="oa" d="M3 6 h26 l-10 12 v11 l-6 -3 v-8 z" stroke-linejoin="round"/>
+          </svg></div>
+          <h4>Don't chase every finding</h4>
+          <p>An evaluator prompted to find gaps will usually report some, even when the work is sound. Treat its findings as input to human judgment, not as a to-do list — acting on all of them produces over-engineering, not quality.</p>
+        </div>
+      </div>
+      <p class="fig-cap">Separation removes the author's bias; calibration is what adds the skepticism</p>
+    </div>
+
+    <p>
+      The target is an evaluator whose judgment you'd endorse: neither a rubber stamp nor a critic you feel
+      obliged to obey. Until you've checked its verdicts against your own a few times, you have separation
+      — you don't yet have skepticism.
+    </p>
+
+    <h2><span class="idx">04</span>How to apply it</h2>
     <ul>
       <li><strong>Grade against the spec, by someone other than the author.</strong> A fresh reviewer or a
         fresh agent, acceptance criteria in hand. The author never self-certifies — the same separation
@@ -171,7 +234,7 @@
         the tests were written from the code; or call anything verified with nothing attached.</li>
     </ul>
 
-    <h2><span class="idx">04</span>In practice</h2>
+    <h2><span class="idx">05</span>In practice</h2>
     <p>
       Take the <em>per-user deal priority</em> feature, sliced and built across the previous pages. Now
       prove it.
@@ -227,7 +290,7 @@ Edge case the spec implied but didn't spell out
       caught on purpose rather than by a confused customer.
     </p>
 
-    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <h2><span class="idx">06</span>Anti-patterns</h2>
     <ul>
       <li><strong>Vibe verification.</strong> "It runs, ship it." Proof by feeling, with nothing checked
         and nothing attached — the failure this whole page exists to prevent.
@@ -239,6 +302,10 @@ Edge case the spec implied but didn't spell out
         in <a href="../20-harness/05-behaviour-harness.html">the behaviour harness</a>.</li>
       <li><strong>The unattached claim.</strong> "Verified," "tested," "looks good" — attached to no
         screenshot, log, or state dump. A reviewer can't check an adjective.</li>
+      <li><strong>The lenient skeptic.</strong> A separate evaluator trusted without ever checking its
+        judgment against yours. It finds the real issue, decides it isn't a big deal, and approves — the
+        separation is real, the skepticism is not. The fix is calibration: anchored verdicts and a tuning
+        loop until it grades the way you would.</li>
     </ul>
 
     <div class="callout">

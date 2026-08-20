@@ -29,7 +29,7 @@
 
   <nav class="gloss-az" aria-label="Jump to letter">
     <a href="#L-A">A</a><a href="#L-B">B</a><a href="#L-C">C</a><a href="#L-D">D</a><a href="#L-E">E</a>
-    <a href="#L-F">F</a><a href="#L-G">G</a><a href="#L-H">H</a><a href="#L-I">I</a><a href="#L-K">K</a>
+    <a href="#L-F">F</a><a href="#L-G">G</a><a href="#L-H">H</a><a href="#L-I">I</a><a href="#L-J">J</a><a href="#L-K">K</a>
     <a href="#L-L">L</a><a href="#L-M">M</a><a href="#L-N">N</a><a href="#L-O">O</a><a href="#L-P">P</a>
     <a href="#L-Q">Q</a><a href="#L-R">R</a><a href="#L-S">S</a><a href="#L-T">T</a><a href="#L-Z">Z</a>
   </nav>
@@ -74,6 +74,12 @@
       <div class="gloss-see"><a href="10-lifecycle/05-verify-proof-not-vibes.html">Verify — Proof, Not Vibes</a></div>
     </div>
 
+    <div class="gloss-item" id="autonomy-ladder">
+      <h3 class="gloss-term">Autonomy ladder</h3>
+      <p>The four named rungs an agent’s autonomy climbs, per zone: <strong>propose-only</strong>, <strong>merge-with-review</strong>, <strong>merge-on-green</strong>, and <strong>self-merge with post-merge correction</strong>. Promotion is per-zone and evidence-based — the zone’s sensors have <em>actually caught</em> the failure class that worries you — and demotion is automatic on an escaped defect. The precise form of <a href="#levels-of-autonomy">levels of autonomy</a>.</p>
+      <div class="gloss-see"><a href="50-adoption/02-growing-the-harness.html">Growing the Harness</a></div>
+    </div>
+
     <h2 class="gloss-letter" id="L-B">B</h2>
 
     <div class="gloss-item" id="behaviour-harness">
@@ -95,6 +101,18 @@
     </div>
 
     <h2 class="gloss-letter" id="L-C">C</h2>
+
+    <div class="gloss-item" id="ceremony-mismatch">
+      <h3 class="gloss-term">Ceremony mismatch</h3>
+      <p>Full spec machinery aimed at a change whose intent fits in a sentence — four user stories and sixteen acceptance criteria for a one-line fix. It produces review burden, not safety: the paperwork should grow and shrink with the problem, while the discipline of stating expected behaviour before building never goes away.</p>
+      <div class="gloss-see"><a href="10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a></div>
+    </div>
+
+    <div class="gloss-item" id="change-classification">
+      <h3 class="gloss-term">Change classification</h3>
+      <p>Sorting a change to a <a href="#specification-spec">spec</a> before it merges: <strong>additive</strong> (a new requirement), <strong>compatible</strong> (clarifies without changing promised behaviour), <strong>breaking</strong> (changes what an existing requirement promises), or <strong>ambiguous</strong> (can’t tell). Additive and compatible flow through the normal gate; breaking and ambiguous need a human sign-off, because they redefine the contract itself.</p>
+      <div class="gloss-see"><a href="30-delivery/04-drift-and-health-sensors.html">Drift and Health Sensors</a></div>
+    </div>
 
     <div class="gloss-item" id="characterization-test">
       <h3 class="gloss-term">Characterization test</h3>
@@ -196,6 +214,18 @@
 
     <h2 class="gloss-letter" id="L-E">E</h2>
 
+    <div class="gloss-item" id="escalation-ladder">
+      <h3 class="gloss-term">Escalation ladder</h3>
+      <p>The enforcement rungs a rule can live on, weakest to strongest: an in-prompt instruction, a session-level goal re-checked each turn, a deterministic <a href="#hook">hook</a> that blocks until the check passes, an independent second-opinion agent. Climb only as high as the rule demands — each rung costs more. Rule of thumb: instructions for judgment calls, hooks for invariants.</p>
+      <div class="gloss-see"><a href="20-harness/01-guides-feedforward.html">Guides — Feedforward</a></div>
+    </div>
+
+    <div class="gloss-item" id="evaluator-calibration">
+      <h3 class="gloss-term">Evaluator calibration</h3>
+      <p>Building judgment into a separated evaluator the way you’d train a new reviewer: anchor its verdicts with worked, reasoned examples, tune it in a loop against your own judgments, stress-test what the criteria wording <em>rewards</em>, and don’t chase its every finding. Separation removes the author’s bias; calibration is what adds the skepticism.</p>
+      <div class="gloss-see"><a href="10-lifecycle/05-verify-proof-not-vibes.html">Verify — Proof, Not Vibes</a></div>
+    </div>
+
     <div class="gloss-item" id="evidence-artifact">
       <h3 class="gloss-term">Evidence artifact</h3>
       <p>The captured proof attached to a verified change so a reviewer can <em>see</em> it rather than trust a claim — a screenshot of the real screen in the real state for UI, a saved log excerpt or state dump of the real persisted result for backend. "Verified" with nothing attached is a vibe, not proof.</p>
@@ -262,6 +292,12 @@
       <div class="gloss-see"><a href="50-adoption/02-growing-the-harness.html">Growing the Harness</a></div>
     </div>
 
+    <div class="gloss-item" id="hook">
+      <h3 class="gloss-term">Hook</h3>
+      <p>A script the harness itself runs on an event — before an edit, after an edit, at the end of a turn — that can hard-block an action rather than suggest against it. The deterministic layer where everything the agent <em>reads</em> is advisory: a hook never passes through the context window, so it fires whether or not the agent remembered the rule.</p>
+      <div class="gloss-see"><a href="20-harness/01-guides-feedforward.html">Guides — Feedforward</a></div>
+    </div>
+
     <h2 class="gloss-letter" id="L-I">I</h2>
 
     <div class="gloss-item" id="inferential-sensor">
@@ -270,10 +306,24 @@
       <div class="gloss-see"><a href="00-foundations/03-harness-engineering.html">Harness Engineering</a></div>
     </div>
 
+    <div class="gloss-item" id="intent-elicitation">
+      <h3 class="gloss-term">Intent elicitation</h3>
+      <p>Having the agent interview <em>you</em> before a word of spec exists — challenging assumptions, making constraints explicit, pinning success criteria, deciding what should <em>not</em> be built — then writing the <a href="#specification-spec">spec</a> from the interview. The questions are cheap; the guesses they replace are not. Execution then starts in a fresh session, leaving the interview’s residue behind.</p>
+      <div class="gloss-see"><a href="10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a></div>
+    </div>
+
     <div class="gloss-item" id="invariant">
       <h3 class="gloss-term">Invariant</h3>
       <p>A statement of what must <em>always</em> hold for a scenario, regardless of input or implementation — "after any transfer, total balances are unchanged," "a sorted list sorted again is identical." Because it's a property of the <em>problem</em>, a test built from it is bound to the business rule and can't silently encode the code's current bug. The lever of the <a href="#behaviour-harness">behaviour harness</a>.</p>
       <div class="gloss-see"><a href="20-harness/05-behaviour-harness.html">Behaviour Harness</a></div>
+    </div>
+
+    <h2 class="gloss-letter" id="L-J">J</h2>
+
+    <div class="gloss-item" id="just-in-time-retrieval">
+      <h3 class="gloss-term">Just-in-time retrieval</h3>
+      <p>Keeping <em>references</em> in context — paths, queries, links — and fetching the content at the moment of need, rather than pre-loading everything that might turn out relevant. Includes interrogating a large output with small query tools instead of loading the whole artifact into the window.</p>
+      <div class="gloss-see"><a href="00-foundations/02-context-engineering.html">Context Engineering</a></div>
     </div>
 
     <h2 class="gloss-letter" id="L-K">K</h2>
@@ -360,9 +410,21 @@
       <div class="gloss-see"><a href="10-lifecycle/02-plan-before-code.html">Plan Before Code</a></div>
     </div>
 
+    <div class="gloss-item" id="progressive-disclosure">
+      <h3 class="gloss-term">Progressive disclosure</h3>
+      <p>Structuring information so the agent loads it in stages: lightweight identifiers first — file paths, skill names and one-line descriptions, an index — full content only when judged relevant, appendix detail only when actually needed. The reason a <a href="#skill">skill’s</a> metadata and an instruction file’s index matter more than their bodies.</p>
+      <div class="gloss-see"><a href="00-foundations/02-context-engineering.html">Context Engineering</a></div>
+    </div>
+
     <div class="gloss-item" id="property-based-testing">
       <h3 class="gloss-term">Property-based testing</h3>
       <p>A test that asserts an <a href="#invariant">invariant</a> — "output is never negative," "round-trip leaves it unchanged" — and lets a tool <em>generate</em> the inputs that try to break it, rather than hand-picking examples. Because the property comes from the spec's meaning (docstring, types, names), the test is independent of the function body and finds the edge case a hand-written example skips.</p>
+      <div class="gloss-see"><a href="20-harness/05-behaviour-harness.html">Behaviour Harness</a></div>
+    </div>
+
+    <div class="gloss-item" id="property-testing-loop">
+      <h3 class="gloss-term">Property-testing loop</h3>
+      <p>The five-step loop an agent runs <a href="#property-based-testing">property-based testing</a> as: comprehend the target, propose properties grounded in that context, generate the tests, execute <em>with self-reflection</em> (did the code fail or did my test?), and report only above a confidence bar — with findings ranked by a scoring rubric before a human reads them.</p>
       <div class="gloss-see"><a href="20-harness/05-behaviour-harness.html">Behaviour Harness</a></div>
     </div>
 
@@ -408,6 +470,12 @@
       <div class="gloss-see"><a href="20-harness/03-sensors-feedback.html">Sensors — Feedback</a></div>
     </div>
 
+    <div class="gloss-item" id="sensor-ergonomics">
+      <h3 class="gloss-term">Sensor ergonomics</h3>
+      <p>Designing a <a href="#sensor">sensor’s</a> whole interface for the agent that consumes it: a remediation-rich failure message, a <a href="#suppress-with-reason">suppress-with-reason</a> escape hatch, threshold latitude with “refactor first” stated, a query tool wrapped around big reports, and effectiveness tracked over time.</p>
+      <div class="gloss-see"><a href="20-harness/03-sensors-feedback.html">Sensors — Feedback</a></div>
+    </div>
+
     <div class="gloss-item" id="sensor-integrity">
       <h3 class="gloss-term">Sensor integrity</h3>
       <p>The property that passing a <a href="#sensor">sensor</a> <em>requires the work to actually have been done</em>. A check the agent can satisfy cheaply — an integration test asserting only "didn't throw" — is a false sensor: it reports safety it can't back up. The fix is to assert the observable end-state (real persisted state, visible behaviour), never the mere absence of an error.</p>
@@ -418,6 +486,18 @@
       <h3 class="gloss-term">Skill</h3>
       <p>A reusable, packaged guide the agent can load on demand (a named instruction set with metadata). Powerful in small, curated sets; a large library is a <em>budget tax</em> — it costs tokens up front and agents route poorly over big pools.</p>
       <div class="gloss-see"><a href="00-foundations/02-context-engineering.html">Context Engineering</a></div>
+    </div>
+
+    <div class="gloss-item" id="spec-drift-detection">
+      <h3 class="gloss-term">Spec-drift detection</h3>
+      <p>A scheduled (or CI-triggered) scan that compares the <a href="#specification-spec">spec’s</a> requirement and acceptance-criteria ids against the tests and code that claim to implement them — every requirement traces to a test, every scenario-tagged test back to a requirement. Catches the drift no diff review sees: each side locally green, the contract between them quietly void.</p>
+      <div class="gloss-see"><a href="30-delivery/04-drift-and-health-sensors.html">Drift and Health Sensors</a></div>
+    </div>
+
+    <div class="gloss-item" id="spec-driven-development-sdd">
+      <h3 class="gloss-term">Spec-driven development (SDD)</h3>
+      <p>The spectrum of how central the spec is: <strong>spec-first</strong> (written before the code, discarded once the feature ships), <strong>spec-anchored</strong> (kept after the task and used to evolve the feature), and <strong>spec-as-source</strong> (humans edit only the spec; the code is regenerated, never touched). The playbook’s durable, audited spec is spec-anchored — and skeptical of spec-as-source.</p>
+      <div class="gloss-see"><a href="10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a></div>
     </div>
 
     <div class="gloss-item" id="specification-spec">
@@ -448,6 +528,18 @@
       <h3 class="gloss-term">System of record</h3>
       <p>The durable, version-controlled home for what matters — code, specs, decisions, notes in the repository. Reviewable and legible to every future run, unlike a chat thread or a <a href="#memory-store">memory store</a>, so it's the canon the agent should reason from.</p>
       <div class="gloss-see"><a href="00-foundations/02-context-engineering.html">Context Engineering</a></div>
+    </div>
+
+    <div class="gloss-item" id="suppress-with-reason">
+      <h3 class="gloss-term">Suppress-with-reason</h3>
+      <p>An inline suppression of a sensor’s rule that requires a stated justification — the legitimate way out of a rule the agent genuinely can’t satisfy. Without it, the agent games the rule silently; with it, the exception sits in the diff as a documented judgment call a reviewer can read and veto. The escape hatch doesn’t weaken the sensor — it routes exceptions into the open.</p>
+      <div class="gloss-see"><a href="20-harness/03-sensors-feedback.html">Sensors — Feedback</a></div>
+    </div>
+
+    <div class="gloss-item" id="survivors-list">
+      <h3 class="gloss-term">Survivors list</h3>
+      <p>The <a href="#mutation-testing">mutation-testing</a> artifact you actually work with: each surviving mutant names, in one concrete reproducible example, a behaviour no test asserts — a ready-made worklist for the agent (“kill this mutant”), far sharper than “improve the tests” and immune to the coverage illusion.</p>
+      <div class="gloss-see"><a href="20-harness/05-behaviour-harness.html">Behaviour Harness</a></div>
     </div>
 
     <h2 class="gloss-letter" id="L-T">T</h2>

@@ -204,7 +204,73 @@
       <p class="fig-cap">Put them in a loop and they compound — and killing a named surviving mutant is a task the agent is genuinely good at</p>
     </div>
 
-    <h2><span class="idx">03</span>How to apply it</h2>
+
+    <h2><span class="idx">03</span>The survivors list is the worklist</h2>
+    <p>
+      In practice, then, the mutation <em>score</em> is a trend to watch — the <strong>survivors
+      list</strong> is the artifact you actually work with. Each surviving mutant names, in one concrete and
+      reproducible example, a behaviour no test asserts, which turns the list into a ready-made worklist for
+      the agent: kill this mutant, then this one. That's a far sharper instruction than "improve the tests,"
+      and it's immune to the coverage illusion.
+    </p>
+
+    <div class="callout">
+      <div class="c-label">A real cautionary case</div>
+      <p>
+        A file with <strong>100% statement coverage</strong> and 75% branch coverage carried
+        <strong>thirteen surviving mutants</strong> — and had <em>zero</em> unit tests. Acceptance tests
+        exercised every line without asserting what any of it did, and only the survivors made that gap
+        visible.
+      </p>
+    </div>
+
+    <p>
+      Mutation testing is too slow to run everywhere, so give it a deliberate cadence — so a slow slide in
+      suite strength gets noticed even when no single change caused it.
+    </p>
+
+    <div class="fig">
+      <div class="pipe">
+        <div class="step c1"><div class="dot"></div><div class="s-n">in the loop</div><div class="s-t">Incremental</div><div class="s-d">runs on the changed files, inside the change loop</div></div>
+        <div class="step c2"><div class="dot"></div><div class="s-n">post-merge</div><div class="s-t">Full</div><div class="s-d">the exhaustive run, after integration</div></div>
+        <div class="step c3"><div class="dot"></div><div class="s-n">on a clock</div><div class="s-t">Trend</div><div class="s-d">the score tracked by a <a href="../30-delivery/04-drift-and-health-sensors.html">scheduled sensor</a></div></div>
+      </div>
+      <p class="fig-cap">One sensor, three cadences — the diff checks today's change, the clock checks the direction</p>
+    </div>
+
+    <h2><span class="idx">04</span>The property-testing loop</h2>
+    <p>
+      Property-based testing, run by an agent, is a reproducible loop — not a one-shot "write property
+      tests" prompt. Five steps:
+    </p>
+
+    <ol>
+      <li><strong>Comprehend the target.</strong> Read the code, the docstrings, the types, and how the rest
+        of the codebase actually uses it — the property has to come from the <em>meaning</em>, and the
+        meaning lives in that context.</li>
+      <li><strong>Propose properties grounded in that context.</strong> The spec's approved invariants are
+        exactly this — the scenario contracts from earlier in the page plug straight into this step.</li>
+      <li><strong>Generate the property tests.</strong></li>
+      <li><strong>Execute — with self-reflection.</strong> On a failure: <em>did the test fail because the
+        code is wrong, or because my test is wrong?</em> On a pass: <em>does this assert anything
+        worthwhile, or is it trivially true?</em> The reflection step is load-bearing, not a nicety — a real
+        observed failure had the agent wrap a test in <code>try/catch</code>, masking the very bug it had
+        just found.</li>
+      <li><strong>Report only above a confidence bar.</strong> A finding the agent can't argue for doesn't
+        reach a human.</li>
+    </ol>
+
+    <div class="callout">
+      <div class="c-label">Triage before review</div>
+      <p>
+        Human review of agent-generated bug reports is the bottleneck, so rank the findings with a scoring
+        rubric before a person reads them — in measured use, that lifted the valid-finding rate reaching
+        reviewers <strong>from roughly half to over four-fifths</strong>. The loop generates candidates; the
+        rubric spends the reviewer's attention only on the ones likely to be real.
+      </p>
+    </div>
+
+    <h2><span class="idx">05</span>How to apply it</h2>
     <ul>
       <li><strong>Start from the invariant, not the example.</strong> For each scenario, ask "what must be
         true here <em>no matter the input</em>?" and write that down. The example test comes second, if at
@@ -234,7 +300,7 @@
         screen is actually right.</li>
     </ul>
 
-    <h2><span class="idx">04</span>In practice</h2>
+    <h2><span class="idx">06</span>In practice</h2>
     <p>
       A teammate asks the agent to build <code>transfer(from, to, amount)</code> — move money between two
       accounts. <em>Without</em> the behaviour harness, the agent writes its own test from the happy path it
@@ -274,7 +340,7 @@ property("sum of all balances is unchanged after any transfer", () =&gt; {
       business actually meant.
     </p>
 
-    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <h2><span class="idx">07</span>Anti-patterns</h2>
     <ul>
       <li><strong>The confirms-the-implementation test.</strong> A test reverse-engineered from the code it's
         meant to check, so it proves the code does what it does — not what was needed. The failure this whole

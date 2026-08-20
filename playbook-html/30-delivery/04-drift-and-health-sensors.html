@@ -51,7 +51,7 @@
     <p>
       The trigger for catching those is not a change — it's <strong>time</strong>. A drift or health sensor
       runs on a schedule, out of band from the change lifecycle, and asks a question no single pull request
-      could answer: <em>what has quietly rotted since we last looked?</em> Four kinds are worth standing up:
+      could answer: <em>what has quietly rotted since we last looked?</em> Five kinds are worth standing up:
     </p>
 
     <div class="fig">
@@ -90,12 +90,29 @@
           <h4>Architecture-drift scans</h4>
           <p>The codebase diverging from its intended shape — boundaries blurring, a module accreting responsibilities. A scheduled "janitor" run scans for the drift and <em>proposes</em> fixes, so entropy gets a standing counter-force.</p>
         </div>
+        <div class="outcome">
+          <div class="o-icon"><svg viewBox="0 0 32 32">
+            <rect class="oa" x="2" y="8" width="10" height="16" rx="1.5"/>
+            <rect class="wh" x="20" y="8" width="10" height="16" rx="1.5"/>
+            <line class="ln da" x1="12" y1="16" x2="20" y2="16"/>
+            <line class="lc" x1="13.5" y1="13" x2="18.5" y2="19"/>
+            <line class="lc" x1="18.5" y1="13" x2="13.5" y2="19"/>
+          </svg></div>
+          <h4>Spec-drift detection</h4>
+          <p>The <a href="../10-lifecycle/01-spec-the-contract.html">spec chapter</a> tells you to audit spec and code for drift; this scan is the mechanism. On a schedule — or triggered in CI when either side changes — compare the spec's <code>REQ-xxx</code> and <code>AC-xxx</code> ids against the tests and code that claim to implement them: every requirement traces to at least one test, every scenario-tagged test traces back to a requirement, and the API surface matches the spec's interface contracts.</p>
+        </div>
       </div>
-      <p class="fig-cap">Four sensors whose trigger is the calendar, not a diff</p>
+      <p class="fig-cap">Five sensors whose trigger is the calendar, not a diff</p>
     </div>
 
     <p>
-      A fifth member you've already met: <a href="03-observability.html">observability</a> — runtime sensors
+      The drift that last one catches is exactly the kind no diff review sees: an endpoint returning fields
+      the spec never declared, a required field silently dropped in a refactor, a requirement whose only test
+      was deleted three changes ago — each side still locally green, the contract between them quietly void.
+    </p>
+
+    <p>
+      A sixth member you've already met: <a href="03-observability.html">observability</a> — runtime sensors
       watching production. It belongs to this same family, but it runs continuously on live traffic rather
       than on a schedule against the repo, so it has its own page. This page is about the <em>scheduled</em>
       scans of the codebase itself.
@@ -167,7 +184,20 @@
       <li><strong>Track trends, not snapshots.</strong> Record coverage and mutation score over time and look
         at the <em>slope</em>. A single threshold gate on coverage invites
         <a href="../20-harness/03-sensors-feedback.html">gaming with low-value tests</a>; a trend line tells
-        you the honest direction.</li>
+        you the honest direction. On cadence: the full mutation run is a scheduled, trend-tracking job — far
+        too slow for any <a href="../20-harness/04-keep-quality-left.html">change gate</a> — while the
+        <a href="../20-harness/05-behaviour-harness.html">incremental runs scoped to changed code</a> live in
+        the change loop. Same sensor, two triggers: the diff checks today's change, the clock checks the
+        direction.</li>
+      <li><strong>Classify every spec change before it merges.</strong> The spec-drift scan has a
+        diff-triggered companion: drift cuts both ways, and a change to the
+        <a href="../10-lifecycle/01-spec-the-contract.html">spec</a> itself moves the very contract the scan
+        measures against. So when a spec changes, classify the change — <strong>additive</strong> (a new
+        requirement), <strong>compatible</strong> (clarifies without changing promised behaviour),
+        <strong>breaking</strong> (changes what an existing requirement promises), or
+        <strong>ambiguous</strong> (can't tell) — and let additive and compatible flow through the normal
+        gate while breaking and ambiguous require a human sign-off before merge. An agent can propose the
+        classification; a person confirms the two kinds that redefine the contract.</li>
       <li><strong>Keep the non-deterministic scans advisory.</strong> A janitor that <em>auto-merges</em> its
         own architecture "fixes" is a gate making semantic calls it isn't qualified to make unsupervised. Let
         the agent <em>propose</em> and route it through the same
@@ -205,7 +235,7 @@
           <p class="outcome-line">It all surfaces at once in month twelve — a security audit, a refactor tripping over dead code, a senior engineer asking why the suite feels thin. <b>None of it was any one diff's fault</b>.</p>
         </div>
         <div class="lane good">
-          <span class="lane-tag">Four scheduled jobs</span>
+          <span class="lane-tag">The scheduled jobs</span>
           <h4>Nothing allowed to accumulate</h4>
           <ul>
             <li>The dependency scanner opens a bump PR the morning the CVE drops — reviewed and merged before lunch.</li>
@@ -274,6 +304,7 @@
       <a href="../20-harness/03-sensors-feedback.html">Sensors — Feedback</a>
       <a href="../20-harness/05-behaviour-harness.html">Behaviour Harness</a>
       <a href="../20-harness/04-keep-quality-left.html">Keep Quality Left</a>
+      <a href="../10-lifecycle/01-spec-the-contract.html">Spec — The Contract</a>
       <a href="../50-adoption/02-growing-the-harness.html">Growing the Harness</a>
       <a href="../10-lifecycle/06-review-and-convergence.html">Review and Convergence</a>
     </div>

@@ -143,7 +143,132 @@
       <p class="fig-cap">A skill earns its keep only if every stage holds — treat it as a pipeline, not a checkbox</p>
     </div>
 
-    <h2><span class="idx">03</span>How to apply it</h2>
+
+    <h2><span class="idx">03</span>Loading the skill is not a given</h2>
+    <p>
+      The bloated-library warning has a sharper, measured edge: even a well-curated skill only helps if it's
+      actually <em>read</em>, and in the wild it often isn't. With the relevant skills directly available,
+      agents load all of them in only about half of their runs — and once distractor skills muddy the pool,
+      that drops to under a third. The misses aren't even the worst case: for weaker models, a noisy
+      retrieved skill set scores <em>below</em> the no-skills baseline — an irrelevant skill doesn't sit
+      idle, it actively misleads. And refining a skill's content only pays above a quality threshold:
+      refinement is a multiplier on the knowledge a skill already carries, not a generator of the knowledge
+      it's missing.
+    </p>
+
+    <div class="fig">
+      <div class="diagram">
+        <svg viewBox="0 0 360 140" role="img" aria-label="Agents load every relevant skill in about half of their runs; once distractor skills muddy the pool that drops to under a third">
+          <text x="4" y="38" font-size="9">relevant skills only</text>
+          <text x="4" y="78" font-size="9">with distractors</text>
+          <line class="ln" x1="150" y1="18" x2="150" y2="100"/>
+          <line class="ln da" x1="300" y1="18" x2="300" y2="100"/>
+          <rect class="cl" x="150" y="26" width="75" height="16" rx="2"/>
+          <rect class="fl" x="150" y="66" width="50" height="16" rx="2"/>
+          <text x="232" y="38" font-size="9">about half</text>
+          <text x="207" y="78" font-size="9">under a third</text>
+          <text x="150" y="13" text-anchor="middle" font-size="9">0</text>
+          <text x="300" y="13" text-anchor="middle" font-size="9">every run</text>
+          <text x="150" y="120" font-size="9">share of runs that load every relevant skill →</text>
+        </svg>
+      </div>
+      <p class="fig-cap">A skill that exists is not a skill that was read</p>
+    </div>
+
+    <p>
+      Three consequences for practice:
+    </p>
+    <ul>
+      <li><strong>Check loading before blaming content.</strong> When a run fails in territory a skill
+        covers, "did the agent actually load and apply the skill?" is an explicit diagnostic step, never an
+        assumption — roughly half the time the answer is no.</li>
+      <li><strong>Fewer, higher-coverage skills beat a large noisy library.</strong> Every marginal skill is
+        a distractor for every task it doesn't fit, and distractors measurably drag retrieval below
+        useless.</li>
+      <li><strong>Fix the metadata before the body.</strong> Selection runs on a skill's name and
+        description, not its content. A skill that exists but wasn't used has a <em>discovery</em> problem —
+        rewrite what the router reads before rewriting what the agent never got to.</li>
+    </ul>
+
+    <h2><span class="idx">04</span>Instructions are advisory; hooks are deterministic</h2>
+    <p>
+      One more distinction before the how-to, because it decides where a rule should live at all. Everything
+      the agent <em>reads</em> — the instruction file, the conventions, the anti-cheat constraints — is
+      <strong>advisory</strong>: the agent reads it and usually complies, and "usually" is the ceiling, not
+      a defect more prose can fix. Every line competes for the same attention, so compliance with any one
+      rule degrades as the file grows. That gives you the litmus test for every line you're tempted to keep:
+      <em>would removing this line cause the agent to make mistakes?</em> If not, cut it — it isn't neutral,
+      it's diluting the lines that would.
+    </p>
+    <p>
+      Some rules can't live at "usually." For anything that must hold every time, with zero exceptions, use
+      the harness's <strong>deterministic layer</strong> instead: <strong>hooks</strong> — scripts the
+      harness itself runs on events (before an edit, after an edit, at the end of a turn) that can
+      hard-block the action rather than suggest against it. A hook never competes for attention because it
+      never passes through the context window; it fires whether or not the agent remembered the rule.
+    </p>
+
+    <div class="fig">
+      <div class="layers">
+        <div class="layer l1">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <path class="oa" d="M4 6 h24 v14 H14 l-6 6 v-6 H4 z" stroke-linejoin="round"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>In-prompt instruction</h4>
+            <p>Tell the agent to run the check. It reads it, and usually complies.</p>
+          </div>
+          <div class="l-dur">weakest</div>
+        </div>
+        <div class="layer l2">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <path class="lc" d="M26 16 A10 10 0 1 1 16 6"/>
+            <polyline class="lc" points="12,3 16,6 12,10" stroke-linejoin="round"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Session-level goal</h4>
+            <p>A separate process re-checks the goal each turn, so the rule doesn't fade as the thread grows.</p>
+          </div>
+          <div class="l-dur">re-checked</div>
+        </div>
+        <div class="layer l3">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <line class="ln" x1="3" y1="16" x2="15" y2="16"/>
+            <polyline class="ln" points="11,12 15,16 11,20" stroke-linejoin="round"/>
+            <rect class="cl" x="20" y="5" width="5" height="22" rx="1.5"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Deterministic hook</h4>
+            <p>The harness runs the check on an event and blocks completion until it passes — no context window involved.</p>
+          </div>
+          <div class="l-dur">blocking</div>
+        </div>
+        <div class="layer l4">
+          <div class="l-ico"><svg viewBox="0 0 32 32">
+            <circle class="st" cx="9" cy="16" r="6"/>
+            <circle class="st" cx="23" cy="16" r="6"/>
+            <path class="lc" d="M20 16 l2.5 2.5 L26.5 12.5" stroke-linejoin="round"/>
+          </svg></div>
+          <div class="l-body">
+            <h4>Independent second opinion</h4>
+            <p>A separate agent grades the work, so the agent doing the work isn't the one grading it.</p>
+          </div>
+          <div class="l-dur">strongest</div>
+        </div>
+      </div>
+      <p class="fig-cap">The escalation ladder — climb only as high as the rule demands, each rung costs more</p>
+    </div>
+
+    <div class="callout">
+      <div class="c-label">Rule of thumb</div>
+      <p>
+        <strong>Instructions for judgment calls, hooks for invariants.</strong> Between the two poles runs
+        the escalation ladder above, weakest enforcement to strongest — and each rung costs more to build
+        and run than the one below it.
+      </p>
+    </div>
+
+    <h2><span class="idx">05</span>How to apply it</h2>
     <ul>
       <li><strong>Keep the instruction file short and first-read.</strong> Put what's true for the whole repo
         — layout, non-negotiable conventions, build/test commands, pointers to deeper docs — and stop. It's
@@ -189,7 +314,7 @@
         it.</li>
     </ul>
 
-    <h2><span class="idx">04</span>In practice</h2>
+    <h2><span class="idx">06</span>In practice</h2>
     <p>
       A teammate asks the agent to add a <em>create-invoice</em> endpoint, and the slice ships with one
       integration test that asserts the invoice actually landed in the database.
@@ -228,7 +353,7 @@
       the guides, keep them lean, and pair every constraint that matters with the check that enforces it.
     </p>
 
-    <h2><span class="idx">05</span>Anti-patterns</h2>
+    <h2><span class="idx">07</span>Anti-patterns</h2>
     <ul>
       <li><strong>The bloated guide library.</strong> Force-loading hundreds of skills or a sprawling
         instruction file up front — tens of thousands of tokens before the first prompt, with the agent
@@ -237,6 +362,10 @@
         <a href="../40-anti-patterns/01-failure-modes.html">Failure modes</a>)</li>
       <li><strong>The single-task answer-key skill.</strong> A "skill" written for exactly one problem, so it
         never composes and just adds noise to every unrelated task that retrieves it by mistake.</li>
+      <li><strong>The unloaded skill.</strong> The skill exists, the run failed in exactly the territory it
+        covers, and nobody checked whether it was ever read. Diagnosis charges off toward rewriting the
+        skill's content when the actual failure was retrieval — and the fix was a better name and
+        description.</li>
       <li><strong>The unenforced rule.</strong> A constraint stated in a guide with no sensor behind it — a
         wish the agent drifts off the moment "make it work" outweighs it.
         (<a href="../10-lifecycle/04-code-with-the-agent.html">Code with the agent</a> ·

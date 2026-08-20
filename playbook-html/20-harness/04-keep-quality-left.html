@@ -177,6 +177,14 @@
       <li><strong>Thin the heavy stages deliberately.</strong> When you find yourself adding the full suite to
         pre-push "to be safe," stop — that safety already lives in CI. Decide, on purpose, what each local
         stage runs.</li>
+      <li><strong>Give an expensive sensor an incremental mode instead of banishing it.</strong> Some checks
+        are too slow for the left in their full form yet too valuable to fire only late —
+        <a href="05-behaviour-harness.html">mutation testing</a> is the type case. The resolution is two
+        modes: an incremental run scoped to the changed files at pre-commit or pre-push, the full run after
+        integration, and the score tracked as a
+        <a href="../30-delivery/04-drift-and-health-sensors.html">trend on a schedule</a>. The expensive
+        sensor isn't excluded from "left" — it runs there in its cheaper incremental form, with the
+        exhaustive form placed where the cadence can absorb it.</li>
       <li><strong>Don't:</strong> pile the full build or e2e onto a git hook; run the same slow check at every
         stage "to be safe" (it taxes every iteration and buys no extra safety); or leave a cheap deterministic
         check — lint, types — to fire <em>only</em> in CI, making a trivial error cost a full round-trip.</li>
