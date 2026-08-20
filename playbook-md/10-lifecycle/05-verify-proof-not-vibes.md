@@ -87,6 +87,36 @@ absent from another user's query, can be *checked* — by a reviewer today, by a
 merge, by you next week when something regresses. Evidence travels and outlasts the
 conversation; trust does neither.
 
+## Calibrating the evaluator
+
+A separated evaluator is necessary — it is not automatically good. Untuned evaluator
+agents fail in two documented ways: they identify a real issue and then talk themselves
+into deciding it isn't a big deal and approve anyway; and they test superficially — happy
+path, headline criteria — instead of probing the edge cases where the change actually
+breaks. Splitting the roles removed the author's bias; it did not grant the grader
+judgment. That has to be built, the same way you'd train a new reviewer.
+
+Four practices do the building:
+
+- **Anchor the verdicts with worked examples.** Give the evaluator a few graded cases —
+  including the detailed reasoning that led to each verdict, not just the score. Anchors
+  reduce drift from run to run.
+- **Tune it in a loop.** Read the evaluator's logs and find the cases where its judgment
+  diverged from yours — issues it excused, passes you'd have failed. Update its
+  instructions, run again. Expect several rounds before it grades the way you would; the
+  first draft never does.
+- **Stress-test the criteria wording.** Phrasing steers beyond its literal intent. One
+  observed case: telling a design evaluator "the best designs are museum quality" pushed
+  every output toward the same converged aesthetic. Watch what your wording *rewards*,
+  not just what it says.
+- **Don't chase every finding.** An evaluator prompted to find gaps will usually report
+  some, even when the work is sound. Treat its findings as input to human judgment, not
+  as a to-do list — acting on all of them produces over-engineering, not quality.
+
+The target is an evaluator whose judgment you'd endorse: neither a rubber stamp nor a
+critic you feel obliged to obey. Until you've checked its verdicts against your own a few
+times, you have separation — you don't yet have skepticism.
+
 ## How to apply it
 
 - **Grade against the spec, by someone other than the author.** A fresh reviewer or a fresh
@@ -165,6 +195,10 @@ costs, a human still signs off.)
   is in [the behaviour harness](../20-harness/05-behaviour-harness.md).
 - **The unattached claim.** "Verified," "tested," "looks good" — attached to no screenshot,
   log, or state dump. A reviewer can't check an adjective.
+- **The lenient skeptic.** A separate evaluator trusted without ever checking its judgment
+  against yours. It finds the real issue, decides it isn't a big deal, and approves — the
+  separation is real, the skepticism is not. The fix is calibration: anchored verdicts and
+  a tuning loop until it grades the way you would.
 
 > **Next up — [Review and Convergence](06-review-and-convergence.md):** verification proved the change is correct. Now the last lifecycle step guards two slower threats — the zombie code that *reads* perfectly while doing the wrong thing, and the quiet pile-up of near-duplicates that turns a tidy codebase into one nobody dares touch.
 

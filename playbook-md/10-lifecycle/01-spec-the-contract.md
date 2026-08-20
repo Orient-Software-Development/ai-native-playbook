@@ -45,6 +45,65 @@ the part stakeholders are quickest to react to. A mockup turns "is this what you
 from a sprint-long round trip into a two-minute conversation, *before* a line of real
 code exists.
 
+## Spec-first, spec-anchored, spec-as-source
+
+Spec-driven development is a spectrum, and it's worth naming where this playbook sits on
+it. The established taxonomy has three levels: **spec-first**, where the spec is written
+before the code and discarded once the feature ships; **spec-anchored**, where the spec is
+kept after the task and used to evolve and maintain the feature; and **spec-as-source**,
+where the spec *is* the main source file — humans edit only the spec, and the code is
+regenerated from it, never touched by hand. The durable, version-controlled, regularly
+audited spec this chapter describes is **spec-anchored**: the contract outlives the
+change, but the code is still the code.
+
+Be skeptical of the third level. Spec-as-source is a close rerun of 2000s Model-Driven
+Development, which failed for reasons that haven't gone away: the abstraction level was
+awkward — too high to express what mattered, too low to be worth maintaining instead of
+the code — and the ceremony cost more than it returned. LLM generation removes MDD's
+parser constraints, but replaces them with non-determinism, which risks inheriting the
+downsides of both worlds: the inflexibility of code you're not allowed to touch *and*
+generation you can't repeat. Today, even identical specs don't yield identical code — so
+"regenerate from the spec" is not the reproducible build it sounds like. Anchor the spec;
+keep editing the code.
+
+## Interview first — elicit the intent
+
+There's a better opening move than either you drafting from a blank page or the agent
+guessing from a one-line request: have the agent **interview you** first. Before a word
+of spec exists, ask it to challenge your assumptions, make the constraints explicit, pin
+down the success criteria, and — just as important — decide what should *not* be built.
+Keep answering until the ambiguities are resolved, then have it write the spec from the
+interview. The questions an agent asks are cheap; the guesses it makes are not.
+
+Then start execution in a **fresh session**. The interview transcript is full of
+half-formed ideas, rejected options, and reasoning that led *to* the contract — exactly
+the residue that biases an implementation away from the contract itself. The spec is the
+distillation; carry it forward and leave the conversation behind. (This is the
+reset-over-compaction discipline from
+[context engineering](../00-foundations/02-context-engineering.md), applied at the
+lifecycle's first seam.)
+
+The quality of this step is visible all the way downstream. Weak intent work produces
+shallow specs, fuzzy task boundaries, and a coding phase spent constantly correcting the
+agent. Strong intent work surfaces the ambiguities early — while each one costs a
+sentence — and buys longer, focused agent runs later. If the build phase feels like a
+fight, the fault is usually here, not there.
+
+## Scale the ceremony to the change
+
+The spec workflow must scale down as well as up. A one-line bug fix does not need four
+user stories and sixteen acceptance criteria; it needs a sentence stating the expected
+behaviour and one check that reproduces the defect. Elaborate spec machinery applied to a
+small change produces review burden, not safety: the intent-owner now has to wade through
+a pile of generated markdown that says less than the diff would — and a reviewer who
+skims a padded contract is protected by none of it.
+
+The test is proportionality. A feature with real ambiguity earns the full contract —
+normative requirements, acceptance criteria, a prototype. A change whose intent fits in a
+sentence gets a sentence, and the review effort goes where it's actually useful: the
+diff. The discipline of *stating the expected behaviour before building* never goes away;
+the paperwork around it should grow and shrink with the problem.
+
 ## Why it works
 
 An agent only acts on what's in front of it. Where a human fills a gap in the
@@ -192,6 +251,10 @@ you can check, not a thing you hope for.
   failure this whole page exists to prevent. ([Failure modes](../40-anti-patterns/01-failure-modes.md))
 - **The novel spec.** So long the agent builds the front and silently skips the tail as
   its attention thins out.
+- **The ceremony mismatch.** Full spec machinery aimed at a one-line fix — four user
+  stories, sixteen acceptance criteria, a pile of generated markdown nobody reads as
+  carefully as they'd have read the diff. Where the novel spec is too long for its
+  feature, this is too much *process* for its change. Scale the ceremony to the problem.
 - **The how-not-what spec.** A pile of implementation detail with no clear obligations,
   so neither the stakeholder nor a sensor can tell whether it was satisfied.
 - **The unreadable spec.** Written in jargon the intent-owner can't follow, so the one

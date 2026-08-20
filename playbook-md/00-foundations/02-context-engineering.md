@@ -72,6 +72,35 @@ the distinction matters enough that it has its own treatment below.)
   You don't need to see the model's weights, but you must see its prompt. A thin helper that does
   what you told it is fine; a framework that decides for you is not.
 
+## Techniques that stretch the budget
+
+Beyond the habits, a few named techniques do most of the heavy lifting:
+
+- **Progressive disclosure.** Structure information so the agent loads it in stages: lightweight
+  identifiers first — file paths, skill names and one-line descriptions, an index — full content only
+  when judged relevant, appendix detail only when actually needed. A well-organized manual works the
+  same way: table of contents, then the chapter, then the appendix. This is why a skill's metadata and
+  an instruction file's index matter more than their bodies: the agent decides *whether* to read from
+  the cheap layer, and only then pays for the expensive one.
+
+- **Just-in-time retrieval over up-front dumping.** Keep *references* in context — paths, queries,
+  links — and fetch the content at the moment of need, rather than pre-loading everything that might
+  turn out relevant. The same move applies to large outputs: interrogate a big test report with small
+  query tools — head, tail, a summary command — instead of loading the whole artifact into the window
+  to answer one question about it.
+
+- **Structured note-taking as agentic memory.** The agent writes durable notes outside the window — a
+  progress file, a decision log — and pulls them back in after a reset. This is what makes the
+  reset-over-compaction guidance workable on long tasks: the reset stops being amnesia because the
+  note, not the chat history, carries the state. It's the memory-store layer from above doing real
+  work — still a convenience, not the canon, but the bridge that lets working memory be cleared
+  ruthlessly.
+
+- **Delegate the investigation, keep the summary.** A subagent's value isn't parallelism — it's
+  context isolation. It burns *its own* window on the search trail and returns only the condensed
+  answer: a thousand-token summary instead of the hundred-thousand-token exhaust it took to find it.
+  The main thread stays focused on the task; the noise stays in the subagent.
+
 > **Next up — [Harness Engineering](03-harness-engineering.md):** you've met the channel the agent perceives the world through. Now we name the whole apparatus you build around it — guides before, sensors after — and see why the same model in a sharp harness quietly runs rings around itself in a sloppy one.
 
 ---

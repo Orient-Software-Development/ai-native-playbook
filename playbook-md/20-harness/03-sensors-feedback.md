@@ -80,9 +80,12 @@ the new value." A sensor must check the *real outcome the work was supposed to p
 externally visible behaviour — so that the only way to turn it green is to actually do the work.
 
 A weak assertion is worse than no sensor, because a missing check is *honestly* missing while a vacuous one
-is *trusted*. This isn't a small-scale quirk: even carefully curated benchmark suites have let provably
-wrong fixes pass, simply because the gating test was too weak to tell a correct patch from a plausible one.
-A passing test is not proof if the test is weak.
+is *trusted*. This isn't a small-scale quirk. When researchers strengthened the tests of a heavily
+human-reviewed agent benchmark, about one task in twenty turned out to have insufficient tests — and 16% of
+the patches that had been graded *passing* actually failed once the tests could tell a correct fix from a
+plausible one. On the less-reviewed variant of the same benchmark, 28%. Review by 93 engineers had not
+caught it. The lesson isn't that those reviewers were careless — it's that human review of tests does not
+substitute for grading the tests mechanically. A passing test is not proof if the test is weak.
 
 This is the feedback half of the anti-cheat story. The [feedforward half](01-guides-feedforward.md) is the
 rule written into the instruction file — *you may not weaken a failing test to make it pass; tests must
@@ -106,6 +109,35 @@ it pays the most, because you own the message: write it for the agent that will 
 specific violation, and the shape of the correct code ("API routes must not import the db layer — move the
 query into `packages/sales/queries` and call it from here"). A check that can fail the build but can't
 explain itself is doing half its job, and the missing half is free.
+
+## Sensor ergonomics
+
+The failure message is the first move in a broader discipline: designing the sensor's whole *interface* for
+the agent that consumes it. Four mechanics carry most of the value.
+
+**Give the rule an escape hatch that costs a justification.** A custom failure message should carry the
+self-correction guidance *and* name the legitimate way out: **suppress-with-reason** — an inline suppression
+that requires a stated justification. Without it, an agent facing a rule it genuinely can't satisfy games
+the rule silently; with it, the agent makes a documented judgment call that sits in the diff for a reviewer
+to read and veto. The escape hatch doesn't weaken the sensor — it routes the exceptions into the open.
+
+**Grant threshold latitude — but say "refactor first."** For graded rules — a complexity ceiling, a lint
+threshold — binary suppress-or-comply is too coarse: sometimes the refactor genuinely isn't feasible, and
+the honest move is raising the threshold *with a reason*. The observed pattern, though, is that agents
+reach for the threshold raise first and produce perfectly good refactors when pushed one step further. So
+write the order of preference into the guide: refactor first, raise only with a stated reason.
+
+**Wrap big reports in a query tool.** A large sensor output — a mutation report, a coverage report — dumped
+raw into context spends the attention budget on the 95% the agent doesn't need. Wrap it in a small CLI the
+agent can interrogate — summary, per-file, hotspots — so it pulls only the slice it's actually working on.
+The report becomes something the agent *queries*, not something it wades through.
+
+**Track sensor effectiveness over time.** Log what each sensor catches, run over run. Failures trending
+down means the guides are working — feedforward absorbing what feedback used to catch. A sensor that
+*never* fires is one of two things: mastered, and a prune candidate, or broken — so test that it still
+*can* fire. That makes the silent-sensor question operational (the scheduled version of that check lives
+with the [drift and health sensors](../30-delivery/04-drift-and-health-sensors.md)). And a rule that fails
+constantly is a signpost, not just a nuisance: it marks exactly where a better guide is needed.
 
 ## How to apply it
 

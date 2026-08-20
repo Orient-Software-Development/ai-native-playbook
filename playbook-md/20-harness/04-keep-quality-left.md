@@ -80,6 +80,13 @@ cadence its cost doesn't break.
 - **Thin the heavy stages deliberately.** When you find yourself adding the full suite to pre-push "to be
   safe," stop — that safety already lives in CI. Decide, on purpose, what each local stage runs and keep the
   slow work off it.
+- **Give an expensive sensor an incremental mode instead of banishing it.** Some checks are too slow for
+  the left in their full form yet too valuable to fire only late — [mutation
+  testing](05-behaviour-harness.md) is the type case. The resolution is two modes: an incremental run
+  scoped to the changed files at pre-commit or pre-push, the full run after integration, and the score
+  tracked as a [trend on a schedule](../30-delivery/04-drift-and-health-sensors.md). The expensive sensor
+  isn't excluded from "left" — it runs there in its cheaper incremental form, with the exhaustive form
+  placed where the cadence can absorb it.
 - **Don't:** pile the full build or e2e onto a git hook; run the same slow check at every stage "to be
   safe" (it taxes every iteration and buys no extra safety, since CI already has it); leave a cheap
   deterministic check — lint, types — to fire *only* in CI, making a trivial error cost a full round-trip

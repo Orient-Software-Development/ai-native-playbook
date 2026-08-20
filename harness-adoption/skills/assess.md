@@ -43,6 +43,8 @@ library (`../patterns/`).
 | **Architecture rules** | boundary lint rules, dependency-cruiser/import-linter/ArchUnit, module structure | architecture-fitness layer |
 | **Inferential review** | any LLM-in-CI workflow (e.g. a Claude/Codex review action) | inferential layer |
 | **CI / VCS** | `.github/workflows/`, `.gitlab-ci.yml`, `azure-pipelines.yml`, `Jenkinsfile`; remote host | which CI/VCS adapter |
+| **Drift & health sensors** | `schedule:`/cron triggers in CI workflows; `dependabot.yml`/`renovate.json`; dead-code tools (knip, vulture, deadcode) | scheduled sensing beyond the change loop |
+| **Hooks (deterministic layer)** | agent-tool hook config (e.g. `.claude/settings.json` hooks, tool-specific event scripts) | whether invariants are hook-enforced or prose-only |
 
 State back to the user, in two or three lines: the detected stack, the
 AI tool (or "none detected"), the VCS/CI host, and whether a harness is
@@ -89,7 +91,9 @@ important finding a harness assessment produces.
 
 ### Feedforward (guides)
 - 9–10: a concrete, current guide file (`AGENTS.md`/`CLAUDE.md`); every
-  reference resolves; conventions are specific enough to act on.
+  reference resolves; conventions are specific enough to act on; rules
+  that must hold every time are hook-enforced, not prose-only
+  (instructions are advisory — see `../reference/harness-model.md` §1).
 - 5–6: a guide exists but is vague, stale, or aspirational ("be careful
   with X").
 - 0–4: no guide file, or it is a stub the agent will mis-infer from.
@@ -108,7 +112,9 @@ important finding a harness assessment produces.
 
 ### Behaviour
 - 9–10: at least one real behaviour test asserting an observable
-  end-state, run by the gate; coverage of critical paths.
+  end-state, run by the gate; coverage of critical paths; suite strength
+  graded mechanically (mutation or property testing) rather than by
+  reading the tests.
 - 5–6: unit tests exist but nothing proves the product's main path
   end to end.
 - 0–4: no tests, or tests assert only "did not throw".

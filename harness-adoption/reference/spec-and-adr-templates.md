@@ -11,6 +11,18 @@ the product, not on day one.
 
 Save as `specs/<area>/NNN-<slug>.md`.
 
+**Scale the ceremony to the change.** A feature with real ambiguity
+earns the full template. A change whose intent fits in a sentence gets a
+sentence and one check that reproduces the defect — not four user
+stories. The discipline of stating expected behaviour before building
+never goes away; the paperwork grows and shrinks with the problem.
+
+**Interview first.** Before drafting, have the agent interview the
+intent-owner: challenge assumptions, pin success criteria, decide what
+should *not* be built. Write the spec from the interview — then start
+execution in a **fresh session**, leaving the interview's residue
+behind (the spec is the distillation; the transcript biases the build).
+
 ```markdown
 ---
 id: SPEC-NNN
@@ -33,8 +45,8 @@ updated: <YYYY-MM-DD>
 <what this deliberately does not cover>
 
 ## Acceptance
-- [ ] <observable, testable criterion>
-- [ ] <observable, testable criterion>
+- [ ] AC-1: <observable, testable criterion>
+- [ ] AC-2: <observable, testable criterion>
 
 ## Open questions
 <TBD items — mark them, don't let the agent infer answers>
@@ -43,6 +55,18 @@ updated: <YYYY-MM-DD>
 Rule: the spec asserts **observable end-states**, never "it runs". The
 behaviour test (`../patterns/behaviour-test.md`) proves the acceptance
 criteria.
+
+The `AC-n` ids are load-bearing, not decoration: tests reference them
+(in the test name or a tag), which is what lets the spec-drift scan
+(`../patterns/drift-and-health.md`) verify that every criterion still
+traces to a test and every scenario-tagged test back to a criterion.
+
+**Changing a spec after approval:** classify the change — **additive**
+(new requirement) / **compatible** (clarifies, promises unchanged) /
+**breaking** (changes what an existing requirement promises) /
+**ambiguous** (can't tell). Additive and compatible flow through the
+normal gate; breaking and ambiguous need a human sign-off, because they
+redefine the contract itself.
 
 ---
 

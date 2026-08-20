@@ -103,6 +103,48 @@ misleads. The fix is never a bigger catalogue; it's a curated, well-designed, sm
 cost and routing failure are covered in
 [context engineering](../00-foundations/02-context-engineering.md); here the point is *design*.)
 
+## Loading the skill is not a given
+
+The bloated-library warning has a sharper, measured edge: even a well-curated skill only helps if it's
+actually *read*, and in the wild it often isn't. With the relevant skills directly available, agents load
+all of them in only about half of their runs — and once distractor skills muddy the pool, that drops to
+under a third. The misses aren't even the worst case: for weaker models, a noisy retrieved skill set scores
+*below* the no-skills baseline — an irrelevant skill doesn't sit idle, it actively misleads. And refining a
+skill's content only pays above a quality threshold: refinement is a multiplier on the knowledge a skill
+already carries, not a generator of the knowledge it's missing.
+
+Three consequences for practice:
+
+- **Check loading before blaming content.** When a run fails in territory a skill covers, "did the agent
+  actually load and apply the skill?" is an explicit diagnostic step, never an assumption — roughly half
+  the time the answer is no.
+- **Fewer, higher-coverage skills beat a large noisy library.** Every marginal skill is a distractor for
+  every task it doesn't fit, and distractors measurably drag retrieval below useless.
+- **Fix the metadata before the body.** Selection runs on a skill's name and description, not its content.
+  A skill that exists but wasn't used has a *discovery* problem — rewrite what the router reads before
+  rewriting what the agent never got to.
+
+## Instructions are advisory; hooks are deterministic
+
+One more distinction before the how-to, because it decides where a rule should live at all. Everything the
+agent *reads* — the instruction file, the conventions, the anti-cheat constraints — is **advisory**: the
+agent reads it and usually complies, and "usually" is the ceiling, not a defect more prose can fix. Every
+line competes for the same attention, so compliance with any one rule degrades as the file grows. That
+gives you the litmus test for every line you're tempted to keep: *would removing this line cause the agent
+to make mistakes?* If not, cut it — it isn't neutral, it's diluting the lines that would.
+
+Some rules can't live at "usually." For anything that must hold every time, with zero exceptions, use the
+harness's **deterministic layer** instead: **hooks** — scripts the harness itself runs on events (before an
+edit, after an edit, at the end of a turn) that can hard-block the action rather than suggest against it.
+A hook never competes for attention because it never passes through the context window; it fires whether or
+not the agent remembered the rule.
+
+Between those poles runs an **escalation ladder**, weakest enforcement to strongest: an in-prompt
+instruction to run the check → a session-level goal a separate process re-checks each turn → a
+deterministic hook that blocks completion until the check passes → an independent second-opinion agent, so
+the agent doing the work isn't the one grading it. Climb only as high as the rule demands — each rung costs
+more to build and run. The rule of thumb: **instructions for judgment calls, hooks for invariants.**
+
 ## How to apply it
 
 - **Keep the instruction file short and first-read.** Put what's true for the whole repo — layout,
@@ -194,6 +236,9 @@ that enforces it.
   ([Context engineering](../00-foundations/02-context-engineering.md) · [Failure modes](../40-anti-patterns/01-failure-modes.md))
 - **The single-task answer-key skill.** A "skill" written for exactly one problem, so it never
   composes and just adds noise to every unrelated task that retrieves it by mistake.
+- **The unloaded skill.** The skill exists, the run failed in exactly the territory it covers, and
+  nobody checked whether it was ever read. Diagnosis charges off toward rewriting the skill's content
+  when the actual failure was retrieval — and the fix was a better name and description.
 - **The unenforced rule.** A constraint stated in a guide with no sensor behind it — a wish the agent
   drifts off the moment the local pull of "make it work" outweighs it.
   ([Code with the agent](../10-lifecycle/04-code-with-the-agent.md) · [Sensors — Feedback](03-sensors-feedback.md))

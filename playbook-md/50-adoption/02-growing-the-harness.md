@@ -108,6 +108,29 @@ tidying; it's keeping the harness honest about what the current model genuinely 
   (the harness bloats into a tax); grant end-to-end autonomy before the harness can catch the agent in that
   zone.
 
+## The autonomy ladder
+
+"Widen autonomy as the harness earns it" deserves more precision than a slogan, so give the widening
+named rungs. Per zone — the flop-zone map the
+[responsible team](03-responsible-team-and-ai-debt.md) draws — autonomy climbs four:
+
+1. **Propose-only.** The agent drafts; a human applies. The default for a new zone, and the standing
+   setting for a known flop zone.
+2. **Merge-with-review.** The agent commits on a branch; a human reviews every diff before merge.
+3. **Merge-on-green.** The gate is the reviewer; a human spot-checks after the fact. This rung has a
+   precondition: the zone's sensors need a track record — the behaviours that matter are gated by
+   honest tests, and the gate has *actually caught* agent mistakes before, not "would probably catch."
+4. **Self-merge with post-merge correction.** For zones with mature
+   [drift sensors](../30-delivery/04-drift-and-health-sensors.md) and cleanup machinery: mistakes are
+   caught behind the merge instead of in front of it.
+
+Two rules keep the ladder honest. **Promotion is per-zone and evidence-based**: a zone climbs when its
+sensors have demonstrably caught the failure class that worries you — not when the team feels
+confident, which is just optimism with a rung attached. And **demotion is automatic**: an escaped
+defect in a zone drops it a rung, and it stays dropped until the sensor that should have caught the
+defect exists. The payoff is that "how much do we trust the agent here?" always has an answer that is a
+rung and a reason, never a mood.
+
 ## In practice
 
 A team is past week one. Their minimum viable harness is holding, and now they're letting the agent build
@@ -151,6 +174,10 @@ upgrades, compounding on harnessability underneath.
   [load-bearing](../40-anti-patterns/01-failure-modes.md).
 - **Big-bang autonomy.** Granting the agent end-to-end scope before the harness around that zone has earned
   it. Autonomy is earned by controls that demonstrably catch the agent's mistakes, not granted on optimism.
+- **Promotion by mood.** Running the autonomy ladder on feelings: widening a zone's autonomy on optimism,
+  narrowing it only after an incident, with no evidence rule in either direction. A rung granted by a
+  feeling gets revoked by a feeling — the ladder only means something when sensors, not sentiment, move a
+  zone up or down.
 - **Designing it all up front.** Trying to predict and build the complete harness in one sitting — the same
   mistake as the [big-bang minimum harness](01-minimum-viable-harness.md), a step later. You can't foresee
   the failures; let the repo show you.

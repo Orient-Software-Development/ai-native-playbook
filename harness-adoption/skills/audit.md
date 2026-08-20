@@ -47,6 +47,10 @@ patterns the first assessment can't see (they only appear over time):
   agent infers a non-rule from a stub.
 - **Staleness** — when was the guide / brain doc last updated relative
   to feature activity?
+- **Unloaded guides** — if a run failed in territory a guide rule or
+  skill covers, check whether the rule was ever *read* before diagnosing
+  its content. A rule that exists but wasn't loaded has a discovery
+  problem: fix the name, description, or index first, not the body.
 
 ### Maintainability / architecture / behaviour decay
 - **Budget trend** — are suppression and TODO budgets stable, shrinking,
@@ -55,8 +59,17 @@ patterns the first assessment can't see (they only appear over time):
   CI checks, `// eslint-disable` clusters)? A bypassed gate is no gate.
 - **Noisy sensors** — any sensor producing false positives the team has
   learned to ignore? A noisy sensor is worse than none — tune or remove it.
+- **Silent sensors** — any sensor that hasn't fired all period? It's
+  mastered (a prune candidate) or broken — plant a violation and prove
+  it still *can* fire before trusting its silence. Failures trending
+  down across sensors is the good sign: guides absorbing what feedback
+  used to catch.
+- **Unreasoned suppressions** — are suppressions accumulating without
+  stated justifications? The escape hatch has become a bypass.
 - **Spec rot** — any spec marked `implemented` that no longer matches the
-  code? Worse than no spec.
+  code? Worse than no spec. If specs carry AC ids, run the traceability
+  check: every criterion maps to a test, every scenario-tagged test back
+  to a criterion (`../patterns/drift-and-health.md`).
 
 ---
 
@@ -82,10 +95,23 @@ the model names (`../reference/harness-model.md` §5):
 
 - A regression escaped the gate → tighten the gate, or consciously accept
   the class belongs to a later stage (CI, not pre-commit).
-- A guide rule is repeatedly ignored → rewrite it more concretely, or
-  encode it as a sensor.
+- A guide rule is repeatedly ignored → rewrite it more concretely, encode
+  it as a sensor, or — if it's an invariant — move it to a hook.
 - A sensor produces false positives → tune or remove it.
 - A new failure class appeared twice → add it to the next increment.
+
+For any incident, **trace the chain upstream** before fixing the
+instance: the bug came from a gap in the spec; the gap survived review;
+review was overloaded — where did the ambiguity *enter* (elicitation,
+spec, review, verification)? Fix that layer, or the same class of bug
+walks back in through the same door.
+
+If the team runs zoned autonomy, apply the ladder rules: an **escaped
+defect demotes the zone a rung** (propose-only ← merge-with-review ←
+merge-on-green ← self-merge), and it stays demoted until the sensor that
+should have caught the defect exists. Promotion needs evidence — the
+zone's sensors have actually caught the failure class — never
+confidence.
 
 Hand the single highest-value move to [adopt](adopt.md). One increment,
 then stop — same discipline as adoption.

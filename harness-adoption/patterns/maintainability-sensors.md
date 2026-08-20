@@ -37,6 +37,29 @@ legacy repo where you want to stop the bleeding.
 - Secret scan: fail the commit on a match; allow an explicit, reviewed
   allowlist entry for false positives.
 
+### Sensor ergonomics — design the interface for the agent
+
+- **Failure messages carry the fix.** A check that can fail the build
+  but can't explain itself does half its job. Name the rule, the
+  violation, and the shape of correct code.
+- **Suppress-with-reason.** Every suppression must carry a stated
+  justification — most linters support it natively (`eslint-disable-next-line
+  rule -- reason`, `# noqa: CODE` plus a comment, `//nolint:rule // reason`,
+  `rubocop:disable` with a comment). Without a legitimate way out, an
+  agent facing a rule it can't satisfy games it silently; with one, the
+  exception sits in the diff as a documented judgment call a reviewer
+  can read and veto. The escape hatch doesn't weaken the sensor — it
+  routes exceptions into the open.
+- **Threshold latitude, "refactor first".** For graded rules (a budget
+  ceiling, a complexity limit), raising the threshold *with a stated
+  reason* is legitimate — but write the order of preference into the
+  guide: refactor first, raise only with a reason. Agents reach for the
+  raise first and produce good refactors when pushed one step further.
+- **Wrap big reports in a query interface.** A large sensor output
+  (coverage, mutation report) dumped raw into context wastes the
+  agent's attention on the 95% it doesn't need. Give it a summary /
+  per-file / hotspots mode so the agent queries the slice it's working on.
+
 ## Assessment signal
 
 - Config files present (`.eslintrc`/`eslint.config.*`, `.prettierrc`,
@@ -106,3 +129,10 @@ replacement for gitleaks/Snyk.
   only ever rises is a budget in name only. Report the trend.
 - A linter with hundreds of warnings nobody fixes is noise — either gate
   at zero or remove the rules generating ignored warnings.
+- **Track what each sensor catches, run over run.** Failures trending
+  down means the guides are absorbing what feedback used to catch. A
+  sensor that *never* fires is mastered (prune candidate) or broken —
+  plant a violation and prove it still can. A rule that fails constantly
+  marks exactly where a better guide is needed.
+- Suppressions without reasons accumulating = the escape hatch has
+  become a bypass. Re-require the justification.

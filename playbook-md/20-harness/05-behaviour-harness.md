@@ -82,6 +82,43 @@ back to the agent. And the agent is genuinely good at *this* last step — given
 ("when I changed this line, no test complained"), writing the assertion that kills it is a well-specified
 task, not an open-ended one.
 
+## The survivors list is the worklist
+
+In practice, then, the mutation *score* is a trend to watch — the **survivors list** is the artifact you
+actually work with. Each surviving mutant names, in one concrete and reproducible example, a behaviour no
+test asserts, which turns the list into a ready-made worklist for the agent: kill this mutant, then this
+one. That's a far sharper instruction than "improve the tests," and it's immune to the coverage illusion.
+A real cautionary case: a file with 100% statement coverage and 75% branch coverage carried thirteen
+surviving mutants — and had *zero* unit tests. Acceptance tests exercised every line without asserting what
+any of it did, and only the survivors made that gap visible.
+
+Mutation testing is too slow to run everywhere, so give it a deliberate cadence: **incremental** runs on the
+changed files inside the change loop, the **full** run after integration, and the score tracked as a trend
+by a [scheduled sensor](../30-delivery/04-drift-and-health-sensors.md) — so a slow slide in suite strength
+gets noticed even when no single change caused it.
+
+## The property-testing loop
+
+Property-based testing, run by an agent, is a reproducible loop — not a one-shot "write property tests"
+prompt. Five steps:
+
+1. **Comprehend the target.** Read the code, the docstrings, the types, and how the rest of the codebase
+   actually uses it — the property has to come from the *meaning*, and the meaning lives in that context.
+2. **Propose properties grounded in that context.** The spec's approved invariants are exactly this — the
+   scenario contracts from earlier in the page plug straight into this step.
+3. **Generate the property tests.**
+4. **Execute — with self-reflection.** On a failure: *did the test fail because the code is wrong, or
+   because my test is wrong?* On a pass: *does this assert anything worthwhile, or is it trivially true?*
+   The reflection step is load-bearing, not a nicety — a real observed failure had the agent wrap a test in
+   try/catch, masking the very bug it had just found.
+5. **Report only above a confidence bar.** A finding the agent can't argue for doesn't reach a human.
+
+And one discipline downstream of the loop: **triage before review**. Human review of agent-generated bug
+reports is the bottleneck, so rank the findings with a scoring rubric before a person reads them — in
+measured use, that lifted the valid-finding rate reaching reviewers from roughly half to over four-fifths.
+The loop generates candidates; the rubric spends the reviewer's attention only on the ones likely to be
+real.
+
 ## How to apply it
 
 - **Start from the invariant, not the example.** For each scenario, ask "what must be true here *no matter

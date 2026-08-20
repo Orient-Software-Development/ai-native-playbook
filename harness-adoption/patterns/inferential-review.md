@@ -50,6 +50,26 @@ things to check (spec alignment, error handling, tenant scoping, etc.).
 Keep the rubric in the repo so it's reviewed like code; swap the model
 behind it freely.
 
+## Calibrating the reviewer
+
+A separated evaluator is necessary, not automatically good. Untuned,
+it fails in two documented ways: it finds a real issue and talks itself
+into approving anyway, and it tests the happy path instead of the edges.
+Separation removed the author's bias; calibration is what adds the
+skepticism:
+
+- **Anchor verdicts with worked examples.** Put a few graded cases in
+  the rubric — including the reasoning that led to each verdict, not
+  just the score. Anchors reduce drift run to run.
+- **Tune in a loop.** Read the reviewer's output and find where its
+  judgment diverged from yours — issues it excused, passes you'd have
+  failed. Update the rubric; run again. Expect several rounds.
+- **Stress-test the wording.** Criteria steer beyond their literal
+  intent — watch what a phrase *rewards*, not just what it says.
+- **Don't chase every finding.** A reviewer prompted to find gaps will
+  report some even when the work is sound. Findings are input to human
+  judgment, not a to-do list — acting on all of them over-engineers.
+
 ## How adopt writes it
 
 1. Confirm the four computational layers are solid first — if they're
@@ -66,3 +86,7 @@ behind it freely.
 
 - Is it acted on, or has it become wallpaper? An ignored inferential
   sensor should be tuned or switched off — cost without signal.
+- **The lenient skeptic** — a reviewer trusted without its verdicts ever
+  being checked against a human's. Until someone has compared a few of
+  its calls to their own, the team has separation, not skepticism.
+  Sample its verdicts each audit.

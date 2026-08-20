@@ -13,14 +13,28 @@ to raise the odds of a right first attempt. See
 - **Concrete.** Every rule is specific enough to act on without guessing
   ("import data-layer code only through `repositories/`", not "be careful
   with imports"). Vague rules are noise the agent pays a context tax to read.
+- **Every line earns its place.** Everything the agent reads is advisory —
+  each line competes with every other for attention, so compliance with any
+  one rule degrades as the file grows. Litmus test per line: *would removing
+  it cause the agent to make mistakes?* If not, cut it.
 - **Stable.** Volatile state (current sprint, who's on call) lives
   elsewhere; the guide changes maybe monthly.
 - **Discoverable.** Every "MUST read" path resolves to a real file.
 - **Short.** If it grows past ~400 lines the agent attends to the wrong
   things — extract sections (UI conventions, runbooks) into linked files.
-- **Sensored or soft.** Each rule either has a sensor or is explicitly
-  marked soft. Aspirational rules with no enforcement decay and erode
-  trust in the whole file.
+  This is **progressive disclosure**: the guide is the index the agent
+  always reads; detail loads only when a task makes it relevant. The
+  index and each linked file's one-line description matter more than the
+  bodies — they're what the agent routes on.
+- **Enforced to match its weight.** Each rule sits on one of three rungs:
+  **(soft)** — a judgment call, explicitly marked, no sensor; **sensored**
+  — a check in the gate verifies it; or **hook-enforced** — for invariants
+  that must hold every time, a script the harness runs on the event
+  (before an edit, end of turn) hard-blocks the violation instead of
+  relying on the agent having read the rule. Prose is advisory; a hook
+  never passes through the context window. Rule of thumb: instructions
+  for judgment calls, hooks for invariants. Aspirational rules with no
+  enforcement decay and erode trust in the whole file.
 
 ## Blocking behaviour
 
@@ -88,5 +102,8 @@ Stack only changes the *commands* and *conventions*, not the structure.
 3. Add one-line pointer files for whichever AI tools the team uses.
 4. For each convention written, confirm a sensor exists or mark it
    `(soft)`. Flag to the user any rule that ought to have a sensor —
-   that's a candidate for the next adopt increment.
+   that's a candidate for the next adopt increment. For a rule that must
+   hold *every* time (never commit to main, never edit generated files),
+   propose a hook in the team's agent tool rather than another line of
+   prose.
 5. Verify every referenced path exists before finishing.

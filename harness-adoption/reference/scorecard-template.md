@@ -26,6 +26,9 @@ Trend legend: `↑` improved · `→` flat · `↓` regressed · `—` first ass
 - Commits/PRs in period: {{PR_COUNT}}
 - Incidents in period: {{INCIDENT_COUNT}} (attributable to a harness miss: {{HARNESS_MISS_COUNT}})
 - Gate bypasses (`--no-verify` etc.) in period: {{BYPASS_COUNT}}
+- Scheduled drift sensors running: {{DRIFT_SENSORS}} (deps / dead code / spec-drift / mutation trend, or "none")
+- Autonomy rungs per zone (if the team runs zoned autonomy): {{AUTONOMY_RUNGS}}
+  (propose-only · merge-with-review · merge-on-green · self-merge; demote a rung on any escaped defect)
 
 ---
 

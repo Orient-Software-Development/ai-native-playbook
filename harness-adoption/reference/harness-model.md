@@ -21,6 +21,33 @@ a **gate** that enforces the sensor's verdict. Guide + sensor + gate =
 closed loop. Miss any one and you don't have a small harness, you have
 no harness.
 
+### Advisory vs. deterministic — where a rule lives
+
+Everything the agent *reads* — the guide file, conventions, constraints
+— is **advisory**: the agent usually complies, and "usually" is the
+ceiling, not a defect more prose can fix. Every line competes for the
+same attention, so compliance with any one rule degrades as the file
+grows. Litmus test for every line: *would removing it cause the agent
+to make mistakes?* If not, cut it — it isn't neutral, it's diluting the
+lines that would.
+
+Rules that must hold every time belong on the **deterministic layer**:
+**hooks** — scripts the harness itself runs on events (before an edit,
+after an edit, end of turn) that hard-block the action rather than
+suggest against it. A hook never passes through the context window, so
+it fires whether or not the agent remembered the rule.
+
+Between the poles runs an **escalation ladder**, weakest to strongest:
+
+1. in-prompt instruction to run the check →
+2. session-level goal a separate process re-checks each turn →
+3. deterministic hook that blocks until the check passes →
+4. independent second-opinion agent (the worker isn't the grader).
+
+Climb only as high as the rule demands — each rung costs more to build
+and run. Rule of thumb: **instructions for judgment calls, hooks (and
+gates) for invariants.**
+
 ---
 
 ## 2. Two execution modes
@@ -73,6 +100,13 @@ A slow pre-commit trains developers to use `--no-verify`. The single
 `check` command + gate (`../patterns/check-and-gate.md`) is what enforces
 this distribution.
 
+One caveat for mature teams: the strict merge gate is a spectrum, not a
+law. Some agent-first teams run deliberately minimal blocking checks and
+catch mistakes *behind* the merge — but only on top of scheduled drift
+sensors and sharp observability (`../patterns/drift-and-health.md`).
+Until that post-merge machinery exists and has a track record, keep the
+gate strict; a team without it has nowhere to move the checking *to*.
+
 ---
 
 ## 5. The steering loop
@@ -117,6 +151,9 @@ the decisions that matter — spec authoring, ADR debate, audit and tuning
   infers a non-rule. Mark undecided things `TBD — defer to PR review`.
 - **Sensors that soft-skip on environmental failure.** Exiting 0 when a
   dependency is unreachable gives no signal. Fail loudly instead.
+- **The silent sensor.** A sensor that never fires is one of two things:
+  mastered (a prune candidate) or broken. Test that it still *can* fire
+  — plant a violation — before trusting its silence.
 - **Pre-commit checks > 5 s.** They train `--no-verify`. Move them right.
 - **Inferential gates on the fast path.** They destroy the local loop and
   cost more than they add. CI only.

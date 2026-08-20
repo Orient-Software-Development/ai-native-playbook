@@ -51,6 +51,14 @@ that worked at merge but quietly broke a few changes on. The runtime sibling of 
 against its code: it makes a silent regression surface on purpose.
 → [Verify — Proof, Not Vibes](10-lifecycle/05-verify-proof-not-vibes.md)
 
+### Autonomy ladder
+
+The four named rungs an agent's autonomy climbs, per zone: **propose-only**, **merge-with-review**,
+**merge-on-green**, and **self-merge with post-merge correction**. Promotion is per-zone and
+evidence-based — the zone's sensors have *actually caught* the failure class that worries you — and
+demotion is automatic on an escaped defect. The precise form of [levels of autonomy](#levels-of-autonomy).
+→ [Growing the Harness](50-adoption/02-growing-the-harness.md)
+
 ### Behaviour harness
 
 The hardest of the three regulation categories: the guides and sensors that prove the code does what the
@@ -72,6 +80,21 @@ and untyped where it matters, so the harness is hardest to build precisely where
 don't fix it in one rewrite; you earn it one high-risk *seam* (a place two responsibilities meet) at a
 time, pinning current behaviour with [characterization tests](#characterization-test) and drawing
 boundaries incrementally, highest-risk first. → [Legacy and Brownfield](50-adoption/04-legacy-and-brownfield.md)
+
+### Ceremony mismatch
+
+Full spec machinery aimed at a change whose intent fits in a sentence — four user stories and sixteen
+acceptance criteria for a one-line fix. It produces review burden, not safety: the paperwork should grow
+and shrink with the problem, while the discipline of stating expected behaviour before building never
+goes away. → [Spec — The Contract](10-lifecycle/01-spec-the-contract.md)
+
+### Change classification
+
+Sorting a change to a [spec](#specification-spec) before it merges: **additive** (a new requirement),
+**compatible** (clarifies without changing promised behaviour), **breaking** (changes what an existing
+requirement promises), or **ambiguous** (can't tell). Additive and compatible flow through the normal
+gate; breaking and ambiguous need a human sign-off, because they redefine the contract itself.
+→ [Drift and Health Sensors](30-delivery/04-drift-and-health-sensors.md)
 
 ### Characterization test
 
@@ -196,6 +219,21 @@ flag the drift and open the PR that fixes it. Distinct from [observability](#obs
 watches production at runtime rather than the repo on a clock.
 → [Drift and Health Sensors](30-delivery/04-drift-and-health-sensors.md)
 
+### Escalation ladder
+
+The enforcement rungs a rule can live on, weakest to strongest: an in-prompt instruction → a
+session-level goal re-checked each turn → a deterministic [hook](#hook) that blocks until the check
+passes → an independent second-opinion agent. Climb only as high as the rule demands — each rung costs
+more. Rule of thumb: instructions for judgment calls, hooks for invariants.
+→ [Guides — Feedforward](20-harness/01-guides-feedforward.md)
+
+### Evaluator calibration
+
+Building judgment into a separated evaluator the way you'd train a new reviewer: anchor its verdicts
+with worked, reasoned examples, tune it in a loop against your own judgments, stress-test what the
+criteria wording *rewards*, and don't chase its every finding. Separation removes the author's bias;
+calibration is what adds the skepticism. → [Verify — Proof, Not Vibes](10-lifecycle/05-verify-proof-not-vibes.md)
+
 ### Evidence artifact
 
 The captured proof attached to a verified change so a reviewer can *see* it rather than trust a
@@ -266,12 +304,27 @@ grown harness becomes the [blueprint](#blueprint) for its whole topology — but
 so budget the upkeep to keep instances from drifting from it.
 → [Growing the Harness](50-adoption/02-growing-the-harness.md)
 
+### Hook
+
+A script the harness itself runs on an event — before an edit, after an edit, at the end of a turn —
+that can hard-block an action rather than suggest against it. The deterministic layer where everything
+the agent *reads* is advisory: a hook never passes through the context window, so it fires whether or
+not the agent remembered the rule. → [Guides — Feedforward](20-harness/01-guides-feedforward.md)
+
 ### Inferential sensor
 
 A [sensor](#sensor) that judges *semantically* — an AI reviewer reading a diff for a misleading name, a
 lying comment, or drift from the spec. Slower, costs tokens, non-deterministic, and can be talked out of a
 real finding, so it's reserved for what a [computational sensor](#computational-sensor) structurally can't
 reach. → [Harness Engineering](00-foundations/03-harness-engineering.md)
+
+### Intent elicitation
+
+Having the agent interview *you* before a word of spec exists — challenging assumptions, making
+constraints explicit, pinning success criteria, deciding what should *not* be built — then writing the
+[spec](#specification-spec) from the interview. The questions are cheap; the guesses they replace are
+not. Execution then starts in a fresh session, leaving the interview's residue behind.
+→ [Spec — The Contract](10-lifecycle/01-spec-the-contract.md)
 
 ### Invariant
 
@@ -280,6 +333,13 @@ transfer, total balances are unchanged," "a sorted list sorted again is identica
 of the *problem*, a test built from it is bound to the business rule and can't silently encode the code's
 current bug. The lever of the [behaviour harness](#behaviour-harness).
 → [Behaviour Harness](20-harness/05-behaviour-harness.md)
+
+### Just-in-time retrieval
+
+Keeping *references* in context — paths, queries, links — and fetching the content at the moment of
+need, rather than pre-loading everything that might turn out relevant. Includes interrogating a large
+output with small query tools instead of loading the whole artifact into the window.
+→ [Context Engineering](00-foundations/02-context-engineering.md)
 
 ### Keep quality left
 
@@ -371,6 +431,13 @@ A read-only agent mode: it can investigate the codebase and draft a [plan](#plan
 files. Keeps exploration from sprawling into half-built code and keeps the plan a proposal you
 approve rather than a change already made. → [Plan Before Code](10-lifecycle/02-plan-before-code.md)
 
+### Progressive disclosure
+
+Structuring information so the agent loads it in stages: lightweight identifiers first — file paths,
+skill names and one-line descriptions, an index — full content only when judged relevant, appendix
+detail only when actually needed. The reason a [skill's](#skill) metadata and an instruction file's
+index matter more than their bodies. → [Context Engineering](00-foundations/02-context-engineering.md)
+
 ### Property-based testing
 
 A test that asserts an [invariant](#invariant) — "output is never negative," "round-trip leaves it
@@ -378,6 +445,13 @@ unchanged" — and lets a tool *generate* the inputs that try to break it, rathe
 Because the property comes from the spec's meaning (docstring, types, names), the test is independent of the
 function body and finds the edge case a hand-written example skips.
 → [Behaviour Harness](20-harness/05-behaviour-harness.md)
+
+### Property-testing loop
+
+The five-step loop an agent runs [property-based testing](#property-based-testing) as: comprehend the
+target, propose properties grounded in that context, generate the tests, execute *with self-reflection*
+(did the code fail or did my test?), and report only above a confidence bar — with findings ranked by a
+scoring rubric before a human reads them. → [Behaviour Harness](20-harness/05-behaviour-harness.md)
 
 ### Quality gate
 
@@ -422,6 +496,13 @@ AI reviewer — so the agent or a human can self-correct. The feedback half of t
 [harness](00-foundations/03-harness-engineering.md); its partner is [feedforward](#feedforward) (guides),
 which shapes the work before. → [Sensors — Feedback](20-harness/03-sensors-feedback.md)
 
+### Sensor ergonomics
+
+Designing a [sensor's](#sensor) whole interface for the agent that consumes it: a remediation-rich
+failure message, a [suppress-with-reason](#suppress-with-reason) escape hatch, threshold latitude with
+"refactor first" stated, a query tool wrapped around big reports, and effectiveness tracked over time.
+→ [Sensors — Feedback](20-harness/03-sensors-feedback.md)
+
 ### Sensor integrity
 
 The property that passing a [sensor](#sensor) *requires the work to actually have been done*. A check the
@@ -435,6 +516,22 @@ A reusable, packaged guide the agent can load on demand (a named instruction set
 Powerful in small, curated sets; a large library is a *budget tax* — it costs tokens up front and
 agents route poorly over big pools. → [Context Engineering](00-foundations/02-context-engineering.md)
 
+### Spec-drift detection
+
+A scheduled (or CI-triggered) scan that compares the [spec's](#specification-spec) requirement and
+acceptance-criteria ids against the tests and code that claim to implement them — every requirement
+traces to a test, every scenario-tagged test back to a requirement. Catches the drift no diff review
+sees: each side locally green, the contract between them quietly void.
+→ [Drift and Health Sensors](30-delivery/04-drift-and-health-sensors.md)
+
+### Spec-driven development (SDD)
+
+The spectrum of how central the spec is: **spec-first** (written before the code, discarded once the
+feature ships), **spec-anchored** (kept after the task and used to evolve the feature), and
+**spec-as-source** (humans edit only the spec; the code is regenerated, never touched). The playbook's
+durable, audited spec is spec-anchored — and skeptical of spec-as-source.
+→ [Spec — The Contract](10-lifecycle/01-spec-the-contract.md)
+
 ### Specification (spec)
 
 The short, concrete contract between what you meant and what the agent builds: the *what* (normative
@@ -442,6 +539,21 @@ requirements and acceptance criteria, in business language), deferring the *how*
 agent builds against it; you check the result against it. Unlike a [plan](#plan), it is **durable** —
 it lives with the code, version-controlled, and is audited against the code over time so the two
 don't drift. → [Spec — The Contract](10-lifecycle/01-spec-the-contract.md)
+
+### Suppress-with-reason
+
+An inline suppression of a sensor's rule that requires a stated justification — the legitimate way out
+of a rule the agent genuinely can't satisfy. Without it, the agent games the rule silently; with it,
+the exception sits in the diff as a documented judgment call a reviewer can read and veto. The escape
+hatch doesn't weaken the sensor — it routes exceptions into the open.
+→ [Sensors — Feedback](20-harness/03-sensors-feedback.md)
+
+### Survivors list
+
+The [mutation-testing](#mutation-testing) artifact you actually work with: each surviving mutant names,
+in one concrete reproducible example, a behaviour no test asserts — a ready-made worklist for the agent
+("kill this mutant"), far sharper than "improve the tests" and immune to the coverage illusion.
+→ [Behaviour Harness](20-harness/05-behaviour-harness.md)
 
 ### Task slicing
 

@@ -20,7 +20,7 @@ diff-triggered sensor ever fires.
 
 The trigger for catching those is not a change — it's **time**. A drift or health sensor runs on a
 schedule (nightly, weekly, on a cron), out of band from the change lifecycle, and asks a question no
-single pull request could answer: *what has quietly rotted since we last looked?* Four kinds are
+single pull request could answer: *what has quietly rotted since we last looked?* Five kinds are
 worth standing up:
 
 - **Dead-code detection.** Code that nothing calls anymore — a function whose last caller was deleted
@@ -42,8 +42,18 @@ worth standing up:
   scheduled "janitor" run (sometimes called garbage collection at agent scale) scans for that drift
   and *proposes* fixes, so entropy gets a standing counter-force instead of building until someone
   notices in disgust.
+- **Spec-drift detection.** The [spec chapter](../10-lifecycle/01-spec-the-contract.md) tells you to
+  audit spec and code for drift; this scan is the mechanism. On a schedule — or triggered in CI when
+  either side changes — compare the spec's requirement and acceptance-criteria ids (the REQ-xxx and
+  AC-xxx the [contract](../10-lifecycle/01-spec-the-contract.md) is written in) against the tests and
+  code that claim to implement them: every requirement traces to at least one test, every
+  scenario-tagged test traces back to a requirement, and the API surface matches the spec's interface
+  contracts. The drift it catches is exactly the kind no diff review sees: an endpoint returning
+  fields the spec never declared, a required field silently dropped in a refactor, a requirement
+  whose only test was deleted three changes ago — each side still locally green, the contract between
+  them quietly void.
 
-A fifth member you've already met: [**observability**](03-observability.md) — runtime sensors
+A sixth member you've already met: [**observability**](03-observability.md) — runtime sensors
 watching production. It belongs to this same family (a sensor outside the change lifecycle), but it
 runs continuously on live traffic rather than on a schedule against the repo, so it has
 [its own page](03-observability.md). This page is about the *scheduled* scans of the codebase itself.
@@ -96,7 +106,19 @@ is everything like this?"
 - **Track trends, not snapshots.** Record coverage and mutation score over time and look at the
   *slope*. A single threshold gate on coverage invites [gaming with low-value
   tests](../20-harness/03-sensors-feedback.md); a trend line you watch tells you the honest direction
-  without pretending a number is a quality bar.
+  without pretending a number is a quality bar. On cadence: the full mutation run is a scheduled,
+  trend-tracking job — far too slow for any [change gate](../20-harness/04-keep-quality-left.md) —
+  while the [incremental runs scoped to changed code](../20-harness/05-behaviour-harness.md) live in
+  the change loop. Same sensor, two triggers: the diff checks today's change, the clock checks the
+  direction.
+- **Classify every spec change before it merges.** The spec-drift scan has a diff-triggered
+  companion: drift cuts both ways, and a change to the [spec](../10-lifecycle/01-spec-the-contract.md)
+  itself moves the very contract the scan measures against. So when a spec changes, classify the
+  change — **additive** (a new requirement), **compatible** (clarifies without changing promised
+  behaviour), **breaking** (changes what an existing requirement promises), or **ambiguous** (can't
+  tell) — and let additive and compatible flow through the normal gate while breaking and ambiguous
+  require a human sign-off before merge. An agent can propose the classification; a person confirms
+  the two kinds that redefine the contract.
 - **Keep the non-deterministic scans advisory.** A janitor that *auto-merges* its own architecture
   "fixes" is a gate that can't be argued with making semantic calls it isn't qualified to make
   unsupervised. Let the agent *propose* — open the PR — and route it through the same
@@ -130,7 +152,7 @@ once in month twelve, as a security audit that finds the CVE, a refactor that tr
 and a senior engineer asking why the test suite feels so thin. A year of silent decay, billed in one
 lump.
 
-**With drift sensors.** The same team runs four scheduled jobs. The dependency scanner re-checks the
+**With drift sensors.** The same team runs the scheduled jobs. The dependency scanner re-checks the
 world every night; the morning the CVE is disclosed it opens a PR bumping the library to the patched
 version, and it's reviewed and merged before lunch — no local change ever needed to happen, because the
 sensor's trigger was the calendar, not a diff. A weekly dead-code scan opens a small deletion PR each
@@ -170,4 +192,4 @@ that fixes it.
 ---
 [← Previous: Observability](03-observability.md) · [Contents](../README.md) · [Next → Failure Modes](../40-anti-patterns/01-failure-modes.md)
 
-Related: [Observability](03-observability.md) · [Sensors — Feedback](../20-harness/03-sensors-feedback.md) · [Behaviour Harness](../20-harness/05-behaviour-harness.md) · [Keep Quality Left](../20-harness/04-keep-quality-left.md) · [Growing the Harness](../50-adoption/02-growing-the-harness.md) · [Review and Convergence](../10-lifecycle/06-review-and-convergence.md)
+Related: [Observability](03-observability.md) · [Sensors — Feedback](../20-harness/03-sensors-feedback.md) · [Behaviour Harness](../20-harness/05-behaviour-harness.md) · [Keep Quality Left](../20-harness/04-keep-quality-left.md) · [Spec — The Contract](../10-lifecycle/01-spec-the-contract.md) · [Growing the Harness](../50-adoption/02-growing-the-harness.md) · [Review and Convergence](../10-lifecycle/06-review-and-convergence.md)

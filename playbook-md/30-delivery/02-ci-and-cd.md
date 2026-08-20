@@ -64,6 +64,16 @@ once." A gate everyone learns to dodge is [no gate at all](../20-harness/04-keep
 failure the heavyweight git hook causes one stage earlier. So the gate has to be *both* strict and fast,
 which is what draft-aware gating buys you.
 
+**One honest caveat: the strict gate is a spectrum, not a law.** Some mature agent-first teams run
+deliberately minimal blocking checks at merge — short-lived PRs, agent-to-agent review, a tolerance for
+post-merge correction, a flaky test triggering a follow-up run instead of freezing the queue. That isn't a
+contradiction of this page; it's a maturity trade. Those teams haven't removed verification — they've moved
+it *behind* the merge, onto the continuous cleanup machinery this playbook builds later: [janitor agents
+and drift sensors](04-drift-and-health-sensors.md) that catch what the gate stopped checking, and
+[observability](03-observability.md) sharp enough to surface a mistake in minutes rather than months. Loose
+gates are only safe on top of that machinery. A team without it has nowhere to move the checking *to* — so
+until the post-merge sensors exist and have a track record, keep the gate strict.
+
 ## How to apply it
 
 - **Draw the seam: CI decides merge, CD decides release.** Put build, lint, type-check, and the test pyramid

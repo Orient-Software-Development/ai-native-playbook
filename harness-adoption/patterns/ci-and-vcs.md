@@ -22,6 +22,12 @@ remote.
   force-push.
 - CI is fast and trusted — a red CI nobody believes is no gate at all.
 
+One honest caveat: some mature agent-first teams run deliberately loose
+merge gates and catch mistakes *behind* the merge — but only on top of
+scheduled drift sensors (`drift-and-health.md`) and sharp observability
+with a track record. Until that machinery exists, keep the gate strict;
+a team without it has nowhere to move the checking *to*.
+
 ## Blocking behaviour
 
 A failing required check **blocks the merge**. The point of CI over the

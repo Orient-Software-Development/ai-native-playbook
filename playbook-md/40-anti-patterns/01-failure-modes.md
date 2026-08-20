@@ -157,6 +157,16 @@ weak gate. The bloated spec and the skill tax are that fluency drowning in noise
 prioritise. In every case the agent did something that *looked* complete, and nothing
 strong enough was watching to tell complete from correct.
 
+A debugging discipline follows: when the agent ships a bug, don't stop at "the agent got
+it wrong." Trace the chain upstream — the bug in the code came from a gap in the spec; the
+gap survived review; review was overloaded by high-volume, low-quality spec and plan
+generation; the volume traces back to a weak elicitation workflow. The productive question
+isn't "why did the agent fail" but *"what in our elicitation, specification, review, or
+verification process allowed this ambiguity to survive?"* Fix the layer where the
+ambiguity entered — starting with the interview-first practice in
+[the spec chapter](../10-lifecycle/01-spec-the-contract.md) — not just the instance, or
+the same class of bug walks back in through the same door.
+
 So the defence is always the same shape, whatever the disguise:
 
 - **Keep a human accountable** — responsibility for shipped code does not transfer to the

@@ -38,7 +38,7 @@ agent executes. Pick the entry point for your AI tool:
 
 | Your tool | Entry point |
 |-----------|-------------|
-| Claude Code | `/harness-assess` (see [adapters/claude/SKILL.md](adapters/claude/SKILL.md)) |
+| Claude Code | `/harness-assess`, `/harness-adopt`, `/harness-audit` (see [adapters/claude/](adapters/claude/) — one thin skill per runbook, so each routes on its own name and description) |
 | Copilot / Cursor / Codex / local agents | drop [adapters/AGENTS.md.snippet](adapters/AGENTS.md.snippet) into your `AGENTS.md` and ask the agent to "run the harness assessment" |
 | Any chat agent (no repo access) | paste [adapters/paste-prompt.md](adapters/paste-prompt.md) |
 
@@ -61,7 +61,8 @@ Nothing the starter installs is imported as a library. Everything is
 - **One real behaviour test** against the product's most important path.
 - **Higher-value controls only as assessment shows you need them** —
   suppression budgets, secret scan, architecture fitness, inferential
-  review, spec/ADR corpus, behaviour-contract packs.
+  review, spec/ADR corpus, behaviour-contract packs, scheduled drift
+  & health scans.
 
 The order is the playbook's order: the
 [minimum viable harness](../playbook-md/50-adoption/01-minimum-viable-harness.md)
@@ -79,7 +80,10 @@ harness-adoption/
 │   ├── adopt.md
 │   └── audit.md
 ├── adapters/                ← thin per-tool entry points
-│   ├── claude/SKILL.md
+│   ├── claude/              ← one skill dir per runbook
+│   │   ├── harness-assess/SKILL.md
+│   │   ├── harness-adopt/SKILL.md
+│   │   └── harness-audit/SKILL.md
 │   ├── AGENTS.md.snippet
 │   └── paste-prompt.md
 ├── patterns/                ← the control library the skills reason from
@@ -91,7 +95,8 @@ harness-adoption/
 │   ├── architecture-fitness.md
 │   ├── inferential-review.md
 │   ├── specs-and-decisions.md
-│   └── ci-and-vcs.md
+│   ├── ci-and-vcs.md
+│   └── drift-and-health.md
 └── reference/               ← self-contained theory + templates
     ├── harness-model.md     ← the 5 layers, control types, modes, loop
     ├── readiness-rubric.md  ← harnessability score (0–100)

@@ -48,6 +48,7 @@ detected stack:
 | Inferential (LLM) review in CI | `../patterns/inferential-review.md` |
 | Specs / ADRs / behaviour-contract packs | `../patterns/specs-and-decisions.md` |
 | CI workflow / VCS wiring | `../patterns/ci-and-vcs.md` |
+| Scheduled drift & health scans (deps, dead code, spec-drift, mutation trend) | `../patterns/drift-and-health.md` |
 
 If the stack isn't covered explicitly, use the **generic recipe** in the
 pattern (the control's intent + blocking behaviour) and implement it with
@@ -91,6 +92,10 @@ Apply the recipe. Hold to these rules:
 5. **Sensored or aspirational, pick one.** Every rule you add to the
    guide file gets a sensor, or is explicitly marked soft. Don't write
    rules you can't enforce — they decay and erode trust in the whole guide.
+   For an invariant that must hold every time, prefer a **hook** (a script
+   the agent tool runs on the event, hard-blocking the action) over another
+   line of prose — instructions are advisory; hooks are deterministic.
+   See `../patterns/guide-file.md`.
 6. **No dangling references.** Every path the guide mentions must exist.
 7. **Match the surrounding code.** Use the repo's existing config style,
    naming, and tool versions. Don't introduce a second formatter.

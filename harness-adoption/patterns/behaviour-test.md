@@ -76,8 +76,34 @@ API call that proves the core promise, asserting the returned result.
    value) and confirm the test goes red; restore. A behaviour test you
    never watched fail is not yet trusted.
 
+## Growing it — from one test to a behaviour harness
+
+Once the one test has caught something, grow strength, not count:
+
+- **Property tests from the spec's invariants.** For each invariant in
+  the spec ("output is never negative", "round-trip preserves the
+  value"), a property test binds the suite to the business rule instead
+  of the current implementation. Run as a loop, not a one-shot prompt:
+  comprehend the target in its real usage context → propose properties
+  from the meaning → generate → execute *with self-reflection* (did the
+  code fail, or did my test?) → report only findings the agent can
+  argue for. Rank findings with a scoring rubric before a human reads
+  them — reviewer attention is the bottleneck.
+- **Mutation testing grades the suite mechanically.** Coverage says a
+  line *ran*; a surviving mutant proves no test *asserts* it — human
+  review of tests does not substitute for this. Two modes: an
+  **incremental** run scoped to changed files inside the change loop,
+  and the **full** run on a schedule with the score tracked as a trend
+  (`drift-and-health.md`).
+- **The survivors list is the worklist.** Each surviving mutant names,
+  reproducibly, a behaviour no test asserts — "kill this mutant" is a
+  far sharper agent instruction than "improve the tests", and it's
+  immune to the coverage illusion.
+
 ## Decay notes (for audit)
 
 - Coverage of *critical paths*, not coverage percentage, is the metric.
 - Watch for tests weakened over time into "did not throw" assertions —
   that's a behaviour test rotting into a vacuous one.
+- If mutation runs exist: a survivors list nobody works and a score
+  trending down are the behaviour layer weakening invisibly.

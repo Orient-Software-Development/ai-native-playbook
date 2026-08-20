@@ -33,6 +33,7 @@ Every pattern follows the same shape:
 | [inferential-review](inferential-review.md) | Inferential | later |
 | [specs-and-decisions](specs-and-decisions.md) | Feedforward | later (specs grow with the product) |
 | [ci-and-vcs](ci-and-vcs.md) | (wiring + enforcement of last resort) | later (the local gate is enough week one) |
+| [drift-and-health](drift-and-health.md) | (scheduled sensing across all layers) | later (needs CI + the MVH first) |
 
 The four ✅ rows are the
 [minimum viable harness](../../playbook-md/50-adoption/01-minimum-viable-harness.md):

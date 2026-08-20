@@ -84,7 +84,9 @@ into everything built on top of it. Capture the standard once, enforce it contin
 - **Earn autonomy zone by zone.** Tie this to [growing the harness](02-growing-the-harness.md): a zone earns
   more agent autonomy as its controls prove they catch mistakes. A flop zone keeps a human in the loop until
   it's harnessed well enough to let go — and some zones (security, money) may stay human indefinitely, on
-  purpose.
+  purpose. The rungs of that climb — from propose-only up to self-merge — are formalised as the
+  [autonomy ladder](02-growing-the-harness.md) in growing the harness, with its promotion-on-evidence and
+  automatic-demotion rules.
 - **Make AI debt visible — in the repo, not in someone's head.** Keep a tracked list of the known
   shortcuts, the stubbed corners, the areas flagged weak. A debt that lives in the
   [system of record](../00-foundations/02-context-engineering.md) can be scheduled; a debt that lives in a
